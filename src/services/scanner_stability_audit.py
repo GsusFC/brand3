@@ -142,8 +142,21 @@ def _load_samples(conn: sqlite3.Connection, opts: StabilityAuditOptions) -> list
         ORDER BY created_at ASC, id ASC
     """
     rows = [dict(row) for row in conn.execute(query, params).fetchall()]
-    sv9_by_run = _load_sv9_by_source_run(conn) if _table_exists(conn, "sv9_scans") else {}
-    raw_inputs_by_run = _load_raw_inputs_by_run(conn) if _table_exists(conn, "raw_inputs") else {}
+    source_run_ids = {
+        int(row["source_run_id"])
+        for row in rows
+        if row.get("source_run_id") is not None
+    }
+    sv9_by_run = (
+        _load_sv9_by_source_run(conn, source_run_ids)
+        if source_run_ids and _table_exists(conn, "sv9_scans")
+        else {}
+    )
+    raw_inputs_by_run = (
+        _load_raw_inputs_by_run(conn, source_run_ids)
+        if source_run_ids and _table_exists(conn, "raw_inputs")
+        else {}
+    )
 
     samples: list[dict[str, Any]] = []
     for row in rows:
@@ -190,13 +203,21 @@ def _load_samples(conn: sqlite3.Connection, opts: StabilityAuditOptions) -> list
     return samples
 
 
-def _load_raw_inputs_by_run(conn: sqlite3.Connection) -> dict[int, list[dict[str, Any]]]:
+def _load_raw_inputs_by_run(
+    conn: sqlite3.Connection,
+    source_run_ids: set[int],
+) -> dict[int, list[dict[str, Any]]]:
+    if not source_run_ids:
+        return {}
+    placeholders = _placeholders(source_run_ids)
     rows = conn.execute(
-        """
+        f"""
         SELECT run_id, source, payload_json
         FROM raw_inputs
+        WHERE run_id IN ({placeholders})
         ORDER BY run_id ASC, source ASC, id ASC
-        """
+        """,
+        sorted(source_run_ids),
     ).fetchall()
     by_run: dict[int, list[dict[str, Any]]] = {}
     for row in rows:
@@ -209,14 +230,22 @@ def _load_raw_inputs_by_run(conn: sqlite3.Connection) -> dict[int, list[dict[str
     return by_run
 
 
-def _load_sv9_by_source_run(conn: sqlite3.Connection) -> dict[int, dict[str, Any]]:
+def _load_sv9_by_source_run(
+    conn: sqlite3.Connection,
+    source_run_ids: set[int],
+) -> dict[int, dict[str, Any]]:
+    if not source_run_ids:
+        return {}
+    placeholders = _placeholders(source_run_ids)
     rows = conn.execute(
-        """
+        f"""
         SELECT *
         FROM sv9_scans
         WHERE source_run_id IS NOT NULL
+          AND source_run_id IN ({placeholders})
         ORDER BY created_at ASC, id ASC
-        """
+        """,
+        sorted(source_run_ids),
     ).fetchall()
     by_run: dict[int, dict[str, Any]] = {}
     has_components = _table_exists(conn, "sv9_component_scores")
@@ -490,6 +519,10 @@ def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
         (name,),
     ).fetchone()
     return row is not None
+
+
+def _placeholders(values: set[int]) -> str:
+    return ",".join("?" for _ in values)
 
 
 def _normalize_url(value: str) -> str:

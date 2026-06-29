@@ -227,10 +227,14 @@ def _load_raw_inputs_by_run(
     ).fetchall()
     by_run: dict[int, list[dict[str, Any]]] = {}
     for row in rows:
+        payload = _loads_json(row["payload_json"])
         by_run.setdefault(int(row["run_id"]), []).append(
             {
                 "source": row["source"],
-                "payload": _loads_json(row["payload_json"]),
+                "payload_hash": _stable_hash(payload),
+                "exa_strategy": _first_json_path(payload, _EXA_STRATEGY_PATHS)
+                if row["source"] == "exa"
+                else None,
             }
         )
     return by_run
@@ -588,6 +592,8 @@ def _raw_input_payload(raw_inputs: Any, source: str) -> Any:
         for item in raw_inputs:
             if not isinstance(item, dict) or item.get("source") != source:
                 continue
+            if source == "exa" and item.get("exa_strategy"):
+                return {"diagnostics": {"strategy": item.get("exa_strategy")}}
             payload = item.get("payload")
             if payload is not None:
                 return payload

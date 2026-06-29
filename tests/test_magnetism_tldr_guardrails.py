@@ -598,3 +598,40 @@ def test_brand_idea_absent_when_built_from_generic_platform_plus_proof_point() -
     assert block["detected"] is False
     assert block["claim_type"] == "absent"
     assert block["mode"] == "not_detected"
+
+
+def test_brand_idea_single_literal_without_conceptual_support_requires_review() -> None:
+    pack = _base_pack()
+    pack["visual_or_conceptual_signals"] = []
+    pack["offer"] = "Build agents on infrastructure that thinks like them"
+    pack["company_summary"] = (
+        "At Vercel, our mission is to enable developers to build and publish wonderful, high-performant apps and websites."
+    )
+    pack["product_summary"] = (
+        "Enable your dev teams to do their best work, faster, with an automated platform to drive performance optimizations and decentralize iteration."
+    )
+    pack["future_direction"] = ""
+
+    validated = validate_analyst_tldr(
+        {
+            "tldr_brand3": {
+                "brand_idea": {
+                    "answer": "Aligning cloud infrastructure with agentic workflows so that building and deploying AI agents is as seamless and intuitive as shipping a frontend site.",
+                    "claim_type": "inferred",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "medium",
+                    "evidence_used": [
+                        "Build agents on infrastructure that thinks like them",
+                    ],
+                }
+            }
+        },
+        pack,
+    )
+
+    block = validated["tldr_brand3"]["brand_idea"]
+    assert block["detected"] is True
+    assert block["claim_type"] == "inferred"
+    assert block["mode"] == "needs_human_review"
+    assert block["human_review_recommended"] is True
+    assert "single literal offer/tagline" in " ".join(block["validation_warnings"]).lower()

@@ -148,6 +148,26 @@ def _validate_block(
             reason="Generic category language plus proof points cannot support a conceptual brand idea block.",
         )
 
+    if (
+        key == "brand_idea"
+        and claim_type == "inferred"
+        and _should_review_brand_idea_single_literal(
+            pack,
+            answer=answer,
+            evidence_used=evidence_used,
+            shortlist_texts=shortlist_texts,
+            signal_candidates=signal_candidates,
+        )
+    ):
+        warnings.append("brand_idea: a single literal offer/tagline without conceptual reinforcement requires human review.")
+        if mode != "needs_human_review":
+            degraded.append(_degrade_entry(key, "mode", mode, "needs_human_review", "single_literal_brand_idea_requires_review"))
+            mode = "needs_human_review"
+        if confidence == "high":
+            degraded.append(_degrade_entry(key, "confidence", confidence, "medium", "single_literal_brand_idea_requires_review"))
+            confidence = "medium"
+        validated["human_review_recommended"] = True
+
     if key == "personality" and (has_press or _contains_any(answer, ("founder", "founder story", "exit", "press", "interview"))):
         warnings.append("personality: founder story or press context cannot be treated as declared personality.")
         degraded.append(_degrade_entry(key, "claim_type", claim_type, "inferred", "founder_story_is_not_declared_personality"))
@@ -618,6 +638,42 @@ def _should_absent_brand_idea(
     proof_evidence = any(marker in evidence_blob for marker in proof_markers)
     answer_is_conceptual_but_unbacked = any(marker in normalized_answer for marker in conceptual_answer_markers)
     return generic_evidence and proof_evidence and answer_is_conceptual_but_unbacked
+
+
+def _should_review_brand_idea_single_literal(
+    pack: dict[str, Any],
+    *,
+    answer: str,
+    evidence_used: list[str],
+    shortlist_texts: list[str],
+    signal_candidates: list[str],
+) -> bool:
+    if not answer:
+        return False
+    if signal_candidates:
+        return False
+    conceptual_pack_items = pack.get("visual_or_conceptual_signals")
+    if isinstance(conceptual_pack_items, list):
+        conceptual_pack = [_clean_text(item) for item in conceptual_pack_items if _clean_text(item)]
+    else:
+        conceptual_pack = [_clean_text(conceptual_pack_items)] if _clean_text(conceptual_pack_items) else []
+    if conceptual_pack:
+        return False
+    unique_evidence = _unique_texts(evidence_used)
+    if len(unique_evidence) != 1:
+        return False
+    unique_shortlist = _unique_texts(shortlist_texts)
+    if len(unique_shortlist) > 1:
+        return False
+    normalized_answer = _normalize_for_match(answer)
+    normalized_evidence = _normalize_for_match(unique_evidence[0])
+    if not normalized_evidence:
+        return False
+    if normalized_answer == normalized_evidence:
+        return False
+    if len(normalized_evidence.split()) < 5:
+        return False
+    return True
 
 
 def _unique_texts(values: list[str]) -> list[str]:

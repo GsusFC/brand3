@@ -89,17 +89,17 @@ def _first_claim_text(claims: Iterable[EvidenceClaim], claim_types: tuple[str, .
 def _offer_text(claims: Iterable[EvidenceClaim], *, graph: EvidenceGraph | None = None) -> str:
     claim_list = list(claims)
     claim_types = {"product_offer", "hero_claim", "audience", "outcome", "feature_evidence"}
-    if graph and _is_company_brand_graph(graph):
-        claim_types.add("mission")
     candidates = [
         claim
         for claim in claim_list
         if claim.claim_type in claim_types
         and claim.text
+        and (claim.claim_type != "audience" or _looks_like_offer_shaped_audience(claim.text))
         and not _looks_like_url_only(claim.text)
         and _eligible_for_offer_candidate(claim)
         and _looks_like_offer(claim.text)
         and not _looks_like_extraction_artifact(claim.text)
+        and not _looks_like_adoption_or_scale_proof(claim.text)
         and not _looks_like_product_summary_noise(claim.text)
     ]
     if graph and _is_company_brand_graph(graph):
@@ -108,7 +108,7 @@ def _offer_text(claims: Iterable[EvidenceClaim], *, graph: EvidenceGraph | None 
         candidates = _owned_proof_offer_candidates(claim_list, graph=graph)
     if candidates:
         return _compact_offer_text(max(candidates, key=lambda claim: _offer_score(claim, graph=graph)).text)
-    fallback = _first_clean_claim_text(claim_list, ("product_offer", "hero_claim", "outcome", "audience"))
+    fallback = _first_offer_fallback(claim_list)
     return _compact_offer_text(fallback)
 
 
@@ -116,6 +116,8 @@ def _looks_like_offer(text: str) -> bool:
     if _looks_like_url_only(text):
         return False
     low = text.lower()
+    if _looks_like_adoption_or_scale_proof(text):
+        return False
     return any(
         marker in low
         for marker in (
@@ -142,6 +144,78 @@ def _looks_like_offer(text: str) -> bool:
             "shopping list",
         )
     )
+
+
+def _looks_like_adoption_or_scale_proof(text: str) -> bool:
+    cleaned = " ".join(str(text or "").split()).strip()
+    if not cleaned:
+        return False
+    low = cleaned.lower()
+    if not any(char.isdigit() for char in cleaned):
+        return False
+    if not any(marker in low for marker in ("serves over", "serving over", "powers over", "handles over", "over ")):
+        return False
+    return any(
+        marker in low
+        for marker in (
+            "monthly website visits",
+            "monthly visits",
+            "daily requests",
+            "monthly requests",
+            "requests per",
+            "visits per",
+            "users",
+            "customers",
+            "developers",
+            "brands",
+            "million",
+            "billion",
+            "thousand",
+        )
+    )
+
+
+def _looks_like_offer_shaped_audience(text: str) -> bool:
+    cleaned = " ".join(str(text or "").split()).strip()
+    low = cleaned.lower()
+    if not cleaned or _looks_like_audience_noise(cleaned):
+        return False
+    return any(
+        marker in low
+        for marker in (
+            " is a ",
+            " is an ",
+            " helps ",
+            " help ",
+            " enables ",
+            " enable ",
+            " allows ",
+            " allow ",
+            " gives ",
+            " give ",
+            " lets ",
+            " let ",
+        )
+    )
+
+
+def _first_offer_fallback(claims: Iterable[EvidenceClaim]) -> str:
+    for claim in claims:
+        if claim.claim_type not in {"product_offer", "hero_claim", "outcome", "audience"}:
+            continue
+        if not claim.text:
+            continue
+        if claim.claim_type == "audience" and not _looks_like_offer_shaped_audience(claim.text):
+            continue
+        if (
+            _looks_like_extraction_artifact(claim.text)
+            or _looks_like_product_summary_noise(claim.text)
+            or _looks_like_adoption_or_scale_proof(claim.text)
+            or _looks_like_audience_noise(claim.text)
+        ):
+            continue
+        return claim.text
+    return ""
 
 
 def _eligible_for_offer_candidate(claim: EvidenceClaim) -> bool:
@@ -207,6 +281,8 @@ def _offer_score(claim: EvidenceClaim, *, graph: EvidenceGraph | None = None) ->
             score -= 65
         if _looks_like_heading_or_truncated_summary(claim.text):
             score -= 35
+    if _looks_like_adoption_or_scale_proof(claim.text):
+        score -= 120
     if len(claim.text) > 700:
         score -= 18
     elif len(claim.text) > 420:
@@ -300,6 +376,7 @@ def _company_summary_text(claims: Iterable[EvidenceClaim], *, graph: EvidenceGra
         and _is_company_scoped_claim(claim)
         and not _product_specific_without_parent(claim, graph)
         and not _looks_like_extraction_artifact(claim.text)
+        and not _looks_like_adoption_or_scale_proof(claim.text)
         and not _looks_like_product_summary_noise(claim.text)
     ]
     if preferred:

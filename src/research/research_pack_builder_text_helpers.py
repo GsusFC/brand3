@@ -225,19 +225,12 @@ def _concept_signals(texts: Iterable[str]) -> list[str]:
     for text in texts:
         low = str(text or "").lower()
         for term in (
-            "lab",
+            "new home for your internet",
             "command center",
-            "nature",
-            "builder",
-            "platform",
-            "assistant",
-            "browser",
-            "workspace",
-            "tabs",
-            "studio",
-            "system",
-            "engine",
             "operating system",
+            "email-first operating system",
+            "life orchestration",
+            "app builder",
         ):
             if term in low:
                 candidates.append(term)

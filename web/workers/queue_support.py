@@ -106,7 +106,23 @@ def _payload_source_run_id(payload: dict) -> int | None:
 
 
 def _complete_magnetism_scan(token: str, payload: dict, now: str, db_path: str) -> None:
+    from web.storage import (
+        _magnetism_payload_insert_state,
+        _magnetism_public_fields_from_payload,
+    )
+
     payload_json = _json_payload(payload)
+    source_run_id = _payload_source_run_id(payload)
+    normalized_payload, _status, _error_message = _magnetism_payload_insert_state(
+        payload_json,
+        source_run_id=source_run_id,
+    )
+    magnetism_score, coherence_score, quadrant = _magnetism_public_fields_from_payload(
+        normalized_payload,
+        magnetism_score=int(payload.get("magnetism_score") or 0),
+        coherence_score=int(payload.get("coherence_score") or 0),
+        quadrant=str(payload.get("quadrant") or "pending"),
+    )
     with sqlite3.connect(str(db_path)) as conn:
         conn.execute(
             """
@@ -117,6 +133,7 @@ def _complete_magnetism_scan(token: str, payload: dict, now: str, db_path: str) 
                 coherence_score = ?,
                 quadrant = ?,
                 raw_payload = ?,
+                source_run_id = COALESCE(?, source_run_id),
                 status = 'ready',
                 phase = 'ready',
                 phase_updated_at = ?,
@@ -127,10 +144,11 @@ def _complete_magnetism_scan(token: str, payload: dict, now: str, db_path: str) 
             (
                 str(payload.get("brand_name") or "Unknown Brand"),
                 str(payload.get("url") or "Manual Upload"),
-                int(payload.get("magnetism_score") or 0),
-                int(payload.get("coherence_score") or 0),
-                str(payload.get("quadrant") or "pending"),
-                payload_json,
+                magnetism_score,
+                coherence_score,
+                quadrant,
+                normalized_payload,
+                source_run_id,
                 now,
                 now,
                 token,

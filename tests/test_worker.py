@@ -513,6 +513,72 @@ class WorkerLoopTests(unittest.TestCase):
 
             self.assertLess(calls.index("ensure_sv9"), calls.index("complete_magnetism"))
 
+    def test_complete_magnetism_scan_syncs_public_columns_from_normalized_payload(self):
+        import json
+
+        from web import storage as web_storage
+        from web.storage import insert_magnetism_job
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            store.close()
+            token = "magnetism-sync-token"
+            with patch("web.storage.BRAND3_DB_PATH", str(db_path)):
+                insert_magnetism_job(
+                    token=token,
+                    brand_name="Mafer",
+                    url="https://www.mafer.ai",
+                    input_type="audit_run",
+                    input_value="160",
+                    source_run_id=160,
+                )
+
+            payload = {
+                "brand_name": "www.mafer.ai",
+                "url": "https://www.mafer.ai",
+                "tldr_brand3": {},
+            }
+            normalized_payload = {
+                **payload,
+                "magnetism_score": 64,
+                "coherence_score": 74,
+                "quadrant": "Bien pensada sin alma comercial",
+            }
+
+            with patch.object(web_queue, "_db_path", return_value=db_path):
+                with patch.object(
+                    web_storage,
+                    "_magnetism_payload_insert_state",
+                    return_value=(json.dumps(normalized_payload), "ready", None),
+                ):
+                    web_queue._complete_magnetism_scan(token, payload)
+
+            with sqlite3.connect(str(db_path)) as conn:
+                conn.row_factory = sqlite3.Row
+                row = conn.execute(
+                    "SELECT magnetism_score, coherence_score, quadrant, raw_payload, status, phase "
+                    "FROM magnetism_scans WHERE token = ?",
+                    (token,),
+                ).fetchone()
+
+            self.assertIsNotNone(row)
+            assert row is not None
+            self.assertEqual(row["magnetism_score"], 64)
+            self.assertEqual(row["coherence_score"], 74)
+            self.assertEqual(row["quadrant"], "Bien pensada sin alma comercial")
+            self.assertEqual(row["status"], "ready")
+            self.assertEqual(row["phase"], "ready")
+            self.assertEqual(json.loads(row["raw_payload"])["magnetism_score"], 64)
+            self.assertEqual(json.loads(row["raw_payload"]).get("coherence_score"), 74)
+
+            with sqlite3.connect(str(db_path)) as conn:
+                persisted_source_run_id = conn.execute(
+                    "SELECT source_run_id FROM magnetism_scans WHERE token = ?",
+                    (token,),
+                ).fetchone()[0]
+            self.assertEqual(persisted_source_run_id, 160)
+
     def test_runs_claimed_job_and_stops_on_shutdown(self):
         claimed_jobs = [{"id": 7, "url": "https://a.com"}]
         ran = []

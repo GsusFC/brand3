@@ -104,6 +104,21 @@ def test_stability_audit_hashes_persisted_raw_inputs_by_source_run(tmp_path: Pat
     assert "raw_inputs_hash" in group["changing_hashes"]
 
 
+def test_stability_audit_separates_runs_by_exa_strategy(tmp_path: Path) -> None:
+    db_path = tmp_path / "brand3.sqlite3"
+    _create_magnetism_schema(db_path)
+    _create_raw_inputs_schema(db_path)
+    payload = _payload(raw_inputs={}, research_pack={"claims": ["same"]}, version="SV9")
+    _insert_scan(db_path, 1, "Example", "https://example.com", 80, 90, payload, source_run_id=101)
+    _insert_scan(db_path, 2, "Example", "https://example.com", 60, 70, payload, source_run_id=102)
+    _insert_raw_input(db_path, 101, "exa", {"diagnostics": {"strategy": "precision_vnext_v1"}})
+    _insert_raw_input(db_path, 102, "exa", {"diagnostics": {"strategy": "precision_vnext_v2"}})
+
+    report = analyze_scanner_stability(db_path, options=StabilityAuditOptions(version="SV9"))
+
+    assert report["repeated_group_count"] == 0
+
+
 def test_stability_audit_flags_storage_payload_mismatch(tmp_path: Path) -> None:
     db_path = tmp_path / "brand3.sqlite3"
     _create_magnetism_schema(db_path)
@@ -142,6 +157,7 @@ def test_stability_audit_exposes_strict_group_dimensions_and_day_bucket(tmp_path
     assert dimensions["visual_signature_version"] == "visual-v1"
     assert dimensions["tldr_prompt_version"] == "tldr-v1"
     assert dimensions["research_pack_builder_version"] == "pack-v1"
+    assert dimensions["exa_strategy"] == "unknown"
     assert dimensions["capture_strategy"] == "playwright"
     assert dimensions["created_day_bucket"] == "2026-06-29"
 

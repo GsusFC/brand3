@@ -150,7 +150,8 @@ def _load_samples(conn: sqlite3.Connection, opts: StabilityAuditOptions) -> list
         payload = _loads_json(row.get("raw_payload"))
         sv9 = sv9_by_run.get(row.get("source_run_id")) or {}
         persisted_raw_inputs = raw_inputs_by_run.get(row.get("source_run_id"))
-        dimensions = _sample_dimensions(row, payload, sv9, opts)
+        raw_inputs = persisted_raw_inputs or _first_json_path(payload, _RAW_INPUT_PATHS)
+        dimensions = _sample_dimensions(row, payload, sv9, opts, raw_inputs)
         version = dimensions["version_label"]
         if opts.version and opts.version.lower() not in version.lower():
             continue
@@ -177,7 +178,7 @@ def _load_samples(conn: sqlite3.Connection, opts: StabilityAuditOptions) -> list
             "sv9_reliability_status": sv9.get("reliability_status"),
             "hashes": {
                 "raw_payload_hash": _stable_hash(payload),
-                "raw_inputs_hash": _stable_hash(persisted_raw_inputs or _first_json_path(payload, _RAW_INPUT_PATHS)),
+                "raw_inputs_hash": _stable_hash(raw_inputs),
                 "research_pack_hash": _stable_hash(_first_json_path(payload, _RESEARCH_PACK_PATHS)),
                 "analyst_tldr_hash": _stable_hash(_first_json_path(payload, _ANALYST_TLDR_PATHS)),
                 "result_tldr_hash": _stable_hash(_first_json_path(payload, _RESULT_TLDR_PATHS)),
@@ -382,6 +383,7 @@ def _group_key(dimensions: dict[str, str]) -> str:
         "visual_signature_version",
         "tldr_prompt_version",
         "research_pack_builder_version",
+        "exa_strategy",
         "capture_strategy",
         "created_day_bucket",
     )
@@ -409,6 +411,7 @@ def _sample_dimensions(
     payload: dict[str, Any],
     sv9: dict[str, Any],
     opts: StabilityAuditOptions,
+    raw_inputs: Any,
 ) -> dict[str, str]:
     created_day = _created_day(row.get("created_at"))
     scanner_version = str(_first_json_path(payload, _SCANNER_VERSION_PATHS) or "unknown")
@@ -432,6 +435,7 @@ def _sample_dimensions(
         "visual_signature_version": str(_first_json_path(payload, _VISUAL_SIGNATURE_VERSION_PATHS) or "unknown"),
         "tldr_prompt_version": str(_first_json_path(payload, _TLDR_PROMPT_VERSION_PATHS) or "unknown"),
         "research_pack_builder_version": str(_first_json_path(payload, _RESEARCH_PACK_BUILDER_VERSION_PATHS) or "unknown"),
+        "exa_strategy": str(_exa_strategy(raw_inputs, payload) or "unknown"),
         "capture_strategy": str(_first_json_path(payload, _CAPTURE_STRATEGY_PATHS) or "unknown"),
         "created_day": created_day,
         "created_day_bucket": created_day if opts.group_by_day else "all",
@@ -535,6 +539,30 @@ def _first_json_path(payload: Any, paths: tuple[tuple[str, ...], ...]) -> Any:
     return None
 
 
+def _exa_strategy(raw_inputs: Any, payload: dict[str, Any]) -> Any:
+    exa_payload = _raw_input_payload(raw_inputs, "exa")
+    return _first_json_path(exa_payload, _EXA_STRATEGY_PATHS) or _first_json_path(payload, _EXA_STRATEGY_PATHS)
+
+
+def _raw_input_payload(raw_inputs: Any, source: str) -> Any:
+    if isinstance(raw_inputs, list):
+        for item in raw_inputs:
+            if not isinstance(item, dict) or item.get("source") != source:
+                continue
+            payload = item.get("payload")
+            if payload is not None:
+                return payload
+            payload_json = item.get("payload_json")
+            if payload_json is not None:
+                return _loads_json(payload_json)
+    if isinstance(raw_inputs, dict):
+        payload = raw_inputs.get(source)
+        if isinstance(payload, dict) and "payload" in payload:
+            return payload.get("payload")
+        return payload
+    return None
+
+
 def _json_path(payload: Any, path: tuple[str, ...]) -> Any:
     value = payload
     for key in path:
@@ -626,6 +654,11 @@ _RESEARCH_PACK_BUILDER_VERSION_PATHS = (
     ("research_pack", "builder_version"),
     ("research_pack", "version"),
     ("evidence_graph_summary", "version"),
+)
+_EXA_STRATEGY_PATHS = (
+    ("diagnostics", "strategy"),
+    ("exa", "diagnostics", "strategy"),
+    ("raw_inputs", "exa", "diagnostics", "strategy"),
 )
 _CAPTURE_STRATEGY_PATHS = (
     ("capture_strategy",),

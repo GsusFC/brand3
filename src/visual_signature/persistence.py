@@ -27,6 +27,7 @@ class VisualSignaturePersistenceBundle:
     run_metadata: dict[str, Any] = field(default_factory=dict)
     artifact_refs: dict[str, Any] = field(default_factory=dict)
     visual_signature_scan: dict[str, Any] | None = None
+    visual_evidence_packet: dict[str, Any] | None = None
     visual_signature_evidence: dict[str, Any] | None = None
     raw_visual_signature_payload: dict[str, Any] | None = None
     vision_payload: dict[str, Any] | None = None
@@ -93,6 +94,7 @@ def build_visual_signature_persistence_bundle(
         run_metadata=run_metadata,
         artifact_refs=artifact_refs,
         visual_signature_scan=visual_signature_scan if isinstance(visual_signature_scan, dict) else None,
+        visual_evidence_packet=visual_signature_evidence if isinstance(visual_signature_evidence, dict) else None,
         visual_signature_evidence=visual_signature_evidence if isinstance(visual_signature_evidence, dict) else None,
         raw_visual_signature_payload=raw if isinstance(raw, dict) else None,
         vision_payload=vision if isinstance(vision, dict) else None,
@@ -119,7 +121,7 @@ def persist_visual_signature_result(
     """
     if not store or run_id is None or not isinstance(result, dict):
         return
-    payload = result.get("visual_signature") or result.get("visual_signature_evidence")
+    payload = result.get("visual_signature") or result.get("visual_evidence_packet") or result.get("visual_signature_evidence")
     if not isinstance(payload, dict):
         return
     vision = payload.get("vision") if isinstance(payload.get("vision"), dict) else None
@@ -139,9 +141,13 @@ def persist_visual_signature_result(
         visual_signature_scan=result.get("visual_signature_scan")
         if isinstance(result.get("visual_signature_scan"), dict)
         else None,
-        visual_signature_evidence=result.get("visual_signature_evidence")
-        if isinstance(result.get("visual_signature_evidence"), dict)
-        else None,
+        visual_signature_evidence=(
+            result.get("visual_evidence_packet")
+            if isinstance(result.get("visual_evidence_packet"), dict)
+            else result.get("visual_signature_evidence")
+            if isinstance(result.get("visual_signature_evidence"), dict)
+            else None
+        ),
     )
     persist_visual_signature_bundle(store, run_id, bundle)
 

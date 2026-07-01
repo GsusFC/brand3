@@ -7,6 +7,12 @@ from src.sv9_flow import (
     BRAND_INTERPRETATION_VERSION,
     SV9_FLOW_CANDIDATE_VERSION,
     SV9_TILE_SIGNALS_VERSION,
+    SV9_FLOW_TLDR_ADAPTER_VERSION,
+    SV9_FLOW_TLDR_MODE,
+    BrandEvidencePack,
+    BrandInterpretation,
+    EvidenceRecord,
+    Sv9FlowCandidate,
 )
 from src.sv9_flow.adapters import build_flow_candidate_from_current_outputs
 from src.sv9_flow.reporting import SV9_FLOW_REPORT_VERSION, build_flow_report
@@ -16,6 +22,10 @@ from src.sv9_flow.surface import (
     pre_sv9_authority_violations,
     worker_artifacts,
 )
+from src.sv9_flow.tldr_adapter import build_magnetism_result_from_flow_candidate
+from src.sv9_flow.tile_signal_worker import build_tile_signals_from_interpretation
+from src.sv9.rubric import COMPONENTS, tile_ids
+from scripts.sv9_flow_sv9_shadow_eval import build_flow_sv9_shadow_eval, compare_sv9_summaries
 
 
 def test_flow_candidate_builds_evidence_interpretation_and_tile_signals_without_score() -> None:
@@ -62,9 +72,34 @@ def test_flow_candidate_builds_evidence_interpretation_and_tile_signals_without_
     assert all(signal["schema_version"] == SV9_TILE_SIGNALS_VERSION for signal in signals)
     assert {signal["effect"] for signal in signals} == {"supports"}
     assert {signal["source"] for signal in signals} == {"brand_interpretation"}
+    by_component = {signal["component"]: signal for signal in signals}
+    assert by_component["value_proposition"]["tile"] == "value_proposition.P1"
 
 
-def test_flow_candidate_keeps_visual_signature_as_evidence_only_tile_signals() -> None:
+def test_interpretation_tile_signals_use_valid_sv9_tile_ids() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Acme",
+        url="https://acme.example",
+        blocks={
+            component: {"detected": True, "content": f"{component} content", "confidence": "high"}
+            for component in COMPONENTS
+            if component != "coherencia"
+        },
+        evidence_refs={},
+        limitations=[],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+    valid_by_component = {component: set(tile_ids(component)) for component in COMPONENTS}
+
+    for signal in signals:
+        tile = signal.to_dict()["tile"]
+        component = signal.to_dict()["component"]
+        assert tile.startswith(f"{component}.")
+        assert tile.split(".", 1)[1] in valid_by_component[component]
+
+
+def test_flow_candidate_keeps_medium_negative_visual_signature_as_evidence_only() -> None:
     visual_signature = {
         "schema_version": "visual-signature-evidence-v1",
         "capture": {"status": "usable", "first_fold_evaluable": True},
@@ -86,11 +121,37 @@ def test_flow_candidate_keeps_visual_signature_as_evidence_only_tile_signals() -
     )
     signals = candidate.to_dict()["tile_signals"]
 
+    assert signals == []
+    assert candidate.evidence_pack.evidence[0].ref == "visual_signature.capture"
+    assert candidate.evidence_pack.evidence[1].ref == "visual_signature.tile_signals.0"
+
+
+def test_flow_candidate_keeps_high_confidence_negative_visual_signature_tile_signal() -> None:
+    visual_signature = {
+        "schema_version": "visual-signature-evidence-v1",
+        "capture": {"status": "usable", "first_fold_evaluable": True},
+        "tile_signals": [
+            {
+                "tile": "coherencia.C6",
+                "effect": "weakens",
+                "confidence": "high",
+                "source": "heuristic",
+                "rationale": "Hero copy and visible visual system point in different directions.",
+            }
+        ],
+    }
+
+    candidate = build_flow_candidate_from_current_outputs(
+        snapshot={"run": {"brand_name": "Acme", "url": "https://acme.example"}},
+        tldr_payload={"tldr_brand3": {}},
+        visual_signature_evidence=visual_signature,
+    )
+    signals = candidate.to_dict()["tile_signals"]
+
     assert {
         (signal["tile"], signal["effect"], signal["source"])
         for signal in signals
     } == {("coherencia.C6", "weakens", "visual_signature")}
-    assert candidate.evidence_pack.evidence[0].ref == "visual_signature.capture"
 
 
 def test_flow_candidate_blocks_positive_visual_signal_when_capture_is_unusable() -> None:
@@ -126,6 +187,367 @@ def test_flow_candidate_blocks_positive_visual_signal_when_capture_is_unusable()
             "rationale": "Visual Signature capture is not usable.",
         }
     ]
+
+
+def test_magnetism_tile_signals_mark_pull_tiles_insufficient_when_direct_evidence_is_missing() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Linear",
+        url="https://linear.app",
+        blocks={
+            "magnetism": {
+                "detected": True,
+                "content": "Linear has professional appeal among engineering teams.",
+                "confidence": "low",
+                "rationale": "Third-party recognition indicates appeal, but direct pull metrics are missing.",
+            }
+        },
+        evidence_refs={"magnetism": ["features.7", "features.11"]},
+        limitations=["No direct community metrics, developer advocacy data, or organic growth statistics were available."],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+
+    by_tile = {signal.tile: signal.to_dict() for signal in signals}
+    assert by_tile["magnetism.MG1"]["effect"] == "supports"
+    assert by_tile["magnetism.MG1"]["confidence"] == "low"
+    assert by_tile["magnetism.MG9"]["effect"] == "insufficient_evidence"
+    assert by_tile["magnetism.MG9"]["confidence"] == "high"
+    assert by_tile["magnetism.MG10"]["effect"] == "insufficient_evidence"
+
+
+def test_magnetism_tile_signals_mark_pull_tiles_insufficient_for_missing_loyalty_metrics() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Pleo",
+        url="https://www.pleo.io",
+        blocks={
+            "magnetism": {
+                "detected": True,
+                "content": "Pleo has momentum evidence, but direct customer loyalty evidence is missing.",
+                "confidence": "low",
+                "rationale": "Momentum is present, not direct community pull.",
+            }
+        },
+        evidence_refs={"magnetism": ["features.7"]},
+        limitations=["No direct metrics or qualitative data regarding brand magnetism or customer loyalty were available."],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+
+    by_tile = {signal.tile: signal.to_dict() for signal in signals}
+    assert by_tile["magnetism.MG9"]["effect"] == "insufficient_evidence"
+    assert by_tile["magnetism.MG10"]["effect"] == "insufficient_evidence"
+
+
+def test_gate_overridden_magnetism_does_not_mark_mechanism_tiles_without_family_limitations() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Pleo",
+        url="https://www.pleo.io",
+        blocks={
+            "magnetism": {
+                "detected": True,
+                "content": "magnetism has enough evidence to evaluate via deterministic gate signals: momentum.",
+                "confidence": "low",
+                "rationale": "No direct magnetism data was available.",
+            }
+        },
+        evidence_refs={"magnetism": ["features.7"]},
+        limitations=["magnetism_llm_detection_overridden_by_gate"],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+
+    by_tile = {signal.tile: signal.to_dict() for signal in signals}
+    assert by_tile["magnetism.MG1"]["effect"] == "supports"
+    for tile in ("magnetism.MG3", "magnetism.MG4", "magnetism.MG5", "magnetism.MG6", "magnetism.MG7", "magnetism.MG8"):
+        assert tile not in by_tile
+
+
+def test_market_momentum_only_magnetism_marks_mechanism_tiles_insufficient() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Acme",
+        url="https://acme.example",
+        blocks={
+            "magnetism": {
+                "detected": True,
+                "content": "Acme has funding and press momentum.",
+                "confidence": "medium",
+                "rationale": "The evidence is market momentum, not a direct audience pull mechanism.",
+            }
+        },
+        evidence_refs={"magnetism": ["features.7"]},
+        limitations=[
+            "magnetism_market_momentum_only",
+            "magnetism_no_owned_hook_evidence",
+            "magnetism_no_preference_evidence",
+            "magnetism_no_belonging_status_evidence",
+        ],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+
+    by_tile = {signal.tile: signal.to_dict() for signal in signals}
+    for tile in ("magnetism.MG3", "magnetism.MG4", "magnetism.MG5", "magnetism.MG6", "magnetism.MG7", "magnetism.MG8"):
+        assert by_tile[tile]["effect"] == "insufficient_evidence"
+        assert by_tile[tile]["confidence"] == "high"
+    assert by_tile["magnetism.MG9"]["effect"] == "insufficient_evidence"
+    assert by_tile["magnetism.MG9"]["confidence"] == "high"
+
+
+def test_magnetism_owned_hook_limitation_only_marks_hook_tiles_insufficient() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Acme",
+        url="https://acme.example",
+        blocks={
+            "magnetism": {
+                "detected": True,
+                "content": "Acme has audience preference evidence but no owned hook mechanism.",
+                "confidence": "medium",
+                "rationale": "The evidence supports magnetism only in preference terms.",
+            }
+        },
+        evidence_refs={"magnetism": ["raw_inputs.2"]},
+        limitations=["magnetism_no_owned_hook_evidence"],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+
+    by_tile = {signal.tile: signal.to_dict() for signal in signals}
+    for tile in ("magnetism.MG3", "magnetism.MG4", "magnetism.MG5", "magnetism.MG6"):
+        assert by_tile[tile]["effect"] == "insufficient_evidence"
+        assert by_tile[tile]["confidence"] == "high"
+    assert "magnetism.MG7" not in by_tile
+    assert "magnetism.MG8" not in by_tile
+    assert "magnetism.MG9" not in by_tile
+    assert "magnetism.MG10" not in by_tile
+
+
+def test_magnetism_preference_limitation_only_marks_preference_tiles_insufficient() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Acme",
+        url="https://acme.example",
+        blocks={
+            "magnetism": {
+                "detected": True,
+                "content": "Acme has owned hook evidence but no preference evidence.",
+                "confidence": "medium",
+                "rationale": "The evidence supports magnetism only in hook terms.",
+            }
+        },
+        evidence_refs={"magnetism": ["raw_inputs.2"]},
+        limitations=["magnetism_no_preference_evidence"],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+
+    by_tile = {signal.tile: signal.to_dict() for signal in signals}
+    assert "magnetism.MG3" not in by_tile
+    assert "magnetism.MG4" not in by_tile
+    assert "magnetism.MG5" not in by_tile
+    assert "magnetism.MG6" not in by_tile
+    for tile in ("magnetism.MG7", "magnetism.MG8"):
+        assert by_tile[tile]["effect"] == "insufficient_evidence"
+        assert by_tile[tile]["confidence"] == "high"
+
+
+def test_generic_core_purpose_marks_advanced_purpose_tiles_as_weakening() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Pleo",
+        url="https://www.pleo.io",
+        blocks={
+            "core_purpose": {
+                "detected": True,
+                "content": (
+                    "Pleo's mission is to make spend management effective, with a vision "
+                    "to automate expense processes for finance teams."
+                ),
+                "confidence": "high",
+                "rationale": "Extracted from official mission and vision statements.",
+            }
+        },
+        evidence_refs={"core_purpose": ["raw_inputs.2", "features.14"]},
+        limitations=["The brand's messaging relies heavily on standard SaaS category descriptors."],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+
+    by_tile = {signal.tile: signal.to_dict() for signal in signals}
+    assert by_tile["core_purpose.PR1"]["effect"] == "supports"
+    for tile in ("core_purpose.PR3", "core_purpose.PR4", "core_purpose.PR7", "core_purpose.PR8", "core_purpose.PR9"):
+        assert by_tile[tile]["effect"] == "weakens"
+        assert by_tile[tile]["confidence"] == "high"
+
+
+def test_derived_core_purpose_marks_advanced_purpose_tiles_as_weakening() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Acme",
+        url="https://acme.example",
+        blocks={
+            "core_purpose": {
+                "detected": True,
+                "content": "Acme exists to maximize operational efficiency.",
+                "confidence": "medium",
+                "rationale": "Derived from strategy summaries.",
+            }
+        },
+        evidence_refs={"core_purpose": ["features.0", "raw_inputs.8"]},
+        limitations=["core_purpose_derived_strategy_evidence"],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+
+    by_tile = {signal.tile: signal.to_dict() for signal in signals}
+    for tile in ("core_purpose.PR3", "core_purpose.PR4", "core_purpose.PR7", "core_purpose.PR8", "core_purpose.PR9"):
+        assert by_tile[tile]["effect"] == "weakens"
+        assert by_tile[tile]["confidence"] == "high"
+
+
+def test_product_bound_core_purpose_marks_advanced_purpose_tiles_as_weakening() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Baker",
+        url="https://withbaker.com",
+        blocks={
+            "core_purpose": {
+                "detected": True,
+                "content": (
+                    "Baker is a performance marketing agency that manages paid marketing channels "
+                    "for lead-based businesses using autonomous AI agents and engineers."
+                ),
+                "confidence": "high",
+                "rationale": "The homepage describes the service from strategy to execution.",
+            }
+        },
+        evidence_refs={"core_purpose": ["raw_inputs.1", "raw_inputs.2"]},
+        limitations=[],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+
+    by_tile = {signal.tile: signal.to_dict() for signal in signals}
+    assert by_tile["core_purpose.PR1"]["effect"] == "supports"
+    for tile in ("core_purpose.PR3", "core_purpose.PR4", "core_purpose.PR7", "core_purpose.PR8", "core_purpose.PR9"):
+        assert by_tile[tile]["effect"] == "weakens"
+        assert by_tile[tile]["confidence"] == "high"
+
+
+def test_core_purpose_duplicate_of_mission_marks_advanced_purpose_tiles_as_weakening() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Staris",
+        url="https://staris.tech",
+        blocks={
+            "core_purpose": {
+                "detected": True,
+                "content": (
+                    "Staris provides continuous AppSec validation by proving which vulnerability "
+                    "candidates are exploitable and delivering PR-ready patches to fix them."
+                ),
+                "confidence": "high",
+                "rationale": "The sources define core purpose as proving exploits and shipping fixes.",
+            },
+            "mission": {
+                "detected": True,
+                "content": (
+                    "To prove which vulnerability candidates are exploitable in running applications "
+                    "and ship the fixes at release cadence."
+                ),
+                "confidence": "high",
+                "rationale": "The mission is to prove exploits and ship fixes.",
+            },
+        },
+        evidence_refs={"core_purpose": ["raw_inputs.1"], "mission": ["raw_inputs.1"]},
+        limitations=[],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+
+    by_tile = {signal.tile: signal.to_dict() for signal in signals}
+    for tile in ("core_purpose.PR3", "core_purpose.PR4", "core_purpose.PR7", "core_purpose.PR8", "core_purpose.PR9"):
+        assert by_tile[tile]["effect"] == "weakens"
+        assert by_tile[tile]["confidence"] == "high"
+
+
+def test_functional_product_core_purpose_marks_advanced_purpose_tiles_as_weakening() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Staris",
+        url="https://staris.tech",
+        blocks={
+            "core_purpose": {
+                "detected": True,
+                "content": (
+                    "Staris delivers automated penetration testing and continuous security validation, "
+                    "replacing traditional scanners and manual workflows by discovering and proving "
+                    "real exploitable vulnerabilities with working exploits and PR-ready patches."
+                ),
+                "confidence": "high",
+                "rationale": "The block describes product functionality and service delivery.",
+            },
+            "mission": {
+                "detected": True,
+                "content": (
+                    "To build continuous, exploit-proven application security validation that proves "
+                    "which vulnerability candidates are exploitable in running apps."
+                ),
+                "confidence": "high",
+                "rationale": "The mission is to prove exploitable vulnerabilities.",
+            },
+            "value_proposition": {
+                "detected": True,
+                "content": (
+                    "Staris automates security validation volume with proof of exploit and PR-ready "
+                    "patches so AppSec teams can eliminate scanner noise."
+                ),
+                "confidence": "high",
+                "rationale": "The value proposition is product utility.",
+            },
+        },
+        evidence_refs={"core_purpose": ["raw_inputs.1"]},
+        limitations=[],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+
+    by_tile = {signal.tile: signal.to_dict() for signal in signals}
+    assert by_tile["core_purpose.PR1"]["effect"] == "supports"
+    for tile in ("core_purpose.PR3", "core_purpose.PR4", "core_purpose.PR7", "core_purpose.PR8", "core_purpose.PR9"):
+        assert by_tile[tile]["effect"] == "weakens"
+        assert by_tile[tile]["confidence"] == "high"
+
+
+def test_agent_feature_core_purpose_marks_advanced_purpose_tiles_as_weakening() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Hermes Agent",
+        url="https://hermes-agent.example",
+        blocks={
+            "core_purpose": {
+                "detected": True,
+                "content": (
+                    "Hermes Agent is an open-source, autonomous agent designed to grow more capable "
+                    "over time. It features persistent memory to learn projects and auto-generate "
+                    "skills, running across multiple platforms and messaging interfaces."
+                ),
+                "confidence": "high",
+                "rationale": "The block describes product capabilities and surfaces.",
+            },
+            "value_proposition": {
+                "detected": True,
+                "content": (
+                    "Power users and developers get a persistent, local-first AI agent environment "
+                    "with focused automation, persistent memory, and isolated subagents."
+                ),
+                "confidence": "high",
+                "rationale": "The value proposition is product utility.",
+            },
+        },
+        evidence_refs={"core_purpose": ["raw_inputs.1"]},
+        limitations=[],
+    )
+
+    signals = build_tile_signals_from_interpretation(interpretation)
+
+    by_tile = {signal.tile: signal.to_dict() for signal in signals}
+    assert by_tile["core_purpose.PR1"]["effect"] == "supports"
+    for tile in ("core_purpose.PR3", "core_purpose.PR4", "core_purpose.PR7", "core_purpose.PR8", "core_purpose.PR9"):
+        assert by_tile[tile]["effect"] == "weakens"
+        assert by_tile[tile]["confidence"] == "high"
 
 
 def test_flow_report_summarizes_candidate_quality_controls() -> None:
@@ -203,3 +625,242 @@ def test_surface_inventory_identifies_workers_to_extract_before_orchestrators() 
         "SV9 tile signals",
     }.issubset(worker_names)
     assert len(CURRENT_SURFACE_INVENTORY) >= len(worker_names)
+
+
+def test_flow_tldr_adapter_builds_current_sv9_input_from_evidence_refs() -> None:
+    candidate = Sv9FlowCandidate(
+        evidence_pack=BrandEvidencePack(
+            brand_name="Acme",
+            url="https://acme.example",
+            evidence=[
+                EvidenceRecord(
+                    ref="raw_inputs.0.text",
+                    source="homepage",
+                    evidence_type="raw_input_text",
+                    content="Acme helps finance teams close the books faster.",
+                ),
+                EvidenceRecord(
+                    ref="features.0",
+                    source="features",
+                    evidence_type="feature_signal",
+                    content="Tone is operational and precise.",
+                ),
+            ],
+        ),
+        interpretation=BrandInterpretation(
+            brand_name="Acme",
+            url="https://acme.example",
+            blocks={
+                "mission": {
+                    "detected": True,
+                    "content": "Help finance teams close faster.",
+                    "confidence": "high",
+                    "rationale": "The homepage states the operating outcome.",
+                },
+                "vision": {
+                    "detected": False,
+                    "content": "",
+                    "confidence": "low",
+                    "rationale": "No future-state evidence.",
+                },
+            },
+            evidence_refs={
+                "mission": ["raw_inputs.0.text", "features.0"],
+                "vision": [],
+            },
+        ),
+        limitations=["No direct community metrics were available."],
+    )
+
+    payload = build_magnetism_result_from_flow_candidate(candidate, source_run_id=123)
+
+    assert payload["source_run_id"] == 123
+    assert payload["sv9_flow_adapter_version"] == SV9_FLOW_TLDR_ADAPTER_VERSION
+    assert payload["tldr_brand3"]["mission"] == {
+        "detected": True,
+        "content": "Help finance teams close faster.",
+        "confidence": "high",
+        "mode": SV9_FLOW_TLDR_MODE,
+        "rationale": "The homepage states the operating outcome.",
+        "limitations": [],
+        "evidence": [
+            "Acme helps finance teams close the books faster.",
+            "Tone is operational and precise.",
+        ],
+        "evidence_refs": ["raw_inputs.0.text", "features.0"],
+        "source": "sv9_flow",
+        "adapter_version": SV9_FLOW_TLDR_ADAPTER_VERSION,
+    }
+    assert payload["tldr_brand3"]["vision"]["detected"] is False
+    assert payload["tldr_brand3"]["vision"]["evidence"] == []
+    assert payload["tldr_brand3"]["mission"]["limitations"] == []
+
+
+def test_flow_sv9_shadow_eval_runs_current_sv9_from_flow_interpretation() -> None:
+    class FlowLLM:
+        api_key = "test-key"
+        model = "flow-fake"
+
+        def _call_json(self, system, user, **kwargs):
+            return {
+                "detected": True,
+                "content": "Acme helps finance teams close faster.",
+                "confidence": "high",
+                "evidence_refs": ["raw_inputs.0"],
+                "rationale": "The evidence states the audience and outcome.",
+                "limitations": [],
+            }
+
+    class TileLLM:
+        api_key = "test-key"
+        model = "tile-fake"
+
+        def _call_json(self, system, user, **kwargs):
+            ids = []
+            schema_name = kwargs.get("schema_name")
+            for key in COMPONENTS:
+                if schema_name == f"baldosas_{key}":
+                    ids = tile_ids(key)
+                    break
+            payload = {
+                "baldosas": [
+                    {"id": tile_id, "estado": "ok", "evidencia": f"quote {tile_id}"}
+                    for tile_id in ids
+                ]
+            }
+            if schema_name == "baldosas_coherencia":
+                payload["veredicto"] = "La marca cuenta una historia única."
+            return payload
+
+    report = build_flow_sv9_shadow_eval(
+        {
+            "source_run_id": 44,
+            "debug": {
+                "run": {"id": 44, "brand_name": "Acme", "url": "https://acme.example"},
+                "raw_inputs": [
+                    {
+                        "source": "homepage",
+                        "payload": {
+                            "url": "https://acme.example",
+                            "text": "Acme helps finance teams close faster.",
+                        },
+                    }
+                ],
+            },
+        },
+        include_full=True,
+        interpretation_llm=FlowLLM(),
+        evaluator_llm=TileLLM(),
+        reasoning_llm=TileLLM(),
+        visual_evidence_fn=lambda _snapshot: {
+            "schema_version": "visual-signature-evidence-v1",
+            "capture": {"status": "usable", "first_fold_evaluable": True},
+            "tile_signals": [
+                {
+                    "tile": "brand_idea.I1",
+                    "effect": "supports",
+                    "confidence": "high",
+                    "rationale": "Logo is visible and distinctive.",
+                },
+                {
+                    "tile": "coherencia.C6",
+                    "effect": "weakens",
+                    "confidence": "medium",
+                    "rationale": "Medium-confidence visual mismatch should remain evidence only.",
+                },
+            ],
+        },
+    )
+
+    assert report["schema_version"] == "sv9-flow-sv9-shadow-eval-v1"
+    assert report["source_run_id"] == 44
+    assert report["visual_acquisition_present"] is True
+    assert report["flow"]["visual_acquisition_present"] is True
+    assert report["flow"]["detected_blocks"]
+    assert report["llm_usage"]["roles"]["flow_interpretation"]["model"] == "flow-fake"
+    assert report["llm_usage"]["roles"]["sv9_evaluator"]["model"] == "tile-fake"
+    assert report["llm_usage"]["totals"]["provider_calls"] == 0
+    assert report["flow"]["extra_signals"]["mission"][0]["feature"] == "sv9_flow_tile_signal"
+    assert report["flow"]["extra_signals"]["mission"][0]["tile"] == "mission.M1"
+    assert report["flow"]["extra_signals"]["mission"][0]["effect"] == "supports"
+    assert any(
+        signal["source"] == "visual_signature" and signal["tile"] == "brand_idea.I1"
+        for signal in report["flow"]["extra_signals"]["brand_idea"]
+    )
+    assert not any(
+        signal["source"] == "visual_signature" and signal["tile"] == "coherencia.C6"
+        for signal in report["flow"]["extra_signals"].get("coherencia", [])
+    )
+    evidence_refs = [
+        record["ref"]
+        for record in report["flow"]["candidate"]["evidence_pack"]["evidence"]
+    ]
+    assert "visual_signature.tile_signals.0" in evidence_refs
+    assert "visual_signature.tile_signals.1" in evidence_refs
+    assert report["sv9"]["brand3_score"] is not None
+    assert report["sv9"]["components"]["mission"]["status"] == "scored"
+
+
+def test_flow_sv9_shadow_eval_compares_flow_and_legacy_tile_profiles() -> None:
+    comparison = compare_sv9_summaries(
+        flow_summary={
+            "brand3_score": 72,
+            "base_average": 6.5,
+            "reliability_status": "shadow",
+            "not_detected": ["vision"],
+            "components": {
+                "mission": {
+                    "status": "scored",
+                    "score": 4,
+                    "lit_tiles": ["M1", "M2"],
+                    "off_tiles": [],
+                    "blind_spot_tiles": ["M3"],
+                },
+                "vision": {
+                    "status": "not_detected",
+                    "score": 0,
+                    "lit_tiles": [],
+                    "off_tiles": [],
+                    "blind_spot_tiles": [],
+                },
+            },
+        },
+        legacy_summary={
+            "brand3_score": 76,
+            "base_average": 7,
+            "reliability_status": "usable",
+            "not_detected": [],
+            "components": {
+                "mission": {
+                    "status": "scored",
+                    "score": 5,
+                    "lit_tiles": ["M1", "M4"],
+                    "off_tiles": ["M2"],
+                    "blind_spot_tiles": [],
+                },
+                "vision": {
+                    "status": "scored",
+                    "score": 2,
+                    "lit_tiles": ["V1"],
+                    "off_tiles": [],
+                    "blind_spot_tiles": [],
+                },
+            },
+        },
+    )
+
+    assert comparison["brand3_score_delta"] == -4
+    assert comparison["base_average_delta"] == -0.5
+    assert comparison["reliability_changed"] is True
+    assert comparison["not_detected_added"] == ["vision"]
+    assert comparison["changed_components"] == ["mission", "vision"]
+    assert comparison["components"]["mission"]["score_delta"] == -1
+    assert comparison["components"]["mission"]["tile_changes"] == {
+        "changed": True,
+        "lit_added": ["M2"],
+        "lit_removed": ["M4"],
+        "off_added": [],
+        "off_removed": ["M2"],
+        "blind_spot_added": ["M3"],
+        "blind_spot_removed": [],
+    }

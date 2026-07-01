@@ -24,6 +24,26 @@ def test_snapshot_eval_accepts_scanner_api_audit_snapshot_envelope() -> None:
     assert snapshot["run"]["brand_name"] == "vercel.com"
 
 
+def test_snapshot_eval_accepts_selected_deploy_snapshot_envelope() -> None:
+    snapshot, run_id = snapshot_and_run_id_from_envelope(
+        {
+            "source": "deploy",
+            "source_run_id": 86,
+            "snapshot": {
+                "run": {
+                    "id": 86,
+                    "brand_name": "www.mafer.ai",
+                    "url": "https://www.mafer.ai",
+                },
+                "raw_inputs": [],
+            },
+        }
+    )
+
+    assert run_id == 86
+    assert snapshot["run"]["brand_name"] == "www.mafer.ai"
+
+
 def test_snapshot_eval_runs_flow_llm_repeats_without_pass1() -> None:
     calls = []
 

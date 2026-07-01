@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Any
 
 from .json_payloads import MalformedJSONPayload, json_dumps, safe_json_loads, to_jsonable
+from src.visual_signature.acquisition_contract import VISUAL_ACQUISITION_RAW_SOURCE
 
 
 class RawInputsStoreMixin:
@@ -47,7 +48,10 @@ class RawInputsStoreMixin:
         return None
 
     def save_visual_signature_evidence(self, run_id: int, payload: Any) -> None:
-        self.save_raw_input(run_id, "visual_signature", payload)
+        self.save_visual_acquisition_evidence(run_id, payload)
+
+    def save_visual_acquisition_evidence(self, run_id: int, payload: Any) -> None:
+        self.save_raw_input(run_id, VISUAL_ACQUISITION_RAW_SOURCE, payload)
 
     def get_latest_raw_input(
         self,
@@ -96,4 +100,24 @@ class RawInputsStoreMixin:
         url: str,
         max_age_hours: int = 24,
     ) -> Any | None:
+        return self.get_latest_visual_acquisition_evidence(
+            brand_name,
+            url,
+            max_age_hours=max_age_hours,
+        )
+
+    def get_latest_visual_acquisition_evidence(
+        self,
+        brand_name: str,
+        url: str,
+        max_age_hours: int = 24,
+    ) -> Any | None:
+        latest = self.get_latest_raw_input(
+            brand_name,
+            url,
+            VISUAL_ACQUISITION_RAW_SOURCE,
+            max_age_hours=max_age_hours,
+        )
+        if latest is not None:
+            return latest
         return self.get_latest_raw_input(brand_name, url, "visual_signature", max_age_hours=max_age_hours)

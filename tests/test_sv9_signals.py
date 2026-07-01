@@ -7,6 +7,7 @@ from src.sv9.signals import (
     compute_vision_observations,
     merge_signals,
     screenshot_url_from_snapshot,
+    visual_evidence_packet_from_snapshot,
     visual_signature_evidence_from_snapshot,
     visual_signature_shadow_signals,
     vision_signals,
@@ -165,6 +166,27 @@ class VisualSignatureShadowSignalTests(unittest.TestCase):
             ]
         )
         evidence = visual_signature_evidence_from_snapshot(snapshot)
+        self.assertEqual(evidence["capture"]["status"], "usable")
+
+    def test_visual_evidence_packet_from_snapshot_accepts_visual_acquisition_source(self):
+        snapshot = snapshot_with(
+            raw_inputs=[
+                {
+                    "source": "visual_acquisition",
+                    "payload": {
+                        "visual_evidence_packet": {
+                            "schema_version": "visual-signature-evidence-v1",
+                            "capture": {"status": "usable"},
+                            "tile_signals": [{"tile": "coherencia.C6", "effect": "supports"}],
+                        }
+                    },
+                },
+            ]
+        )
+
+        evidence = visual_evidence_packet_from_snapshot(snapshot)
+
+        assert evidence is not None
         self.assertEqual(evidence["capture"]["status"], "usable")
 
     def test_visual_signature_shadow_signals_group_tiles_by_component(self):

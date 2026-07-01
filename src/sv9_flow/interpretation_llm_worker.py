@@ -164,6 +164,11 @@ def build_brand_interpretation_with_llm(
             evidence_pack=evidence_pack,
             shortlists=shortlists,
         ),
+        "detection_provenance": {
+            key: block.get("detection_provenance")
+            for key, block in sorted(normalized.blocks.items())
+            if isinstance(block, dict) and isinstance(block.get("detection_provenance"), dict)
+        },
         "block_call_debug": raw_payload.get("_block_call_debug", []),
         "raw": raw,
     }
@@ -203,6 +208,13 @@ def normalize_llm_interpretation_response(
                 "content": "",
                 "confidence": "low",
                 "rationale": "No interpretation returned for this block.",
+                "detection_provenance": {
+                    "llm_detected": False,
+                    "gate_detected": None,
+                    "final_detected": False,
+                    "final_source": "missing_block",
+                    "gate_reason": "",
+                },
             }
             continue
         refs = _valid_refs(
@@ -217,7 +229,17 @@ def normalize_llm_interpretation_response(
                 evidence_pack,
                 allowed_refs=block_evidence_shortlists.get(key),
             )
-        detected = _detected_from_evidence_policy(key, block, policy_refs, evidence_pack)
+        decision = (
+            resolve_block_detection(key, evidence_pack, evidence_refs=policy_refs)
+            if key in SENSITIVE_BLOCKS and policy_refs
+            else None
+        )
+        override_by_gate = bool(block and decision and decision.supports_detection and not truthy_detected(block))
+        detected = (
+            bool(block and decision and decision.supports_detection)
+            if key in SENSITIVE_BLOCKS and policy_refs
+            else _detected_from_evidence_policy(key, block, policy_refs, evidence_pack)
+        )
         if truthy_detected(block) and not refs:
             limitations.append(f"{key}_dropped_missing_evidence_refs")
         elif truthy_detected(block) and block_evidence_shortlists is not None:
@@ -225,18 +247,43 @@ def normalize_llm_interpretation_response(
             dropped = [ref for ref in raw_refs if ref and ref not in refs]
             if dropped:
                 limitations.append(f"{key}_dropped_refs_outside_shortlist")
-        if truthy_detected(block) and policy_refs and key in SENSITIVE_BLOCKS and not detected:
-            decision = resolve_block_detection(key, evidence_pack, evidence_refs=policy_refs)
+        if policy_refs and key in SENSITIVE_BLOCKS and not detected:
+            decision = decision or resolve_block_detection(key, evidence_pack, evidence_refs=policy_refs)
             if decision.limitation_code:
                 limitations.append(decision.limitation_code)
+        if override_by_gate:
+            limitations.append(f"{key}_llm_detection_overridden_by_gate")
+        block_refs = (
+            unique_strings(list(refs) + list(policy_refs))
+            if detected and key in SENSITIVE_BLOCKS
+            else refs
+        )
+        if decision is not None and decision.supports_detection:
+            if key == "magnetism":
+                if _magnetism_market_momentum_only(decision):
+                    limitations.append("magnetism_market_momentum_only")
+                limitations.extend(_magnetism_family_limitations(decision))
+        if key == "core_purpose" and detected and _core_purpose_uses_derived_strategy_evidence(
+            block_refs,
+            evidence_pack,
+        ):
+            limitations.append("core_purpose_derived_strategy_evidence")
         blocks[key] = {
             "detected": detected,
-            "content": str(block.get("content") or "").strip()[:700],
-            "confidence": _confidence(block.get("confidence")),
-            "rationale": str(block.get("rationale") or "").strip()[:700],
+            "content": _block_content(key, block, decision=decision, override_by_gate=override_by_gate),
+            "confidence": "low" if override_by_gate else _confidence(block.get("confidence")),
+            "rationale": _block_rationale(key, block, decision=decision, override_by_gate=override_by_gate),
+            "detection_provenance": _detection_provenance(
+                key=key,
+                block=block,
+                decision=decision,
+                detected=detected,
+                override_by_gate=override_by_gate,
+                policy_refs=policy_refs,
+            ),
         }
-        if refs:
-            evidence_refs[key] = refs
+        if block_refs:
+            evidence_refs[key] = block_refs
 
     response_limitations = payload.get("limitations")
     if isinstance(response_limitations, list):
@@ -653,6 +700,210 @@ def _detected_from_evidence_policy(
     return resolve_block_detection(key, evidence_pack, evidence_refs=refs).supports_detection
 
 
+def _detection_provenance(
+    *,
+    key: str,
+    block: dict[str, Any],
+    decision: Any,
+    detected: bool,
+    override_by_gate: bool,
+    policy_refs: list[str],
+) -> dict[str, Any]:
+    llm_detected = truthy_detected(block)
+    gate_applied = key in SENSITIVE_BLOCKS and bool(policy_refs)
+    gate_detected = bool(decision and decision.supports_detection) if gate_applied else None
+    if override_by_gate:
+        final_source = "gate_override"
+    elif gate_applied and llm_detected and not detected:
+        final_source = "gate_rejected"
+    elif gate_applied and llm_detected and detected:
+        final_source = "llm_confirmed_by_gate"
+    elif gate_applied and detected:
+        final_source = "gate"
+    elif detected:
+        final_source = "llm"
+    else:
+        final_source = "insufficient_evidence"
+    return {
+        "llm_detected": llm_detected,
+        "gate_detected": gate_detected,
+        "final_detected": detected,
+        "final_source": final_source,
+        "gate_reason": _gate_reason(decision),
+    }
+
+
+def _gate_reason(decision: Any) -> str:
+    if decision is None:
+        return ""
+    limitation = str(getattr(decision, "limitation_code", "") or "")
+    if limitation:
+        return limitation
+    support_terms = [str(term) for term in getattr(decision, "support_terms", []) or [] if str(term)]
+    weaken_terms = [str(term) for term in getattr(decision, "weaken_terms", []) or [] if str(term)]
+    if support_terms:
+        return "support_terms:" + ",".join(support_terms)
+    if weaken_terms:
+        return "weaken_terms:" + ",".join(weaken_terms)
+    return str(getattr(decision, "outcome", "") or "")
+
+
+def _block_content(
+    key: str,
+    block: dict[str, Any],
+    *,
+    decision: Any,
+    override_by_gate: bool,
+) -> str:
+    content = str(block.get("content") or "").strip()
+    if content:
+        return content[:700]
+    if override_by_gate and decision is not None:
+        terms = list(getattr(decision, "support_terms", []) or getattr(decision, "weaken_terms", []) or [])
+        term_text = ", ".join(terms) if terms else "shortlisted evidence"
+        return f"{key} has enough evidence to evaluate via deterministic gate signals: {term_text}."[:700]
+    return ""
+
+
+def _block_rationale(
+    key: str,
+    block: dict[str, Any],
+    *,
+    decision: Any,
+    override_by_gate: bool,
+) -> str:
+    rationale = str(block.get("rationale") or "").strip()
+    if rationale:
+        return rationale[:700]
+    if override_by_gate and decision is not None:
+        terms = list(getattr(decision, "support_terms", []) or getattr(decision, "weaken_terms", []) or [])
+        term_text = ", ".join(terms) if terms else "evidence shortlist"
+        return (
+            f"The LLM did not return a detected {key} block, but the deterministic gate found "
+            f"supporting evidence signals: {term_text}."
+        )[:700]
+    return ""
+
+
 def _confidence(value: Any) -> str:
     candidate = str(value or "").lower()
     return candidate if candidate in {"low", "medium", "high"} else "medium"
+
+
+def _magnetism_market_momentum_only(decision: Any) -> bool:
+    support_terms = {
+        str(term or "").strip().lower()
+        for term in getattr(decision, "support_terms", []) or []
+        if str(term or "").strip()
+    }
+    if not support_terms:
+        return False
+    direct_pull_terms = {
+        "demand",
+        "traction",
+        "community engagement",
+        "customer engagement",
+        "organic engagement",
+        "community",
+        "customer love",
+        "customer reviews",
+        "user growth",
+        "follower growth",
+        "audience growth",
+        "market pull",
+        "word of mouth",
+    }
+    if support_terms & direct_pull_terms:
+        return False
+    broad_market_terms = {"momentum", "funding", "press", "revenue growth"}
+    return bool(support_terms) and support_terms <= broad_market_terms
+
+
+def _magnetism_family_limitations(decision: Any) -> list[str]:
+    support_terms = {
+        str(term or "").strip().lower()
+        for term in getattr(decision, "support_terms", []) or []
+        if str(term or "").strip()
+    }
+    if not support_terms:
+        return []
+    owned_hook_terms = {
+        "demand",
+        "traction",
+        "community engagement",
+        "customer engagement",
+        "organic engagement",
+        "community",
+        "customer love",
+        "customer reviews",
+        "user growth",
+        "market pull",
+        "word of mouth",
+    }
+    preference_terms = {
+        "preference",
+        "differentiator",
+        "differentiation",
+        "unique",
+        "distinctive",
+        "superior",
+        "reason to choose",
+        "choose",
+        "competitor",
+        "competitors",
+        "native integration",
+    }
+    belonging_status_terms = {
+        "community engagement",
+        "customer engagement",
+        "organic engagement",
+        "community",
+        "customer love",
+        "customer reviews",
+        "user growth",
+        "follower growth",
+        "audience growth",
+        "word of mouth",
+    }
+    gravity_terms = {
+        "demand",
+        "traction",
+        "market pull",
+        "funding",
+        "press",
+        "revenue growth",
+    }
+    limitations: list[str] = []
+    if not support_terms & owned_hook_terms:
+        limitations.append("magnetism_no_owned_hook_evidence")
+    if not support_terms & preference_terms:
+        limitations.append("magnetism_no_preference_evidence")
+    if not support_terms & belonging_status_terms:
+        limitations.append("magnetism_no_belonging_status_evidence")
+    if not support_terms & gravity_terms:
+        limitations.append("magnetism_no_gravity_evidence")
+    return limitations
+
+
+def _core_purpose_uses_derived_strategy_evidence(
+    refs: list[str],
+    evidence_pack: BrandEvidencePack,
+) -> bool:
+    if not refs:
+        return False
+    by_ref = {record.ref: record for record in evidence_pack.evidence}
+    records = [by_ref[ref] for ref in refs if ref in by_ref]
+    if not records:
+        return False
+    primary_web_records = [
+        record
+        for record in records
+        if record.source == "web" and record.evidence_type == "raw_input"
+    ]
+    derived_records = [
+        record
+        for record in records
+        if record.ref.startswith("features.")
+        or record.source in {"entity_research_packet", "report_narrative"}
+    ]
+    return bool(derived_records) and len(derived_records) >= max(2, len(records) - len(primary_web_records))

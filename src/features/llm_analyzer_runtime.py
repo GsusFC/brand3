@@ -93,6 +93,54 @@ class _LLMAnalyzerRuntime:
     def _clear_failure(self) -> None:
         self.last_failure_reason = None
 
+    def _record_usage_observation(
+        self,
+        *,
+        event: str,
+        response_type: str,
+        cache_key: str,
+        status: str | None = None,
+        max_tokens: int | None = None,
+        schema_name: str | None = None,
+        request_variant: str | None = None,
+        usage_metadata: dict[str, Any] | None = None,
+    ) -> None:
+        observations = getattr(self, "usage_observations", None)
+        if not isinstance(observations, list):
+            return
+        record = {
+            "event": event,
+            "model": self.model,
+            "base_url": self.base_url,
+            "response_type": response_type,
+            "cache_key": cache_key,
+            "cache_key_prefix": cache_key[:12],
+            "status": status,
+            "max_tokens": max_tokens,
+            "schema_name": schema_name or "",
+            "request_variant": request_variant or "",
+            "usage_metadata_available": bool(usage_metadata),
+            "usage_metadata": usage_metadata or {},
+        }
+        observations.append(record)
+
+    def usage_observation_summary(self) -> dict[str, Any]:
+        observations = getattr(self, "usage_observations", [])
+        if not isinstance(observations, list):
+            observations = []
+        return {
+            "model": self.model,
+            "base_url": self.base_url,
+            "cache_hits": int(getattr(self, "cache_hits", 0) or 0),
+            "cache_misses": int(getattr(self, "cache_misses", 0) or 0),
+            "cache_writes": int(getattr(self, "cache_writes", 0) or 0),
+            "provider_calls": sum(1 for item in observations if item.get("event") == "provider_call"),
+            "usage_metadata_available": any(
+                bool(item.get("usage_metadata_available")) for item in observations
+            ),
+            "observations": observations,
+        }
+
     def _cache_key(
         self,
         response_type: str,
@@ -130,6 +178,11 @@ class _LLMAnalyzerRuntime:
         if not cached or cached.get("response_type") != response_type:
             return None
         self.cache_hits += 1
+        self._record_usage_observation(
+            event="cache_hit",
+            response_type=response_type,
+            cache_key=cache_key,
+        )
         if response_type == "json":
             return cached.get("response_json") or {}
         return cached.get("response_text") or ""
@@ -155,5 +208,10 @@ class _LLMAnalyzerRuntime:
             finally:
                 store.close()
             self.cache_writes += 1
+            self._record_usage_observation(
+                event="cache_write",
+                response_type=response_type,
+                cache_key=cache_key,
+            )
         except Exception:
             return

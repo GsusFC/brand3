@@ -5,8 +5,14 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from src.sv9_flow.evidence_source import classify_source
 from src.sv9_flow._utils import feature_confidence, first_string, unique_strings
 from src.sv9_flow.contracts import BrandEvidencePack, EvidenceRecord
+
+_RAW_INPUT_CONTENT_CHARS = 700
+_WEB_CHUNK_CHARS = 900
+_WEB_CHUNK_OVERLAP = 100
+_MAX_WEB_SUBPAGE_CHUNKS = 6
 
 
 def build_evidence_pack_from_snapshot(
@@ -48,21 +54,68 @@ def _evidence_from_raw_inputs(raw_inputs: list[Any]) -> list[EvidenceRecord]:
         entry = row if isinstance(row, dict) else {}
         source = str(entry.get("source") or f"raw_input_{index}")
         payload = _payload_dict(entry)
+        if source == "web":
+            records.extend(_evidence_from_web_payload(index=index, source=source, payload=payload))
+            continue
         url = first_string(payload.get("url"), payload.get("source_url"), payload.get("page_url"))
         text = _summarize_payload(payload)
         if not text:
             continue
-        records.append(
-            EvidenceRecord(
-                ref=f"raw_inputs.{index}",
-                source=source,
-                evidence_type="raw_input",
-                content=text,
-                url=url,
-                confidence="medium",
-            )
-        )
+        records.append(_raw_input_record(index=index, source=source, content=text, url=url))
     return records
+
+
+def _evidence_from_web_payload(*, index: int, source: str, payload: dict[str, Any]) -> list[EvidenceRecord]:
+    text = _summarize_payload(payload, limit=None)
+    if not text:
+        return []
+    url = first_string(payload.get("url"), payload.get("source_url"), payload.get("page_url"))
+    homepage, subpages = _split_web_subpages(text)
+    records: list[EvidenceRecord] = []
+    if homepage:
+        records.append(_raw_input_record(index=index, source=source, content=homepage[:_RAW_INPUT_CONTENT_CHARS], url=url))
+    for subpage_index, (subpage_url, subpage_text) in enumerate(subpages, start=1):
+        for chunk_index, chunk in enumerate(_chunk_text(subpage_text), start=1):
+            records.append(
+                _raw_input_record(
+                    index=index,
+                    source=source,
+                    content=chunk,
+                    url=subpage_url or url,
+                    ref=f"raw_inputs.{index}.subpage.{subpage_index}.chunk.{chunk_index}",
+                    metadata={"subpage_url": subpage_url},
+                )
+            )
+    return records
+
+
+def _raw_input_record(
+    *,
+    index: int,
+    source: str,
+    content: str,
+    url: str = "",
+    ref: str = "",
+    metadata: dict[str, Any] | None = None,
+) -> EvidenceRecord:
+    record_ref = ref or f"raw_inputs.{index}"
+    trimmed = str(content or "").strip()[:_RAW_INPUT_CONTENT_CHARS]
+    record_metadata = dict(metadata or {})
+    record_metadata["source_class"] = classify_source(
+        ref=record_ref,
+        source=source,
+        evidence_type="raw_input",
+        content=trimmed,
+    )
+    return EvidenceRecord(
+        ref=record_ref,
+        source=source,
+        evidence_type="raw_input",
+        content=trimmed,
+        url=url,
+        confidence="medium",
+        metadata=record_metadata,
+    )
 
 
 def _evidence_from_features(features: list[Any]) -> list[EvidenceRecord]:
@@ -77,13 +130,23 @@ def _evidence_from_features(features: list[Any]) -> list[EvidenceRecord]:
         content = str(value or "").strip()
         if not content:
             continue
+        ref = f"features.{index}"
+        evidence_type = f"{dimension_name}.{feature_name}".strip(".")
         records.append(
             EvidenceRecord(
-                ref=f"features.{index}",
+                ref=ref,
                 source="legacy_feature",
-                evidence_type=f"{dimension_name}.{feature_name}".strip("."),
+                evidence_type=evidence_type,
                 content=content[:700],
                 confidence=feature_confidence(feature.get("confidence")),
+                metadata={
+                    "source_class": classify_source(
+                        ref=ref,
+                        source="legacy_feature",
+                        evidence_type=evidence_type,
+                        content=content[:700],
+                    )
+                },
             )
         )
     return records
@@ -103,7 +166,7 @@ def _evidence_from_visual_signature(evidence: dict[str, Any] | None) -> list[Evi
             evidence_type="visual_capture",
             content=f"capture_status={capture.get('status')}; first_fold_evaluable={capture.get('first_fold_evaluable')}",
             confidence="medium",
-            metadata={"capture": capture},
+            metadata={"capture": capture, "source_class": "visual_signal"},
         )
     )
     for index, tile_signal in enumerate(evidence.get("tile_signals") or []):
@@ -117,6 +180,7 @@ def _evidence_from_visual_signature(evidence: dict[str, Any] | None) -> list[Evi
                 content=str(tile_signal.get("rationale") or tile_signal.get("effect") or "")[:700],
                 confidence=feature_confidence(tile_signal.get("confidence")),
                 metadata={
+                    "source_class": "visual_signal",
                     "tile": tile_signal.get("tile"),
                     "effect": tile_signal.get("effect"),
                     "source": tile_signal.get("source"),
@@ -140,11 +204,57 @@ def _payload_dict(entry: dict[str, Any]) -> dict[str, Any]:
     return {}
 
 
-def _summarize_payload(payload: dict[str, Any]) -> str:
-    for key in ("text", "content", "markdown", "summary", "title"):
+def _split_web_subpages(text: str) -> tuple[str, list[tuple[str, str]]]:
+    marker = "\n---\n## Subpage: "
+    if marker not in text:
+        return text.strip(), []
+    first, *raw_subpages = text.split(marker)
+    subpages: list[tuple[str, str]] = []
+    for raw_subpage in raw_subpages:
+        lines = raw_subpage.splitlines()
+        if not lines:
+            continue
+        subpage_url = lines[0].strip()
+        subpage_text = "\n".join(lines[1:]).strip()
+        if subpage_text and not _is_not_found_page(subpage_text):
+            subpages.append((subpage_url, subpage_text))
+    return first.strip(), subpages
+
+
+def _is_not_found_page(text: str) -> bool:
+    normalized = " ".join(str(text or "").strip().lower().split())
+    if not normalized:
+        return False
+    first_slice = normalized[:240]
+    return (
+        "404 not found" in first_slice
+        or first_slice.startswith("not found the requested url was not found")
+        or "the requested url was not found on this server" in first_slice
+    )
+
+
+def _chunk_text(text: str) -> list[str]:
+    clean = str(text or "").strip()
+    if not clean:
+        return []
+    chunks: list[str] = []
+    step = max(1, _WEB_CHUNK_CHARS - _WEB_CHUNK_OVERLAP)
+    for start in range(0, len(clean), step):
+        chunk = clean[start : start + _WEB_CHUNK_CHARS].strip()
+        if chunk:
+            chunks.append(chunk)
+        if len(chunks) >= _MAX_WEB_SUBPAGE_CHUNKS or start + _WEB_CHUNK_CHARS >= len(clean):
+            break
+    return chunks
+
+
+def _summarize_payload(payload: dict[str, Any], *, limit: int | None = _RAW_INPUT_CONTENT_CHARS) -> str:
+    for key in ("text", "content", "markdown", "markdown_content", "summary", "title"):
         value = payload.get(key)
         if isinstance(value, str) and value.strip():
-            return value.strip()[:700]
+            text = value.strip()
+            return text if limit is None else text[:limit]
     if payload:
-        return json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str)[:700]
+        text = json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str)
+        return text if limit is None else text[:limit]
     return ""

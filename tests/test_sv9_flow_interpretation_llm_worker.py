@@ -119,6 +119,13 @@ def test_values_detection_requires_explicit_values_evidence() -> None:
 
     assert interpretation.blocks["values"]["detected"] is False
     assert "values_structural_gate_rejected" in interpretation.limitations
+    assert interpretation.blocks["values"]["detection_provenance"] == {
+        "llm_detected": True,
+        "gate_detected": False,
+        "final_detected": False,
+        "final_source": "gate_rejected",
+        "gate_reason": "values_structural_gate_rejected",
+    }
 
 
 def test_values_detection_accepts_explicit_values_evidence() -> None:
@@ -195,8 +202,255 @@ def test_sensitive_block_gate_uses_deterministic_shortlist_not_llm_selected_refs
         block_evidence_shortlists={"magnetism": ["features.0", "raw_inputs.0"]},
     )
 
-    assert interpretation.blocks["magnetism"]["detected"] is False
-    assert "magnetism_structural_negative_evidence" in interpretation.limitations
+    assert interpretation.blocks["magnetism"]["detected"] is True
+    assert "magnetism_structural_negative_evidence" not in interpretation.limitations
+
+
+def test_sensitive_block_gate_overrides_llm_false_negative_when_evidence_supports_detection() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="features.0",
+                source="momentum",
+                evidence_type="vitalidad.momentum",
+                content="Press momentum and market pull are visible in recent product launches.",
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "magnetism": {
+                "detected": False,
+                "content": "",
+                "confidence": "low",
+                "evidence_refs": [],
+                "rationale": "Not enough direct community data.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"magnetism": ["features.0"]},
+    )
+
+    assert interpretation.blocks["magnetism"]["detected"] is True
+    assert interpretation.blocks["magnetism"]["confidence"] == "low"
+    assert "momentum" in interpretation.blocks["magnetism"]["content"]
+    assert interpretation.evidence_refs["magnetism"] == ["features.0"]
+    assert "magnetism_llm_detection_overridden_by_gate" in interpretation.limitations
+    assert interpretation.blocks["magnetism"]["detection_provenance"] == {
+        "llm_detected": False,
+        "gate_detected": True,
+        "final_detected": True,
+        "final_source": "gate_override",
+        "gate_reason": "support_terms:momentum,press,market pull",
+    }
+
+
+def test_mission_gate_overrides_llm_false_negative_when_action_evidence_exists() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="web",
+                evidence_type="raw_input",
+                content="We help support teams automate high-stakes calls.",
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "mission": {
+                "detected": False,
+                "content": "",
+                "confidence": "low",
+                "evidence_refs": [],
+                "rationale": "Provider failed to extract it.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"mission": ["raw_inputs.0"]},
+    )
+
+    assert interpretation.blocks["mission"]["detected"] is True
+    assert "we help" in interpretation.blocks["mission"]["content"].lower()
+    assert "mission_llm_detection_overridden_by_gate" in interpretation.limitations
+
+
+def test_magnetism_market_momentum_only_is_marked_as_limited() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="features.0",
+                source="legacy_feature",
+                evidence_type="vitalidad.momentum",
+                content="Funding, press momentum, and revenue growth are visible.",
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "magnetism": {
+                "detected": True,
+                "content": "Acme has market momentum.",
+                "confidence": "medium",
+                "evidence_refs": ["features.0"],
+                "rationale": "The evidence mentions funding and press.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"magnetism": ["features.0"]},
+    )
+
+    assert interpretation.blocks["magnetism"]["detected"] is True
+    assert "magnetism_market_momentum_only" in interpretation.limitations
+    assert "magnetism_no_owned_hook_evidence" in interpretation.limitations
+    assert "magnetism_no_preference_evidence" in interpretation.limitations
+    assert "magnetism_no_belonging_status_evidence" in interpretation.limitations
+    assert "magnetism_no_gravity_evidence" not in interpretation.limitations
+
+
+def test_magnetism_preference_evidence_does_not_mark_preference_as_missing() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="features.0",
+                source="legacy_feature",
+                evidence_type="diferenciacion.positioning_clarity",
+                content="A clear differentiator and native integration give buyers a reason to choose Acme.",
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "magnetism": {
+                "detected": True,
+                "content": "Acme has preference evidence.",
+                "confidence": "medium",
+                "evidence_refs": ["features.0"],
+                "rationale": "The evidence names a differentiator and reason to choose.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"magnetism": ["features.0"]},
+    )
+
+    assert interpretation.blocks["magnetism"]["detected"] is True
+    assert "magnetism_market_momentum_only" not in interpretation.limitations
+    assert "magnetism_no_owned_hook_evidence" in interpretation.limitations
+    assert "magnetism_no_preference_evidence" not in interpretation.limitations
+    assert "magnetism_no_belonging_status_evidence" in interpretation.limitations
+    assert "magnetism_no_gravity_evidence" in interpretation.limitations
+
+
+def test_sensitive_blocks_keep_gate_evidence_refs_for_tile_evaluation() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="features.0",
+                source="legacy_feature",
+                evidence_type="vitalidad.momentum",
+                content="Funding and press momentum are visible.",
+            ),
+            EvidenceRecord(
+                ref="features.1",
+                source="legacy_feature",
+                evidence_type="diferenciacion.positioning_clarity",
+                content="A native integration gives buyers a reason to choose Acme.",
+            ),
+        ],
+    )
+    raw = {
+        "blocks": {
+            "magnetism": {
+                "detected": True,
+                "content": "Acme has market momentum.",
+                "confidence": "medium",
+                "evidence_refs": ["features.0"],
+                "rationale": "The evidence mentions funding and press.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"magnetism": ["features.0", "features.1"]},
+    )
+
+    assert interpretation.blocks["magnetism"]["detected"] is True
+    assert interpretation.evidence_refs["magnetism"] == ["features.0", "features.1"]
+    assert "magnetism_no_preference_evidence" not in interpretation.limitations
+
+
+def test_core_purpose_based_on_derived_strategy_evidence_is_marked_limited() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="features.0",
+                source="legacy_feature",
+                evidence_type="diferenciacion.positioning_clarity",
+                content="A derived summary says Acme exists to maximize efficiency.",
+            ),
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="report_narrative",
+                evidence_type="raw_input",
+                content="The narrative says Acme has a clear purpose.",
+            ),
+        ],
+    )
+    raw = {
+        "blocks": {
+            "core_purpose": {
+                "detected": True,
+                "content": "Maximize efficiency for teams.",
+                "confidence": "medium",
+                "evidence_refs": ["features.0", "raw_inputs.0"],
+                "rationale": "The derived evidence says this.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"core_purpose": ["features.0", "raw_inputs.0"]},
+    )
+
+    assert "core_purpose_derived_strategy_evidence" in interpretation.limitations
 
 
 def test_values_detection_rejects_financial_value_language() -> None:
@@ -343,7 +597,7 @@ def test_magnetism_detection_requires_structural_momentum_evidence() -> None:
     assert "magnetism_structural_gate_rejected" in interpretation.limitations
 
 
-def test_magnetism_detection_rejects_negative_engagement_evidence() -> None:
+def test_magnetism_detection_accepts_negative_engagement_evidence_for_tile_evaluation() -> None:
     pack = BrandEvidencePack(
         brand_name="Acme",
         url="https://acme.example",
@@ -378,8 +632,8 @@ def test_magnetism_detection_rejects_negative_engagement_evidence() -> None:
         block_evidence_shortlists={"magnetism": ["raw_inputs.0"]},
     )
 
-    assert interpretation.blocks["magnetism"]["detected"] is False
-    assert "magnetism_structural_negative_evidence" in interpretation.limitations
+    assert interpretation.blocks["magnetism"]["detected"] is True
+    assert "magnetism_structural_negative_evidence" not in interpretation.limitations
 
 
 def test_magnetism_detection_accepts_growth_or_engagement_evidence() -> None:
@@ -513,7 +767,7 @@ def test_llm_worker_can_build_interpretation_per_block() -> None:
         brand_name="Acme",
         url="https://acme.example",
         evidence=[
-            EvidenceRecord(ref="raw_inputs.0", source="homepage", evidence_type="raw_input", content="Help teams ship.")
+            EvidenceRecord(ref="raw_inputs.0", source="homepage", evidence_type="raw_input", content="We help teams ship.")
         ],
     )
 
@@ -530,7 +784,7 @@ def test_llm_worker_can_build_interpretation_per_block() -> None:
     assert debug["detected_count"] == 1
     assert debug["block_detection_decisions"] == [
         {
-            "version": "sv9-flow-block-detection-policy-v1",
+            "version": "sv9-flow-block-detection-policy-v2",
             "block": "magnetism",
             "outcome": "insufficient_evidence",
             "evidence_refs": [],
@@ -539,7 +793,16 @@ def test_llm_worker_can_build_interpretation_per_block() -> None:
             "limitation_code": "magnetism_insufficient_evidence_refs",
         },
         {
-            "version": "sv9-flow-block-detection-policy-v1",
+            "version": "sv9-flow-block-detection-policy-v2",
+            "block": "mission",
+            "outcome": "supports_detection",
+            "evidence_refs": ["raw_inputs.0"],
+            "support_terms": ["we help"],
+            "weaken_terms": [],
+            "limitation_code": "",
+        },
+        {
+            "version": "sv9-flow-block-detection-policy-v2",
             "block": "values",
             "outcome": "insufficient_evidence",
             "evidence_refs": [],
@@ -548,7 +811,7 @@ def test_llm_worker_can_build_interpretation_per_block() -> None:
             "limitation_code": "values_insufficient_evidence_refs",
         },
         {
-            "version": "sv9-flow-block-detection-policy-v1",
+            "version": "sv9-flow-block-detection-policy-v2",
             "block": "vision",
             "outcome": "insufficient_evidence",
             "evidence_refs": [],
@@ -602,13 +865,13 @@ def test_llm_worker_reports_block_detection_from_shortlists_not_llm_refs() -> No
     )
 
     assert debug["block_detection_decisions"][0] == {
-        "version": "sv9-flow-block-detection-policy-v1",
+        "version": "sv9-flow-block-detection-policy-v2",
         "block": "magnetism",
-        "outcome": "weakens_detection",
+        "outcome": "supports_detection",
         "evidence_refs": ["raw_inputs.0"],
         "support_terms": [],
         "weaken_terms": ["lack of active engagement", "stagnation"],
-        "limitation_code": "magnetism_structural_negative_evidence",
+        "limitation_code": "",
     }
 
 
@@ -630,11 +893,11 @@ def test_llm_worker_falls_back_to_text_call_when_json_mode_is_empty() -> None:
             self.text_calls += 1
             if '"block": "mission"' in user:
                 return """{
-                  "detected": true,
-                  "content": "Help teams ship.",
-                  "confidence": "high",
-                  "evidence_refs": ["raw_inputs.0"],
-                  "rationale": "Homepage states it.",
+                      "detected": true,
+                      "content": "We help teams ship.",
+                      "confidence": "high",
+                      "evidence_refs": ["raw_inputs.0"],
+                      "rationale": "Homepage states it.",
                   "limitations": []
                 }"""
             return """{
@@ -651,7 +914,7 @@ def test_llm_worker_falls_back_to_text_call_when_json_mode_is_empty() -> None:
         brand_name="Acme",
         url="https://acme.example",
         evidence=[
-            EvidenceRecord(ref="raw_inputs.0", source="homepage", evidence_type="raw_input", content="Help teams ship.")
+            EvidenceRecord(ref="raw_inputs.0", source="homepage", evidence_type="raw_input", content="We help teams ship.")
         ],
     )
 
@@ -682,12 +945,12 @@ def test_llm_worker_text_fallback_accepts_fenced_json() -> None:
         def _call(self, system, user, max_tokens=900):
             if '"block": "mission"' in user:
                 return """```json
-                {
-                  "detected": true,
-                  "content": "Help teams ship.",
-                  "confidence": "high",
-                  "evidence_refs": ["raw_inputs.0"],
-                  "rationale": "Homepage states it.",
+                    {
+                      "detected": true,
+                      "content": "We help teams ship.",
+                      "confidence": "high",
+                      "evidence_refs": ["raw_inputs.0"],
+                      "rationale": "Homepage states it.",
                   "limitations": []
                 }
                 ```"""
@@ -705,7 +968,7 @@ def test_llm_worker_text_fallback_accepts_fenced_json() -> None:
         brand_name="Acme",
         url="https://acme.example",
         evidence=[
-            EvidenceRecord(ref="raw_inputs.0", source="homepage", evidence_type="raw_input", content="Help teams ship.")
+            EvidenceRecord(ref="raw_inputs.0", source="homepage", evidence_type="raw_input", content="We help teams ship.")
         ],
     )
 

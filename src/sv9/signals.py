@@ -18,6 +18,11 @@ import json
 from collections import defaultdict
 from typing import Any
 
+from src.visual_signature.acquisition_contract import (
+    is_visual_acquisition_source,
+    visual_evidence_packet_from_payload,
+)
+
 _VISION_EVIDENCE_PROMPT = """Analyze this website screenshot as brand identity evidence. The brand is "{brand_name}".
 
 Return ONLY valid JSON:
@@ -199,23 +204,25 @@ def compute_vision_observations(
     return payload
 
 
-def visual_signature_evidence_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any] | None:
-    """Return the latest persisted Visual Signature evidence packet, if present."""
+def visual_evidence_packet_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any] | None:
+    """Return the latest persisted visual evidence packet, if present."""
+
     latest: dict[str, Any] | None = None
     for row in snapshot.get("raw_inputs") or []:
         entry = dict(row) if not isinstance(row, dict) else row
-        if str(entry.get("source") or "") != "visual_signature":
+        if not is_visual_acquisition_source(entry.get("source")):
             continue
         payload = entry.get("payload")
-        if not isinstance(payload, dict):
-            continue
-        evidence = payload.get("visual_signature_evidence")
-        if (
-            isinstance(evidence, dict)
-            and evidence.get("schema_version") == "visual-signature-evidence-v1"
-        ):
+        evidence = visual_evidence_packet_from_payload(payload)
+        if evidence is not None:
             latest = evidence
     return latest
+
+
+def visual_signature_evidence_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any] | None:
+    """Legacy wrapper for Visual Acquisition Layer evidence."""
+
+    return visual_evidence_packet_from_snapshot(snapshot)
 
 
 def visual_signature_shadow_signals(

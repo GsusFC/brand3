@@ -43,6 +43,37 @@ llm_failure_reason = _llm_runtime.llm_failure_reason
 _LOG = logging.getLogger(__name__)
 
 
+def _extract_usage_metadata(content: str | None) -> dict[str, Any] | None:
+    if not content:
+        return None
+    try:
+        payload = json.loads(content)
+    except (TypeError, ValueError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    usage = payload.get("usage") or payload.get("usageMetadata")
+    if not isinstance(usage, dict):
+        return None
+    out: dict[str, Any] = {}
+    for key in (
+        "prompt_tokens",
+        "completion_tokens",
+        "total_tokens",
+        "promptTokenCount",
+        "candidatesTokenCount",
+        "totalTokenCount",
+        "cachedContentTokenCount",
+        "thoughtsTokenCount",
+    ):
+        value = usage.get(key)
+        if isinstance(value, bool):
+            continue
+        if isinstance(value, (int, float)):
+            out[key] = value
+    return out or None
+
+
 class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
     """LLM-powered brand content analyzer."""
 
@@ -64,6 +95,7 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
         self.last_raw_response: str | None = None
         self.call_failures: list[dict[str, Any]] = []
         self.last_request_debug: dict[str, Any] | None = None
+        self.usage_observations: list[dict[str, Any]] = []
 
     def _call(self, system: str, user: str, max_tokens: int = 8000) -> str:
         """Make an LLM call via the OpenAI-compatible endpoint.
@@ -81,6 +113,12 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             self._clear_failure()
             return cached
         self.cache_misses += 1
+        self._record_usage_observation(
+            event="cache_miss",
+            response_type="text",
+            cache_key=cache_key,
+            max_tokens=max_tokens,
+        )
 
         body: dict = {
             "model": self.model,
@@ -101,6 +139,14 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
                 "Authorization": f"Bearer {self.api_key}",
             },
             timeout_seconds=self.timeout_seconds,
+        )
+        self._record_usage_observation(
+            event="provider_call",
+            response_type="text",
+            cache_key=cache_key,
+            status=status,
+            max_tokens=max_tokens,
+            usage_metadata=_extract_usage_metadata(content),
         )
         if status == "ok":
             if not content:
@@ -152,6 +198,13 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             self._clear_failure()
             return cached
         self.cache_misses += 1
+        self._record_usage_observation(
+            event="cache_miss",
+            response_type="json",
+            cache_key=cache_key,
+            max_tokens=max_tokens,
+            schema_name=normalized_schema_name,
+        )
 
         body: dict = {
             "model": self.model,
@@ -200,6 +253,15 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             headers=headers,
             timeout_seconds=effective_timeout,
         )
+        self._record_usage_observation(
+            event="provider_call",
+            response_type="json",
+            cache_key=cache_key,
+            status=status,
+            max_tokens=max_tokens,
+            schema_name=normalized_schema_name,
+            usage_metadata=_extract_usage_metadata(content),
+        )
         if status != "ok" and json_schema is not None:
             # Provider compatibility varies; keep production safe by falling back
             # to JSON mode while preserving schema-specific cache separation.
@@ -211,6 +273,16 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
                     payload=json.dumps(fallback_body).encode(),
                     headers=headers,
                     timeout_seconds=effective_timeout,
+                )
+                self._record_usage_observation(
+                    event="provider_call",
+                    response_type="json",
+                    cache_key=cache_key,
+                    status=status,
+                    max_tokens=max_tokens,
+                    schema_name=normalized_schema_name,
+                    request_variant="json_object_fallback",
+                    usage_metadata=_extract_usage_metadata(content),
                 )
         if status != "ok":
             if status == "timeout":
@@ -298,6 +370,13 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             self._clear_failure()
             return cached
         self.cache_misses += 1
+        self._record_usage_observation(
+            event="cache_miss",
+            response_type="json_gemini_native",
+            cache_key=cache_key,
+            max_tokens=max_tokens,
+            schema_name=schema_name or "brand3_json_response",
+        )
 
         body = {
             "systemInstruction": {"parts": [{"text": system}]},
@@ -325,6 +404,15 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             payload=payload,
             headers=headers,
             timeout_seconds=effective_timeout,
+        )
+        self._record_usage_observation(
+            event="provider_call",
+            response_type="json_gemini_native",
+            cache_key=cache_key,
+            status=status,
+            max_tokens=max_tokens,
+            schema_name=schema_name or "brand3_json_response",
+            usage_metadata=_extract_usage_metadata(content),
         )
         if status != "ok":
             if status == "timeout":

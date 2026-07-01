@@ -146,6 +146,7 @@ def build_shadow_flow_for_run(
             tldr_payload=tldr_payload,
             visual_signature_evidence=visual_signature,
         )
+        _mark_compatibility_candidate(candidate, detection_source=detection_source)
     report = build_flow_report(candidate)
 
     payload: dict[str, Any] = {
@@ -168,6 +169,20 @@ def _load_snapshot(run_id: int, *, db_path: str) -> dict[str, Any]:
     from src.services.magnetism_service import load_brand_audit_snapshot
 
     return load_brand_audit_snapshot(run_id, db_path=db_path)
+
+
+def _mark_compatibility_candidate(candidate: Sv9FlowCandidate, *, detection_source: str) -> None:
+    limitation = {
+        "sv9_detection_cache": "cached_pass1_compatibility_only",
+        "provided_tldr": "provided_tldr_compatibility_only",
+        "live_detection": "live_pass1_compatibility_only",
+    }.get(detection_source)
+    if not limitation:
+        return
+    candidate.interpretation.limitations = unique_strings(
+        list(candidate.interpretation.limitations) + [limitation]
+    )
+    candidate.limitations = unique_strings(list(candidate.limitations) + [limitation])
 
 
 def _get_cached_detection(run_id: int, db_path: str) -> dict[str, Any] | None:

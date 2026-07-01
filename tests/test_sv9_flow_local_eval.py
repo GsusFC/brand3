@@ -51,11 +51,11 @@ def test_compare_flow_repeats_detects_block_detection_drift() -> None:
         block_detection_decisions=[
             {
                 "block": "magnetism",
-                "outcome": "weakens_detection",
+                "outcome": "supports_detection",
                 "evidence_refs": ["raw_inputs.0"],
                 "support_terms": [],
                 "weaken_terms": ["stagnation"],
-                "limitation_code": "magnetism_structural_negative_evidence",
+                "limitation_code": "",
             }
         ]
     )

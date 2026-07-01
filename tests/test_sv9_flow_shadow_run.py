@@ -21,6 +21,8 @@ def test_shadow_flow_uses_cached_detection_without_live_detection() -> None:
     assert calls["detect"] == 0
     assert payload["report"]["tile_signal_effects"] == {"supports": 1}
     assert payload["candidate"]["interpretation"]["blocks"]["mission"]["content"] == "Cached mission"
+    assert "cached_pass1_compatibility_only" in payload["candidate"]["limitations"]
+    assert "cached_pass1_compatibility_only" in payload["candidate"]["interpretation"]["limitations"]
 
 
 def test_shadow_flow_can_force_live_detection_for_validation() -> None:
@@ -36,6 +38,7 @@ def test_shadow_flow_can_force_live_detection_for_validation() -> None:
 
     assert payload["detection_source"] == "live_detection"
     assert payload["candidate"]["interpretation"]["blocks"]["mission"]["content"] == "Live mission"
+    assert "live_pass1_compatibility_only" in payload["candidate"]["limitations"]
 
 
 def test_shadow_flow_report_only_omits_full_candidate() -> None:
@@ -64,6 +67,7 @@ def test_shadow_flow_report_only_omits_full_candidate() -> None:
     assert payload["visual_signature_present"] is True
     assert "candidate" not in payload
     assert payload["report"]["tile_signal_effects"] == {"supports": 2}
+    assert "provided_tldr_compatibility_only" in payload["report"]["limitations"]
 
 
 def test_shadow_flow_can_use_flow_llm_instead_of_pass1() -> None:

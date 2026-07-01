@@ -90,6 +90,30 @@ class LLMCacheTests(unittest.TestCase):
             self.assertEqual(second.cache_hits, 1)
             self.assertEqual(first.cache_writes, 1)
 
+    def test_call_json_records_usage_observations_for_cache_and_provider(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            first = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
+            second = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("ok", json.dumps({"score": 88, "usage": {"total_tokens": 123}})),
+                ):
+                    self.assertEqual(first._call_json("system", "user"), {"score": 88, "usage": {"total_tokens": 123}})
+                    self.assertEqual(second._call_json("system", "user"), {"score": 88, "usage": {"total_tokens": 123}})
+
+        first_summary = first.usage_observation_summary()
+        second_summary = second.usage_observation_summary()
+
+        self.assertEqual(first_summary["provider_calls"], 1)
+        self.assertEqual(first_summary["cache_misses"], 1)
+        self.assertEqual(first_summary["cache_writes"], 1)
+        self.assertTrue(first_summary["usage_metadata_available"])
+        self.assertEqual(first_summary["observations"][1]["usage_metadata"]["total_tokens"], 123)
+        self.assertEqual(second_summary["cache_hits"], 1)
+        self.assertEqual(second_summary["observations"][0]["event"], "cache_hit")
+
     def test_call_json_can_disable_persistent_cache(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = str(Path(tmpdir) / "brand3.sqlite3")

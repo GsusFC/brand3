@@ -214,6 +214,7 @@ def evaluate_component(
         system=_EVALUATOR_SYSTEM_PROMPT,
         user=user_prompt,
         llm=llm,
+        signals=signals,
         detected_content=_block_content_text(block),
         detection_mode=str(block.get("mode") or ""),
         detection_confidence=str(block.get("confidence") or ""),
@@ -259,6 +260,7 @@ def _run_tile_call(
     system: str,
     user: str,
     llm: Any,
+    signals: list[dict[str, Any]] | None = None,
     detected_content: str | None = None,
     detection_mode: str | None = None,
     detection_confidence: str | None = None,
@@ -286,6 +288,7 @@ def _run_tile_call(
         verdicts, error = _normalize_tiles(raw, ids, lenient=is_last)
         veredicto = str((raw or {}).get("veredicto") or "").strip() if isinstance(raw, dict) else ""
         if verdicts is not None and (veredicto or not requires_veredicto or is_last):
+            verdicts = _apply_sv9_flow_tile_signal_overrides(verdicts, signals or [])
             final_veredicto = veredicto
             if requires_veredicto and not final_veredicto:
                 # Product decision (2026-06-14): the evaluator failed to produce
@@ -327,6 +330,81 @@ def _run_tile_call(
         evidence=evidence or [],
         error=last_error,
     )
+
+
+def _apply_sv9_flow_tile_signal_overrides(
+    verdicts: list[TileVerdict],
+    signals: list[dict[str, Any]],
+) -> list[TileVerdict]:
+    """Apply high-confidence negative SV9 Flow tile signals after LLM judging.
+
+    `supports` remains advisory because lighting a tile requires an evaluator
+    verdict with evidence. Negative tile-scoped signals are guardrails: the
+    model cannot turn them into `ok` by extrapolating from block-level prose.
+    """
+
+    overrides: dict[str, tuple[str, str]] = {}
+    for signal in signals:
+        if signal.get("feature") != "sv9_flow_tile_signal":
+            continue
+        if str(signal.get("confidence") or "").lower() != "high":
+            continue
+        effect = str(signal.get("effect") or signal.get("value") or "").strip()
+        if effect not in {"insufficient_evidence", "weakens"}:
+            continue
+        tile = _signal_tile_id(signal.get("tile"))
+        if not tile:
+            continue
+        rationale = str(signal.get("rationale") or signal.get("detail") or "").strip()
+        overrides[tile] = (effect, rationale)
+
+    if not overrides:
+        return verdicts
+
+    normalized: list[TileVerdict] = []
+    for verdict in verdicts:
+        override = overrides.get(verdict.tile_id)
+        if override is None:
+            normalized.append(verdict)
+            continue
+        effect, rationale = override
+        if effect == "weakens":
+            normalized.append(
+                TileVerdict(
+                    tile_id=verdict.tile_id,
+                    estado=ESTADO_NO,
+                    motivo=_override_motivo(
+                        "SV9 Flow high-confidence tile signal weakens this tile.",
+                        rationale,
+                    ),
+                )
+            )
+            continue
+        normalized.append(
+            TileVerdict(
+                tile_id=verdict.tile_id,
+                estado=ESTADO_SIN_EVIDENCIA,
+                motivo=_override_motivo(
+                    "SV9 Flow high-confidence tile signal marks this tile as insufficient evidence.",
+                    rationale,
+                ),
+                contexto_requerido=verdict.contexto_requerido,
+            )
+        )
+    return normalized
+
+
+def _signal_tile_id(value: Any) -> str:
+    raw = str(value or "").strip()
+    if "." in raw:
+        return raw.rsplit(".", 1)[-1]
+    return raw
+
+
+def _override_motivo(prefix: str, rationale: str) -> str:
+    if rationale:
+        return f"{prefix} {rationale}"[:700]
+    return prefix
 
 
 def _fallback_veredicto(key: str, verdicts: list[TileVerdict]) -> str:
@@ -481,6 +559,20 @@ def _signals_lines(signals: list[dict[str, Any]]) -> str:
         return "(none)"
     lines = []
     for signal in signals:
+        if signal.get("feature") == "sv9_flow_tile_signal":
+            refs = signal.get("evidence_refs") or []
+            refs_text = ", ".join(str(ref) for ref in refs) if isinstance(refs, list) else str(refs)
+            line = (
+                f"- SV9 Flow tile signal: tile={signal.get('tile')} "
+                f"effect={signal.get('effect') or signal.get('value')} "
+                f"confidence={signal.get('confidence')} source={signal.get('source')} "
+                f"refs={refs_text}"
+            )
+            rationale = signal.get("rationale") or signal.get("detail")
+            if rationale:
+                line += f"\n  rationale: {rationale}"
+            lines.append(line)
+            continue
         value = signal.get("value")
         confidence = signal.get("confidence")
         line = (
@@ -527,6 +619,10 @@ def _build_component_prompt(
     evidence_section = (
         "\n".join(f"- {quote}" for quote in evidence_quotes) if evidence_quotes else "(none)"
     )
+    limitations = block.get("limitations") or []
+    limitations_section = (
+        "\n".join(f"- {limitation}" for limitation in limitations) if limitations else "(none)"
+    )
     return f"""Brand: {brand_name}
 URL: {url}
 Componente: {spec['label']} ({key})
@@ -541,8 +637,14 @@ rationale: {block.get('rationale')}
 CITAS DE EVIDENCIA:
 {evidence_section}
 
+LIMITACIONES DE EVIDENCIA:
+{limitations_section}
+
 SEÑALES AUXILIARES (terceros / cross-surface):
 {_signals_lines(signals)}
+
+REGLA PARA SEÑALES SV9 FLOW:
+Las señales `sv9_flow_tile_signal` son específicas por baldosa. Un `supports` en una baldosa no enciende otras baldosas por arrastre. Un `insufficient_evidence` de alta confianza en una baldosa exige `sin_evidencia`. Un `weakens` de alta confianza exige `no`. Estas señales negativas se aplican como guardarraíl determinista.
 
 CONTEXTO FACTUAL DE OTROS COMPONENTES (textos, no juicios):
 {context_section}

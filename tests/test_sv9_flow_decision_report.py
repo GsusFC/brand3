@@ -28,7 +28,7 @@ def test_build_decision_report_summarizes_stability_and_decisions() -> None:
         "changed_block_detection_runs": [{"run_id": 346, "blocks": ["magnetism"]}],
     }
     assert report["runs"][0]["flow_decisions"][0]["outcomes"] == {
-        "magnetism": "weakens_detection",
+        "magnetism": "supports_detection",
         "values": "insufficient_evidence",
         "vision": "insufficient_evidence",
     }
@@ -53,7 +53,7 @@ def test_render_markdown_report_includes_human_readable_decisions() -> None:
     assert "canonical textual drift runs: `[343]`" in markdown
     assert "## Run 343 - COFI" in markdown
     assert "stable canonical text hashes: `False`" in markdown
-    assert "repeat 1 decisions: `magnetism: weakens_detection" in markdown
+    assert "repeat 1 decisions: `magnetism: supports_detection" in markdown
     assert "repeat 1 negative terms: `magnetism: stagnation`" in markdown
 
 
@@ -74,11 +74,11 @@ def _eval_run(*, run_id: int, same_decisions: bool, changed_blocks: list[str] | 
                 "block_detection_decisions": [
                     {
                         "block": "magnetism",
-                        "outcome": "weakens_detection",
+                        "outcome": "supports_detection",
                         "evidence_refs": ["raw_inputs.8"],
                         "support_terms": [],
                         "weaken_terms": ["stagnation"],
-                        "limitation_code": "magnetism_structural_negative_evidence",
+                        "limitation_code": "",
                     },
                     {
                         "block": "values",

@@ -5,6 +5,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from src.sv9_flow.contracts import BrandEvidencePack, EvidenceRecord
+from src.sv9_flow.evidence_source import (
+    SOURCE_CLASS_ACQUISITION_METADATA,
+    SOURCE_CLASS_DERIVED_STRATEGY,
+    SOURCE_CLASS_OWNED_COPY,
+    SOURCE_CLASS_VISUAL_SIGNAL,
+    is_acquisition_noise,
+    source_class_for_record,
+)
 
 BLOCK_EVIDENCE_SHORTLIST_VERSION = "sv9-flow-block-evidence-shortlists-v1"
 
@@ -17,6 +25,10 @@ _BLOCK_TERMS: dict[str, tuple[str, ...]] = {
         "aspiration",
         "ambition",
         "become",
+        "goal",
+        "manifesto",
+        "succeed",
+        "transform",
         "toward",
         "long-term",
         "next generation",
@@ -87,8 +99,36 @@ _BLOCK_TERMS: dict[str, tuple[str, ...]] = {
         "monetización",
     ),
     "core_purpose": ("purpose", "why", "enable", "help", "free", "maximize", "discover"),
-    "values": ("values", "principles", "beliefs", "clarity", "efficiency", "empathy", "collaboration"),
-    "magnetism": ("magnetism", "momentum", "affinity", "engagement", "community", "recognizable", "demand"),
+    "values": (
+        "values",
+        "principles",
+        "beliefs",
+        "believe",
+        "conviction",
+        "clarity",
+        "efficiency",
+        "empathy",
+        "collaboration",
+    ),
+    "magnetism": (
+        "magnetism",
+        "momentum",
+        "affinity",
+        "engagement",
+        "community",
+        "recognizable",
+        "demand",
+        "preference",
+        "differentiator",
+        "differentiation",
+        "unique",
+        "distinctive",
+        "superior",
+        "reason to choose",
+        "choose",
+        "competitor",
+        "native integration",
+    ),
 }
 
 _TYPE_BONUS: dict[str, int] = {
@@ -115,7 +155,10 @@ _TEXT_STRATEGY_BLOCKS = {
     "value_proposition",
     "core_purpose",
     "values",
+    "magnetism",
 }
+
+_PRIMARY_COPY_BLOCKS = {"mission", "vision", "core_purpose"}
 
 
 @dataclass(frozen=True, slots=True)
@@ -166,6 +209,7 @@ def _shortlist_for_block(block: str, evidence: list[EvidenceRecord], *, limit: i
 
 def _score_record(block: str, record: EvidenceRecord) -> int:
     terms = _BLOCK_TERMS.get(block, ())
+    source_class = source_class_for_record(record)
     haystack = " ".join(
         (
             record.evidence_type,
@@ -176,11 +220,24 @@ def _score_record(block: str, record: EvidenceRecord) -> int:
     ).lower()
     score = sum(3 for term in terms if term in haystack)
     score += _TYPE_BONUS.get(record.evidence_type, 0)
+    if is_acquisition_noise(record):
+        score -= 20
     if block in _TEXT_STRATEGY_BLOCKS:
-        if record.ref.startswith("visual_signature.") or record.source == "visual_signature":
+        if record.ref.startswith(("visual_signature.", "visual_acquisition.")) or record.source in {"visual_signature", "visual_acquisition"}:
             score -= 5
+        if source_class == SOURCE_CLASS_ACQUISITION_METADATA:
+            score -= 8
         if record.ref.startswith("raw_inputs."):
             score += 2
+    if block in _PRIMARY_COPY_BLOCKS:
+        if source_class == SOURCE_CLASS_OWNED_COPY and record.evidence_type == "raw_input":
+            score += 5
+        if record.ref.startswith("features."):
+            score -= 4
+        if source_class == SOURCE_CLASS_DERIVED_STRATEGY:
+            score -= 6
+    if block == "magnetism" and source_class == SOURCE_CLASS_VISUAL_SIGNAL:
+        score -= 20
     if record.ref.startswith("features."):
         score += sum(1 for term in _FEATURE_BONUS_TERMS if term in haystack)
     if record.confidence == "high":

@@ -7,12 +7,18 @@ import re
 from typing import Literal
 
 from src.sv9_flow.contracts import BrandEvidencePack
+from src.sv9_flow.evidence_source import (
+    SOURCE_CLASS_ACQUISITION_METADATA,
+    SOURCE_CLASS_VISUAL_SIGNAL,
+    is_acquisition_noise,
+    source_class_for_record,
+)
 
-BLOCK_DETECTION_POLICY_VERSION = "sv9-flow-block-detection-policy-v1"
+BLOCK_DETECTION_POLICY_VERSION = "sv9-flow-block-detection-policy-v2"
 
-BlockDetectionOutcome = Literal["supports_detection", "weakens_detection", "insufficient_evidence"]
+BlockDetectionOutcome = Literal["supports_detection", "insufficient_evidence"]
 
-SENSITIVE_BLOCKS = frozenset({"values", "vision", "magnetism"})
+SENSITIVE_BLOCKS = frozenset({"mission", "values", "vision", "magnetism"})
 
 _SUPPORT_TERMS: dict[str, tuple[str, ...]] = {
     "values": (
@@ -25,12 +31,19 @@ _SUPPORT_TERMS: dict[str, tuple[str, ...]] = {
         "guiding principles",
         "commitment to",
         "committed to",
+        "what unites us",
+        "relentless focus",
+        "fast execution",
+        "deep care",
+        "craftsmanship",
     ),
     "vision": (
         "our vision",
         "vision is",
-        "future of",
         "future where",
+        "our goal is",
+        "if we succeed",
+        "transform the experience",
         "long-term",
         "long term",
         "aspire",
@@ -39,12 +52,53 @@ _SUPPORT_TERMS: dict[str, tuple[str, ...]] = {
         "ambition",
         "envision",
         "next generation",
+        "operating system for",
+    ),
+    "mission": (
+        "our mission",
+        "mission is",
+        "we help",
+        "we decided to create",
+        "helps",
+        "enable",
+        "enables",
+        "provide",
+        "provides",
+        "build",
+        "built to",
+        "built for",
+        "designed to",
+        "designed for",
+        "automate",
+        "solves",
+        "solve",
+        "platform for",
+        "specializes in",
+        "specialize in",
+        "somos especialistas",
+        "especialistas en",
+        "decidimos crear",
+        "convertimos",
+        "diseñado para",
+        "diseñados para",
+        "para que",
+        "so your team can",
+        "so teams can",
+        "so you can",
+        "proves which",
+        "ships the fix",
+        "cuts noise",
+        "open-source agent that",
+        "self-improving ai agent",
+        "focused automation",
     ),
     "magnetism": (
         "momentum",
         "demand",
         "traction",
-        "engagement",
+        "community engagement",
+        "customer engagement",
+        "organic engagement",
         "community",
         "customer love",
         "customer reviews",
@@ -52,9 +106,21 @@ _SUPPORT_TERMS: dict[str, tuple[str, ...]] = {
         "revenue growth",
         "funding",
         "press",
-        "followers",
+        "follower growth",
+        "audience growth",
         "market pull",
         "word of mouth",
+        "preference",
+        "differentiator",
+        "differentiation",
+        "unique",
+        "distinctive",
+        "superior",
+        "reason to choose",
+        "choose",
+        "competitor",
+        "competitors",
+        "native integration",
     ),
 }
 
@@ -64,10 +130,6 @@ _WEAKEN_TERMS: dict[str, tuple[str, ...]] = {
         "lack active engagement",
         "stagnation",
         "no active public social channels",
-        "failed to scrape",
-        "insufficient credits",
-        'followers_count": 0',
-        'avg_engagement_rate": 0.0',
         "absence of engagement",
         "no independent third-party evidence",
     ),
@@ -125,16 +187,6 @@ def resolve_block_detection(
         return BlockDetectionDecision(block=block, outcome="supports_detection", evidence_refs=refs)
 
     haystack = _evidence_haystack(refs, evidence_pack)
-    weaken_terms = _matched_terms(haystack, _WEAKEN_TERMS.get(block, ()))
-    if weaken_terms:
-        return BlockDetectionDecision(
-            block=block,
-            outcome="weakens_detection",
-            evidence_refs=refs,
-            weaken_terms=weaken_terms,
-            limitation_code=f"{block}_structural_negative_evidence",
-        )
-
     support_terms = _matched_terms(haystack, _SUPPORT_TERMS.get(block, ()))
     if support_terms:
         return BlockDetectionDecision(
@@ -142,6 +194,15 @@ def resolve_block_detection(
             outcome="supports_detection",
             evidence_refs=refs,
             support_terms=support_terms,
+        )
+
+    weaken_terms = _matched_terms(haystack, _WEAKEN_TERMS.get(block, ()))
+    if weaken_terms:
+        return BlockDetectionDecision(
+            block=block,
+            outcome="supports_detection",
+            evidence_refs=refs,
+            weaken_terms=weaken_terms,
         )
 
     return BlockDetectionDecision(
@@ -167,6 +228,10 @@ def _evidence_haystack(refs: list[str], evidence_pack: BrandEvidencePack) -> str
     for record in evidence_pack.evidence:
         if record.ref not in refs_set:
             continue
+        if is_acquisition_noise(record):
+            continue
+        if source_class_for_record(record) in {SOURCE_CLASS_ACQUISITION_METADATA, SOURCE_CLASS_VISUAL_SIGNAL}:
+            continue
         parts.extend(
             (
                 record.source,
@@ -184,5 +249,17 @@ def _matched_terms(haystack: str, terms: tuple[str, ...]) -> list[str]:
 
 def _contains_detection_term(haystack: str, term: str) -> bool:
     escaped = re.escape(" ".join(term.lower().split()))
-    normalized = " ".join(haystack.split())
+    normalized = _normalize_detection_text(haystack)
     return re.search(rf"(?<![a-z0-9]){escaped}(?![a-z0-9])", normalized) is not None
+
+
+def _normalize_detection_text(value: str) -> str:
+    # Evidence records can contain JSON-serialized page text, where line breaks
+    # arrive as literal "\n". Treat those escapes as separators before applying
+    # word-boundary matching.
+    text = (
+        value.replace("\\n", " ")
+        .replace("\\r", " ")
+        .replace("\\t", " ")
+    )
+    return " ".join(text.split())

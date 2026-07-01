@@ -24,6 +24,12 @@ from src.sv9_flow.surface import (
     pre_sv9_authority_violations,
     worker_artifacts,
 )
+from src.sv9_flow.tldr_adapter import (
+    SV9_FLOW_TLDR_ADAPTER_VERSION,
+    SV9_FLOW_TLDR_MODE,
+    build_magnetism_result_from_flow_candidate,
+    build_tldr_from_flow_candidate,
+)
 
 __all__ = [
     "BRAND_EVIDENCE_PACK_VERSION",
@@ -41,4 +47,8 @@ __all__ = [
     "legacy_score_artifacts",
     "pre_sv9_authority_violations",
     "worker_artifacts",
+    "SV9_FLOW_TLDR_ADAPTER_VERSION",
+    "SV9_FLOW_TLDR_MODE",
+    "build_magnetism_result_from_flow_candidate",
+    "build_tldr_from_flow_candidate",
 ]

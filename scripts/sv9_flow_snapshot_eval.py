@@ -3,7 +3,8 @@
 
 This validates the evidence-first flow without relying on Pass 1/TLDR. The
 input can be a raw Brand Audit snapshot or the Scanner API
-`/audit-snapshot?full=true` envelope, whose snapshot is stored under `debug`.
+`/audit-snapshot?full=true` envelope, whose snapshot is stored under `debug`,
+or a deploy-selected envelope whose snapshot is stored under `snapshot`.
 """
 
 from __future__ import annotations
@@ -90,7 +91,12 @@ def build_snapshot_eval(
 
 
 def snapshot_and_run_id_from_envelope(envelope: dict[str, Any]) -> tuple[dict[str, Any], int]:
-    snapshot = envelope.get("debug") if isinstance(envelope.get("debug"), dict) else envelope
+    if isinstance(envelope.get("debug"), dict):
+        snapshot = envelope["debug"]
+    elif isinstance(envelope.get("snapshot"), dict):
+        snapshot = envelope["snapshot"]
+    else:
+        snapshot = envelope
     run = snapshot.get("run") if isinstance(snapshot.get("run"), dict) else {}
     run_id = int(envelope.get("source_run_id") or run.get("id") or 0)
     if run_id <= 0:

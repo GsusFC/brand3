@@ -15,7 +15,7 @@ def build_failure_payload(*, brand_name: str, url: str, error: str) -> dict[str,
         "analyzed_url": url,
         "interpretation_status": "not_interpretable",
         "acquisition": {
-            "adapter": "visual_signature_shadow_run",
+            "adapter": "visual_acquisition_shadow_run",
             "status_code": None,
             "warnings": [],
             "errors": [error],
@@ -83,6 +83,7 @@ def build_shadow_bundle(
     )
     return vision, screenshot, {
         "visual_signature_scan": visual_signature_scan,
+        "visual_evidence_packet": visual_signature_evidence,
         "visual_signature_evidence": visual_signature_evidence,
         "bundle": bundle,
     }
@@ -128,5 +129,6 @@ def shadow_result(
         "agreement_level": ((vision or {}).get("agreement") or {}).get("agreement_level") if isinstance(vision, dict) else None,
         "visual_signature_score": visual_signature_scan.get("score"),
         "visual_signature_scan_status": visual_signature_scan.get("status"),
+        "visual_evidence_packet": visual_signature_evidence,
         "visual_signature_evidence": visual_signature_evidence,
     }

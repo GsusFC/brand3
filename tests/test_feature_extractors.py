@@ -2089,6 +2089,22 @@ Tabular foundation models for real-world data.
         self.assertNotIn("https://example.com/pricing", selected)
         self.assertNotIn("https://example.com/privacy-policy", selected)
 
+    def test_select_internal_links_to_crawl_prefers_manifesto_over_company_page(self):
+        collector = WebCollector()
+        links = [
+            "https://example.com/use-cases",
+            "https://example.com/company",
+            "https://example.com/blog/manifesto",
+            "https://example.com/customers",
+            "https://example.com/security",
+        ]
+
+        selected = collector._select_internal_links_to_crawl(links, "https://example.com")
+
+        self.assertIn("https://example.com/blog/manifesto", selected)
+        self.assertNotIn("https://example.com/company", selected)
+        self.assertLessEqual(len(selected), 4)
+
     def test_select_internal_links_to_crawl_recognizes_spanish_proof_pages(self):
         collector = WebCollector()
         links = [

@@ -351,6 +351,8 @@ def _priority_for_run(run: dict[str, Any]) -> tuple[str, str]:
         return "P2", "policy_review_component_delta"
     if any(reason.startswith("gate_override_review:") for reason in reasons):
         return "P2", "material_gate_override"
+    if any(reason.startswith("gate_candidate_review:") for reason in reasons):
+        return "P3", "gate_positive_llm_negative_candidate"
     if run.get("assessment") == "review":
         return "P3", "remaining_review"
     return "P4", "acceptable_spot_check"
@@ -368,6 +370,7 @@ def _component_focus(run: dict[str, Any]) -> list[str]:
             "blocking_not_detected_added",
             "review_not_detected_added",
             "gate_override_review",
+            "gate_candidate_review",
             "flow_not_evaluated",
             "positive_core_recovery_review",
         }:
@@ -406,6 +409,8 @@ def _recommended_next_step(run: dict[str, Any], priority: str) -> str:
         return "full audit evidence refs and tile profile before changing rules"
     if any(str(reason).startswith("positive_core_recovery_review:") for reason in run.get("assessment_reasons") or []):
         return "verify recovered core component against source refs before promotion"
+    if any(str(reason).startswith("gate_candidate_review:") for reason in run.get("assessment_reasons") or []):
+        return "confirm the LLM rejection of the gate candidate against source refs"
     if focus & {"magnetism", "core_purpose"}:
         return "inspect full audit; only propose rule if repeated across brands"
     if any(str(reason).startswith("gate_override_review:") for reason in run.get("assessment_reasons") or []):
@@ -435,8 +440,11 @@ def _risk_tags(payload: dict[str, Any], run: dict[str, Any]) -> list[str]:
     if run.get("assessment_kind"):
         tags.add(f"assessment_kind:{run.get('assessment_kind')}")
     for override in run.get("gate_overrides") or []:
-        if isinstance(override, dict) and override.get("block"):
-            tags.add(f"gate_override:{override.get('block')}")
+        if not isinstance(override, dict) or not override.get("block"):
+            continue
+        tags.add(f"gate_override:{override.get('block')}")
+        if override.get("review_queue_reason") == "gate_positive_llm_negative":
+            tags.add(f"gate_candidate:{override.get('block')}")
     if run.get("score_delta") is not None:
         delta = _number(run.get("score_delta")) or 0
         if delta > 12:

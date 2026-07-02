@@ -177,9 +177,12 @@ def test_batch_report_surfaces_material_gate_overrides_as_policy_review() -> Non
     ]
     assert report["summary"]["gate_override_count"] == 1
     assert report["summary"]["gate_override_brands"] == ["Gate Override"]
+    assert not any(
+        reason.startswith("gate_candidate_review:") for reason in run["assessment_reasons"]
+    )
 
 
-def test_batch_report_queues_gate_positive_llm_negative_candidates() -> None:
+def test_batch_report_queues_gate_positive_llm_negative_candidates_regardless_of_delta() -> None:
     report = build_batch_report(
         [
             _payload(
@@ -188,21 +191,17 @@ def test_batch_report_queues_gate_positive_llm_negative_candidates() -> None:
                 gate_outcome="supports_detection",
                 gate_override_block="magnetism",
                 gate_override_source="llm_rejected_gate_candidate",
-                comparison_components={
-                    "magnetism": {
-                        "score_delta": -4,
-                        "status": {"flow": "scored", "legacy": "scored"},
-                        "status_changed": False,
-                        "tile_changes": {"changed": True},
-                    }
-                },
             )
         ]
     )
 
     run = report["runs"][0]
     assert run["assessment"] == "review"
-    assert "gate_override_review:magnetism" in run["assessment_reasons"]
+    assert run["assessment_kind"] == "policy_review"
+    assert "gate_candidate_review:magnetism" in run["assessment_reasons"]
+    assert not any(
+        reason.startswith("gate_override_review:") for reason in run["assessment_reasons"]
+    )
     assert run["gate_overrides"][0]["final_source"] == "llm_rejected_gate_candidate"
     assert run["gate_overrides"][0]["review_queue_reason"] == "gate_positive_llm_negative"
     assert report["summary"]["gate_override_count"] == 1

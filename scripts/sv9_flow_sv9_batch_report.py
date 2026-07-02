@@ -247,6 +247,11 @@ def _assessment(
     material_gate_overrides = _material_gate_override_blocks(gate_overrides, components)
     if material_gate_overrides:
         reviews.append("gate_override_review:" + ",".join(material_gate_overrides))
+    gate_candidates = _gate_candidate_blocks(gate_overrides)
+    if gate_candidates:
+        # Every gate-positive/LLM-negative candidate reaches human review;
+        # the material >=4 lane above is escalation, not the queue condition.
+        reviews.append("gate_candidate_review:" + ",".join(gate_candidates))
     if blockers:
         return "blocker", blockers + reviews
     if reviews:
@@ -267,6 +272,7 @@ def _assessment_kind(assessment: str, reasons: list[str]) -> str:
         reason.startswith(("component_delta_gte_4:", "review_not_detected_added:"))
         or reason == "magnetism_ceiling_review"
         or reason.startswith("gate_override_review:")
+        or reason.startswith("gate_candidate_review:")
         or reason.startswith("positive_core_recovery_review:")
         for reason in reasons
     ):
@@ -415,6 +421,16 @@ def _gate_overrides(
             }
         )
     return overrides
+
+
+def _gate_candidate_blocks(gate_overrides: list[dict[str, Any]]) -> list[str]:
+    return sorted(
+        {
+            str(override.get("block") or "")
+            for override in gate_overrides
+            if override.get("review_queue_reason") == "gate_positive_llm_negative" and override.get("block")
+        }
+    )
 
 
 def _material_gate_override_blocks(

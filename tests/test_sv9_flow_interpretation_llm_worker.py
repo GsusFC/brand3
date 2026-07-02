@@ -326,6 +326,8 @@ def test_sensitive_detection_requires_llm_cited_refs_even_when_gate_supports() -
     )
 
     assert interpretation.blocks["mission"]["detected"] is False
+    assert interpretation.blocks["mission"]["content"] == ""
+    assert interpretation.blocks["mission"]["rejected_content"] == "Automate high-stakes calls for support teams."
     assert "mission" not in interpretation.evidence_refs
     assert "mission_dropped_missing_evidence_refs" in interpretation.limitations
     assert interpretation.blocks["mission"]["detection_provenance"]["final_source"] == "llm_missing_evidence_refs"
@@ -411,7 +413,7 @@ def test_magnetism_preference_evidence_does_not_mark_preference_as_missing() -> 
     assert "magnetism_no_gravity_evidence" in interpretation.limitations
 
 
-def test_sensitive_blocks_keep_gate_evidence_refs_for_tile_evaluation() -> None:
+def test_sensitive_blocks_keep_only_llm_cited_refs() -> None:
     pack = BrandEvidencePack(
         brand_name="Acme",
         url="https://acme.example",
@@ -450,7 +452,7 @@ def test_sensitive_blocks_keep_gate_evidence_refs_for_tile_evaluation() -> None:
     )
 
     assert interpretation.blocks["magnetism"]["detected"] is True
-    assert interpretation.evidence_refs["magnetism"] == ["features.0", "features.1"]
+    assert interpretation.evidence_refs["magnetism"] == ["features.0"]
     assert "magnetism_no_preference_evidence" not in interpretation.limitations
 
 

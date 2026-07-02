@@ -257,24 +257,20 @@ def normalize_llm_interpretation_response(
                 limitations.append(decision.limitation_code)
         if gate_candidate_rejected:
             limitations.append(f"{key}_gate_positive_llm_negative")
-        block_refs = (
-            unique_strings(list(refs) + list(policy_refs))
-            if detected and key in SENSITIVE_BLOCKS
-            else refs
-        )
         if detected and decision is not None and decision.supports_detection:
             if key == "magnetism":
                 if _magnetism_market_momentum_only(decision):
                     limitations.append("magnetism_market_momentum_only")
                 limitations.extend(_magnetism_family_limitations(decision))
         if key == "core_purpose" and detected and _core_purpose_uses_derived_strategy_evidence(
-            block_refs,
+            refs,
             evidence_pack,
         ):
             limitations.append("core_purpose_derived_strategy_evidence")
+        content = _block_content(block)
         blocks[key] = {
             "detected": detected,
-            "content": _block_content(block),
+            "content": content if detected else "",
             "confidence": _confidence(block.get("confidence")),
             "rationale": _block_rationale(block),
             "detection_provenance": _detection_provenance(
@@ -285,8 +281,12 @@ def normalize_llm_interpretation_response(
                 policy_refs=policy_refs,
             ),
         }
-        if block_refs:
-            evidence_refs[key] = block_refs
+        if not detected and content:
+            # Keep the vetoed interpretation reviewable without letting it
+            # read as an accepted one.
+            blocks[key]["rejected_content"] = content
+        if refs:
+            evidence_refs[key] = refs
 
     response_limitations = payload.get("limitations")
     if isinstance(response_limitations, list):

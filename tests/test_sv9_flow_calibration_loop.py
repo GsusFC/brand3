@@ -125,6 +125,27 @@ def test_review_queue_keeps_material_gate_overrides_visible() -> None:
     assert queue["items"][0]["gate_overrides"][0]["block"] == "magnetism"
 
 
+def test_review_queue_includes_gate_candidates_even_without_material_delta() -> None:
+    payload = _payload(
+        "Quiet Candidate",
+        delta=1,
+        gate_override_block="magnetism",
+        gate_override_source="llm_rejected_gate_candidate",
+    )
+    packet = build_calibration_packet([payload], sources=["quiet.json"], cohort_name="unit")
+
+    items = packet["review_queue"]["items"]
+    assert len(items) == 1
+    assert items[0]["priority"] == "P3"
+    assert items[0]["priority_reason"] == "gate_positive_llm_negative_candidate"
+    assert items[0]["component_focus"] == ["magnetism"]
+    assert items[0]["recommended_next_step"] == (
+        "confirm the LLM rejection of the gate candidate against source refs"
+    )
+    entry = packet["cohort_manifest"]["entries"][0]
+    assert "gate_candidate:magnetism" in entry["risk_tags"]
+
+
 def test_write_calibration_packet_persists_expected_artifacts(tmp_path) -> None:
     packet = build_calibration_packet([_payload("Stable", delta=1)], sources=["stable.json"], cohort_name="unit")
 
@@ -153,6 +174,7 @@ def _payload(
     flow_not_evaluated: list[str] | None = None,
     visual: bool = False,
     gate_override_block: str | None = None,
+    gate_override_source: str = "gate_override",
 ) -> dict:
     component_payload = {
         "magnetism": _component(delta=0),
@@ -208,9 +230,14 @@ def _payload(
                         gate_override_block: {
                             "llm_detected": False,
                             "gate_detected": True,
-                            "final_detected": True,
-                            "final_source": "gate_override",
+                            "final_detected": gate_override_source == "gate_override",
+                            "final_source": gate_override_source,
                             "gate_reason": "supports_detection",
+                            **(
+                                {"review_queue_reason": "gate_positive_llm_negative"}
+                                if gate_override_source == "llm_rejected_gate_candidate"
+                                else {}
+                            ),
                         }
                     }
                     if gate_override_block

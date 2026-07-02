@@ -25,6 +25,10 @@ from src.services.magnetism_service import load_brand_audit_snapshot
 from src.sv9.aggregator import aggregate
 from src.sv9.editorial import build_editorial
 from src.sv9.evaluator import evaluate_snapshot_components
+from src.sv9.flow_ingress import (
+    detection_blocks_from_flow_candidate,
+    flow_candidate_extra_signals,
+)
 from src.sv9.models import Sv9ScanResult
 from src.sv9.signals import (
     audit_visual_method,
@@ -36,6 +40,7 @@ from src.sv9.signals import (
     vision_signals,
 )
 from src.sv9.store import Sv9Store
+from src.sv9_flow.contracts import Sv9FlowCandidate
 
 
 def run_sv9_from_audit_run(
@@ -112,12 +117,20 @@ def run_sv9_from_audit_snapshot(
     llm: LLMAnalyzer | None = None,
     reasoning_llm: LLMAnalyzer | None = None,
     magnetism_result: dict[str, Any] | None = None,
+    sv9_flow_candidate: Sv9FlowCandidate | None = None,
+    source_run_id: int | None = None,
     extra_signals: dict[str, Any] | None = None,
 ) -> Sv9ScanResult:
     """Run SV9 over a loaded Brand Audit snapshot.
 
     Pass `magnetism_result` to reuse an already-computed Pass 1 extraction
     (e.g. a persisted Magnetism scan payload) and skip re-detection.
+    Pass `sv9_flow_candidate` to score an SV9 Flow candidate natively instead:
+    its interpretation blocks become the detection input and its tile signals
+    merge into the evaluator signals. The two detection inputs are exclusive.
+    An explicit `source_run_id` wins over anything derivable from the inputs —
+    shadow envelopes carry the run id outside the snapshot, so the caller is
+    the only reliable source.
     `extra_signals` ({component: [signal, ...]}) merge on top of the snapshot
     signals — e.g. the SV9-time vision pass over the persisted screenshot.
 
@@ -126,6 +139,11 @@ def run_sv9_from_audit_snapshot(
     the reasoning tier (`reasoning_llm`). When a caller passes an explicit
     `llm`, it serves both tiers unless `reasoning_llm` is also given.
     """
+    if magnetism_result is not None and sv9_flow_candidate is not None:
+        raise ValueError(
+            "run_sv9_from_audit_snapshot received both magnetism_result and "
+            "sv9_flow_candidate; pass exactly one detection input."
+        )
     base_llm = _effective_llm(llm)
     if reasoning_llm is not None:
         reasoning = reasoning_llm
@@ -133,31 +151,56 @@ def run_sv9_from_audit_snapshot(
         reasoning = llm  # caller-supplied single client serves both tiers
     else:
         reasoning = _reasoning_llm()
-    if magnetism_result is None:
-        magnetism_result = MagnetismExtractor(llm=base_llm).extract_from_audit_snapshot(snapshot)
 
     # get_run_snapshot nests run metadata under "run"; manual snapshots may
     # carry it at the top level. Accept both shapes.
     run_meta = snapshot.get("run") if isinstance(snapshot.get("run"), dict) else {}
-    tldr = magnetism_result.get("tldr_brand3") or {}
-    brand_name = str(
-        magnetism_result.get("brand_name")
-        or run_meta.get("brand_name")
-        or snapshot.get("brand_name")
-        or ""
-    )
-    url = str(
-        magnetism_result.get("source_url")
-        or magnetism_result.get("url")
-        or run_meta.get("url")
-        or snapshot.get("url")
-        or ""
-    )
-    source_run_id = _to_int(
-        magnetism_result.get("source_run_id")
-        or run_meta.get("id")
-        or snapshot.get("id")
-    )
+    if sv9_flow_candidate is not None:
+        tldr = detection_blocks_from_flow_candidate(sv9_flow_candidate)
+        brand_name = str(
+            sv9_flow_candidate.evidence_pack.brand_name
+            or run_meta.get("brand_name")
+            or snapshot.get("brand_name")
+            or ""
+        )
+        url = str(
+            sv9_flow_candidate.evidence_pack.url
+            or run_meta.get("url")
+            or snapshot.get("url")
+            or ""
+        )
+        source_run_id = _to_int(
+            source_run_id
+            if source_run_id is not None
+            else run_meta.get("id") or snapshot.get("id")
+        )
+        extra_signals = merge_signals(
+            flow_candidate_extra_signals(sv9_flow_candidate), extra_signals
+        )
+    else:
+        if magnetism_result is None:
+            magnetism_result = MagnetismExtractor(llm=base_llm).extract_from_audit_snapshot(snapshot)
+        tldr = magnetism_result.get("tldr_brand3") or {}
+        brand_name = str(
+            magnetism_result.get("brand_name")
+            or run_meta.get("brand_name")
+            or snapshot.get("brand_name")
+            or ""
+        )
+        url = str(
+            magnetism_result.get("source_url")
+            or magnetism_result.get("url")
+            or run_meta.get("url")
+            or snapshot.get("url")
+            or ""
+        )
+        source_run_id = _to_int(
+            source_run_id
+            if source_run_id is not None
+            else magnetism_result.get("source_run_id")
+            or run_meta.get("id")
+            or snapshot.get("id")
+        )
 
     signals = merge_signals(collect_signals(snapshot), extra_signals)
     components = evaluate_snapshot_components(

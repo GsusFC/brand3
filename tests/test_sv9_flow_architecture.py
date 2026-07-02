@@ -17,10 +17,23 @@ FORBIDDEN_IMPORT_PREFIXES = (
 
 def test_sv9_flow_does_not_import_routes_db_or_current_sv9_runtime() -> None:
     violations: list[str] = []
-    for path in sorted(SV9_FLOW_ROOT.glob("*.py")):
+    for path in sorted(SV9_FLOW_ROOT.rglob("*.py")):
         tree = ast.parse(path.read_text(encoding="utf-8"))
         for imported in _imports(tree):
             if imported.startswith(FORBIDDEN_IMPORT_PREFIXES):
+                violations.append(f"{path}:{imported}")
+
+    assert violations == []
+
+
+def test_current_sv9_runtime_imports_only_flow_contracts() -> None:
+    """src/sv9 may consume the flow contract, never the flow workers."""
+
+    violations: list[str] = []
+    for path in sorted(Path("src/sv9").rglob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for imported in _imports(tree):
+            if imported.startswith("src.sv9_flow") and imported != "src.sv9_flow.contracts":
                 violations.append(f"{path}:{imported}")
 
     assert violations == []

@@ -17,13 +17,16 @@ if str(ROOT) not in sys.path:
 from scripts.sv9_flow_shadow_run import _load_env_file
 from scripts.sv9_flow_snapshot_eval import snapshot_and_run_id_from_envelope
 from src.features.llm_analyzer import LLMAnalyzer
+from src.sv9.flow_ingress import (
+    detection_blocks_from_flow_candidate,
+    flow_candidate_extra_signals,
+)
 from src.sv9.service import run_sv9_from_audit_snapshot
 from src.sv9_flow._utils import unique_strings
 from src.sv9_flow.block_evidence_worker import build_block_evidence_shortlists
 from src.sv9_flow.contracts import Sv9FlowCandidate
 from src.sv9_flow.evidence_worker import build_evidence_pack_from_snapshot
 from src.sv9_flow.interpretation_llm_worker import build_brand_interpretation_with_llm
-from src.sv9_flow.tldr_adapter import build_magnetism_result_from_flow_candidate
 from src.sv9_flow.tile_signal_worker import build_tile_signals_from_interpretation
 
 SV9_FLOW_SV9_SHADOW_EVAL_VERSION = "sv9-flow-sv9-shadow-eval-v1"
@@ -101,15 +104,13 @@ def build_flow_sv9_shadow_eval(
         tile_signals=tile_signals,
         limitations=unique_strings(list(evidence_pack.limitations) + list(interpretation.limitations)),
     )
-    magnetism_result = build_magnetism_result_from_flow_candidate(candidate, source_run_id=run_id)
-    extra_signals = flow_tile_signals_as_extra_signals(candidate)
     evaluator_llm = evaluator_llm or LLMAnalyzer()
     result = sv9_runner(
         snapshot,
         llm=evaluator_llm,
         reasoning_llm=reasoning_llm,
-        magnetism_result=magnetism_result,
-        extra_signals=extra_signals,
+        sv9_flow_candidate=candidate,
+        source_run_id=run_id,
     )
 
     payload: dict[str, Any] = {
@@ -136,6 +137,7 @@ def build_flow_sv9_shadow_eval(
             snapshot,
             llm=evaluator_llm,
             reasoning_llm=reasoning_llm,
+            source_run_id=run_id,
         )
         legacy_summary = _result_summary(legacy_result.to_dict())
         payload["legacy_sv9"] = legacy_summary
@@ -145,8 +147,8 @@ def build_flow_sv9_shadow_eval(
         )
     if include_full:
         payload["flow"]["candidate"] = candidate.to_dict()
-        payload["flow"]["magnetism_result"] = magnetism_result
-        payload["flow"]["extra_signals"] = extra_signals
+        payload["flow"]["detection_blocks"] = detection_blocks_from_flow_candidate(candidate)
+        payload["flow"]["extra_signals"] = flow_candidate_extra_signals(candidate)
         payload["sv9"]["result"] = result.to_dict()
         if compare_legacy:
             payload["legacy_sv9"]["result"] = legacy_result.to_dict()
@@ -264,32 +266,6 @@ def _llm_usage_summary(llm: Any) -> dict[str, Any]:
         ),
         "observations": observations,
     }
-
-
-def flow_tile_signals_as_extra_signals(candidate: Sv9FlowCandidate) -> dict[str, list[dict[str, Any]]]:
-    grouped: dict[str, list[dict[str, Any]]] = {}
-    for signal in candidate.tile_signals:
-        component = str(signal.component or "").strip()
-        if not component:
-            continue
-        grouped.setdefault(component, []).append(
-            {
-                "feature": "sv9_flow_tile_signal",
-                "legacy_dimension": signal.schema_version,
-                "value": signal.effect,
-                "confidence": signal.confidence,
-                "source": signal.source,
-                "tile": signal.tile,
-                "effect": signal.effect,
-                "evidence_refs": list(signal.evidence_refs),
-                "rationale": signal.rationale,
-                "detail": (
-                    f"tile={signal.tile}; effect={signal.effect}; "
-                    f"rationale={signal.rationale}; evidence_refs={', '.join(signal.evidence_refs)}"
-                ),
-            }
-        )
-    return grouped
 
 
 def compare_sv9_summaries(

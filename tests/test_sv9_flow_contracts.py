@@ -7,8 +7,6 @@ from src.sv9_flow import (
     BRAND_INTERPRETATION_VERSION,
     SV9_FLOW_CANDIDATE_VERSION,
     SV9_TILE_SIGNALS_VERSION,
-    SV9_FLOW_TLDR_ADAPTER_VERSION,
-    SV9_FLOW_TLDR_MODE,
     BrandEvidencePack,
     BrandInterpretation,
     EvidenceRecord,
@@ -22,7 +20,6 @@ from src.sv9_flow.surface import (
     pre_sv9_authority_violations,
     worker_artifacts,
 )
-from src.sv9_flow.tldr_adapter import build_magnetism_result_from_flow_candidate
 from src.sv9_flow.tile_signal_worker import build_tile_signals_from_interpretation
 from src.sv9.rubric import COMPONENTS, tile_ids
 from scripts.sv9_flow_sv9_shadow_eval import build_flow_sv9_shadow_eval, compare_sv9_summaries
@@ -625,75 +622,6 @@ def test_surface_inventory_identifies_workers_to_extract_before_orchestrators() 
         "SV9 tile signals",
     }.issubset(worker_names)
     assert len(CURRENT_SURFACE_INVENTORY) >= len(worker_names)
-
-
-def test_flow_tldr_adapter_builds_current_sv9_input_from_evidence_refs() -> None:
-    candidate = Sv9FlowCandidate(
-        evidence_pack=BrandEvidencePack(
-            brand_name="Acme",
-            url="https://acme.example",
-            evidence=[
-                EvidenceRecord(
-                    ref="raw_inputs.0.text",
-                    source="homepage",
-                    evidence_type="raw_input_text",
-                    content="Acme helps finance teams close the books faster.",
-                ),
-                EvidenceRecord(
-                    ref="features.0",
-                    source="features",
-                    evidence_type="feature_signal",
-                    content="Tone is operational and precise.",
-                ),
-            ],
-        ),
-        interpretation=BrandInterpretation(
-            brand_name="Acme",
-            url="https://acme.example",
-            blocks={
-                "mission": {
-                    "detected": True,
-                    "content": "Help finance teams close faster.",
-                    "confidence": "high",
-                    "rationale": "The homepage states the operating outcome.",
-                },
-                "vision": {
-                    "detected": False,
-                    "content": "",
-                    "confidence": "low",
-                    "rationale": "No future-state evidence.",
-                },
-            },
-            evidence_refs={
-                "mission": ["raw_inputs.0.text", "features.0"],
-                "vision": [],
-            },
-        ),
-        limitations=["No direct community metrics were available."],
-    )
-
-    payload = build_magnetism_result_from_flow_candidate(candidate, source_run_id=123)
-
-    assert payload["source_run_id"] == 123
-    assert payload["sv9_flow_adapter_version"] == SV9_FLOW_TLDR_ADAPTER_VERSION
-    assert payload["tldr_brand3"]["mission"] == {
-        "detected": True,
-        "content": "Help finance teams close faster.",
-        "confidence": "high",
-        "mode": SV9_FLOW_TLDR_MODE,
-        "rationale": "The homepage states the operating outcome.",
-        "limitations": [],
-        "evidence": [
-            "Acme helps finance teams close the books faster.",
-            "Tone is operational and precise.",
-        ],
-        "evidence_refs": ["raw_inputs.0.text", "features.0"],
-        "source": "sv9_flow",
-        "adapter_version": SV9_FLOW_TLDR_ADAPTER_VERSION,
-    }
-    assert payload["tldr_brand3"]["vision"]["detected"] is False
-    assert payload["tldr_brand3"]["vision"]["evidence"] == []
-    assert payload["tldr_brand3"]["mission"]["limitations"] == []
 
 
 def test_flow_sv9_shadow_eval_runs_current_sv9_from_flow_interpretation() -> None:

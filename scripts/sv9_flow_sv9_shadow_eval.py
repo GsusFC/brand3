@@ -22,12 +22,8 @@ from src.sv9.flow_ingress import (
     flow_candidate_extra_signals,
 )
 from src.sv9.service import run_sv9_from_audit_snapshot
-from src.sv9_flow._utils import unique_strings
-from src.sv9_flow.block_evidence_worker import build_block_evidence_shortlists
 from src.sv9_flow.contracts import Sv9FlowCandidate
-from src.sv9_flow.evidence_worker import build_evidence_pack_from_snapshot
-from src.sv9_flow.interpretation_llm_worker import build_brand_interpretation_with_llm
-from src.sv9_flow.tile_signal_worker import build_tile_signals_from_interpretation
+from src.sv9_flow.orchestrator import build_flow_candidate
 
 SV9_FLOW_SV9_SHADOW_EVAL_VERSION = "sv9-flow-sv9-shadow-eval-v1"
 
@@ -83,26 +79,11 @@ def build_flow_sv9_shadow_eval(
     snapshot, run_id = snapshot_and_run_id_from_envelope(envelope)
     visual_evidence_fn = visual_evidence_fn or _visual_evidence_packet_from_snapshot
     visual_evidence_packet = visual_evidence_fn(snapshot)
-    evidence_pack = build_evidence_pack_from_snapshot(
-        snapshot,
-        visual_signature_evidence=visual_evidence_packet,
-    )
-    shortlists = build_block_evidence_shortlists(evidence_pack)
     interpretation_llm = interpretation_llm or LLMAnalyzer()
-    interpretation, debug = build_brand_interpretation_with_llm(
-        evidence_pack,
+    candidate, debug = build_flow_candidate(
+        snapshot=snapshot,
         llm=interpretation_llm,
-        block_evidence_shortlists=shortlists,
-    )
-    tile_signals = build_tile_signals_from_interpretation(
-        interpretation,
         visual_signature_evidence=visual_evidence_packet,
-    )
-    candidate = Sv9FlowCandidate(
-        evidence_pack=evidence_pack,
-        interpretation=interpretation,
-        tile_signals=tile_signals,
-        limitations=unique_strings(list(evidence_pack.limitations) + list(interpretation.limitations)),
     )
     evaluator_llm = evaluator_llm or LLMAnalyzer()
     result = sv9_runner(

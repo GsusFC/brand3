@@ -1,40 +1,55 @@
-"""Thin orchestrator for the parallel SV9 Flow candidate."""
+"""Canonical orchestrator for the SV9 Flow candidate.
+
+The canonical path is evidence_pack -> flow-llm interpretation -> tile
+signals. Pass 1/TLDR compatibility wrappers are not part of this package;
+they live in scripts/sv9_flow_legacy_compat.py while legacy baselines are
+being retired.
+"""
 
 from __future__ import annotations
 
 from typing import Any
 
 from src.sv9_flow._utils import unique_strings
+from src.sv9_flow.block_evidence_worker import build_block_evidence_shortlists
 from src.sv9_flow.contracts import Sv9FlowCandidate
 from src.sv9_flow.evidence_worker import build_evidence_pack_from_snapshot
-from src.sv9_flow.interpretation_worker import build_brand_interpretation_from_tldr
+from src.sv9_flow.interpretation_llm_worker import build_brand_interpretation_with_llm
 from src.sv9_flow.tile_signal_worker import build_tile_signals_from_interpretation
 
 
-def build_flow_candidate_from_current_outputs(
+def build_flow_candidate(
     *,
     snapshot: dict[str, Any],
-    tldr_payload: dict[str, Any] | None = None,
+    llm: Any,
     visual_signature_evidence: dict[str, Any] | None = None,
-) -> Sv9FlowCandidate:
-    """Build a shadow flow candidate without touching the current SV9 runtime."""
+) -> tuple[Sv9FlowCandidate, dict[str, Any]]:
+    """Build the canonical flow candidate for one audit snapshot.
+
+    Returns the candidate plus the interpretation debug payload (prompt and
+    gate provenance, shortlists); the debug payload is for harness comparison
+    only and is not a score.
+    """
 
     evidence_pack = build_evidence_pack_from_snapshot(
         snapshot,
         visual_signature_evidence=visual_signature_evidence,
     )
-    interpretation = build_brand_interpretation_from_tldr(
-        evidence_pack=evidence_pack,
-        tldr_payload=tldr_payload,
+    shortlists = build_block_evidence_shortlists(evidence_pack)
+    interpretation, debug = build_brand_interpretation_with_llm(
+        evidence_pack,
+        llm=llm,
+        block_evidence_shortlists=shortlists,
     )
+    debug["block_evidence_shortlists"] = shortlists
     tile_signals = build_tile_signals_from_interpretation(
         interpretation,
         visual_signature_evidence=visual_signature_evidence,
     )
-    limitations = list(evidence_pack.limitations) + list(interpretation.limitations)
-    return Sv9FlowCandidate(
+    candidate = Sv9FlowCandidate(
         evidence_pack=evidence_pack,
         interpretation=interpretation,
         tile_signals=tile_signals,
-        limitations=unique_strings(limitations),
+        limitations=unique_strings(list(evidence_pack.limitations) + list(interpretation.limitations)),
     )
+    return candidate, debug

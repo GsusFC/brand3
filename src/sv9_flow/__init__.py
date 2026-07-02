@@ -16,6 +16,7 @@ from src.sv9_flow.contracts import (
     Sv9FlowCandidate,
     TileSignal,
 )
+from src.sv9_flow.orchestrator import build_flow_candidate
 from src.sv9_flow.surface import (
     CURRENT_SURFACE_INVENTORY,
     PRE_SV9_ALLOWED_ROLES,
@@ -35,6 +36,7 @@ __all__ = [
     "EvidenceRecord",
     "Sv9FlowCandidate",
     "TileSignal",
+    "build_flow_candidate",
     "CURRENT_SURFACE_INVENTORY",
     "PRE_SV9_ALLOWED_ROLES",
     "SurfaceArtifact",

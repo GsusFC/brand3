@@ -39,23 +39,19 @@ def test_current_sv9_runtime_imports_only_flow_contracts() -> None:
     assert violations == []
 
 
-def test_sv9_flow_adapter_stays_a_thin_facade() -> None:
-    path = SV9_FLOW_ROOT / "adapters.py"
-    tree = ast.parse(path.read_text(encoding="utf-8"))
+def test_sv9_flow_package_has_no_tldr_input_path() -> None:
+    """Pass 1/TLDR compatibility lives only in scripts/sv9_flow_legacy_compat.py.
 
-    forbidden_nodes = (
-        ast.FunctionDef,
-        ast.AsyncFunctionDef,
-        ast.ClassDef,
-        ast.For,
-        ast.While,
-        ast.If,
-        ast.Try,
-        ast.With,
-    )
-    body_nodes = [node for node in tree.body if not isinstance(node, (ast.Expr, ast.ImportFrom, ast.Assign))]
+    The canonical package must not accept or unwrap TLDR payloads.
+    """
 
-    assert not any(isinstance(node, forbidden_nodes) for node in body_nodes)
+    offenders: list[str] = []
+    for path in sorted(SV9_FLOW_ROOT.rglob("*.py")):
+        text = path.read_text(encoding="utf-8")
+        if "tldr_payload" in text or "from_tldr" in text:
+            offenders.append(str(path))
+
+    assert offenders == []
 
 
 def _imports(tree: ast.AST) -> list[str]:

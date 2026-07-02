@@ -73,25 +73,31 @@ def test_shadow_flow_report_only_omits_full_candidate() -> None:
 def test_shadow_flow_can_use_flow_llm_instead_of_pass1() -> None:
     calls = {"cache": 0, "detect": 0, "flow": 0}
 
-    def _flow_interpretation(evidence_pack):
+    def _flow_candidate(snapshot, visual_signature_evidence):
         calls["flow"] += 1
-        from src.sv9_flow.contracts import BrandInterpretation
+        from src.sv9_flow.contracts import BrandEvidencePack, BrandInterpretation, Sv9FlowCandidate
 
-        return (
-            BrandInterpretation(
-                brand_name=evidence_pack.brand_name,
-                url=evidence_pack.url,
-                blocks={
-                    "mission": {
-                        "detected": True,
-                        "content": "Interpret directly from evidence.",
-                        "confidence": "medium",
-                    }
-                },
-                evidence_refs={"mission": ["raw_inputs.0"]},
-            ),
-            {"status": "ok", "prompt_version": "test"},
+        run = snapshot.get("run") or {}
+        interpretation = BrandInterpretation(
+            brand_name=run.get("brand_name") or "",
+            url=run.get("url") or "",
+            blocks={
+                "mission": {
+                    "detected": True,
+                    "content": "Interpret directly from evidence.",
+                    "confidence": "medium",
+                }
+            },
+            evidence_refs={"mission": ["raw_inputs.0"]},
         )
+        candidate = Sv9FlowCandidate(
+            evidence_pack=BrandEvidencePack(
+                brand_name=run.get("brand_name") or "",
+                url=run.get("url") or "",
+            ),
+            interpretation=interpretation,
+        )
+        return candidate, {"status": "ok", "prompt_version": "test"}
 
     payload = build_shadow_flow_for_run(
         123,
@@ -100,7 +106,7 @@ def test_shadow_flow_can_use_flow_llm_instead_of_pass1() -> None:
         get_cached_detection_fn=lambda run_id, db_path: calls.__setitem__("cache", calls["cache"] + 1) or _tldr("Cached"),
         detect_fn=lambda snapshot: calls.__setitem__("detect", calls["detect"] + 1) or _tldr("Live"),
         visual_signature_fn=lambda snapshot: None,
-        flow_interpretation_fn=_flow_interpretation,
+        flow_candidate_fn=_flow_candidate,
     )
 
     assert payload["interpretation_source"] == "flow-llm"

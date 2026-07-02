@@ -12,7 +12,8 @@ from src.sv9_flow import (
     EvidenceRecord,
     Sv9FlowCandidate,
 )
-from src.sv9_flow.adapters import build_flow_candidate_from_current_outputs
+from scripts.sv9_flow_legacy_compat import build_flow_candidate_from_current_outputs
+from src.sv9_flow.orchestrator import build_flow_candidate
 from src.sv9_flow.reporting import SV9_FLOW_REPORT_VERSION, build_flow_report
 from src.sv9_flow.surface import (
     CURRENT_SURFACE_INVENTORY,
@@ -622,6 +623,56 @@ def test_surface_inventory_identifies_workers_to_extract_before_orchestrators() 
         "SV9 tile signals",
     }.issubset(worker_names)
     assert len(CURRENT_SURFACE_INVENTORY) >= len(worker_names)
+
+
+def test_canonical_orchestrator_builds_candidate_from_evidence_and_llm() -> None:
+    class FlowLLM:
+        api_key = "test-key"
+        model = "flow-fake"
+        last_failure_reason = None
+        call_failures = []
+
+        def _call_json(self, system, user, **kwargs):
+            if '"block": "mission"' in user:
+                return {
+                    "detected": True,
+                    "content": "Help finance teams close faster.",
+                    "confidence": "high",
+                    "evidence_refs": ["raw_inputs.0"],
+                    "rationale": "The homepage states it.",
+                    "limitations": [],
+                }
+            return {
+                "detected": False,
+                "content": "",
+                "confidence": "low",
+                "evidence_refs": [],
+                "rationale": "Not enough evidence.",
+                "limitations": [],
+            }
+
+    candidate, debug = build_flow_candidate(
+        snapshot={
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "raw_inputs": [
+                {
+                    "source": "homepage",
+                    "payload": {"text": "Acme helps finance teams close the books faster."},
+                }
+            ],
+        },
+        llm=FlowLLM(),
+    )
+
+    assert candidate.evidence_pack.brand_name == "Acme"
+    assert candidate.interpretation.blocks["mission"]["detected"] is True
+    assert candidate.interpretation.evidence_refs["mission"] == ["raw_inputs.0"]
+    assert any(
+        signal.component == "mission" and signal.effect == "supports"
+        for signal in candidate.tile_signals
+    )
+    assert debug["gate_authority"] == "veto_only"
+    assert "raw_inputs.0" in debug["block_evidence_shortlists"]["mission"]
 
 
 def test_flow_sv9_shadow_eval_runs_current_sv9_from_flow_interpretation() -> None:

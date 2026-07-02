@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Build a parallel SV9 flow candidate from local JSON files.
+"""Build a LEGACY compatibility flow candidate from local JSON files.
 
-This script is intentionally read-only. It does not call the current SV9
-runtime, does not invoke LLMs, and does not write to the database.
+This script wraps a Pass 1/TLDR payload in the flow contracts via
+scripts/sv9_flow_legacy_compat.py — it is a baseline harness, not the
+canonical flow. It is read-only: no SV9 runtime, no LLMs, no database writes.
 """
 
 from __future__ import annotations
@@ -12,7 +13,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from src.sv9_flow.adapters import build_flow_candidate_from_current_outputs
+from scripts.sv9_flow_legacy_compat import build_flow_candidate_from_current_outputs
 from src.sv9_flow.reporting import build_flow_report
 
 

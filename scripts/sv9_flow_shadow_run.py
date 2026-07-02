@@ -18,15 +18,12 @@ import os
 from pathlib import Path
 from typing import Any, Callable
 
+from scripts.sv9_flow_legacy_compat import build_flow_candidate_from_current_outputs
 from src.config import BRAND3_DB_PATH
 from src.sv9_flow._utils import unique_strings
-from src.sv9_flow.block_evidence_worker import build_block_evidence_shortlists
-from src.sv9_flow.contracts import BrandInterpretation, Sv9FlowCandidate
-from src.sv9_flow.evidence_worker import build_evidence_pack_from_snapshot
-from src.sv9_flow.interpretation_llm_worker import build_brand_interpretation_with_llm
-from src.sv9_flow.orchestrator import build_flow_candidate_from_current_outputs
+from src.sv9_flow.contracts import Sv9FlowCandidate
+from src.sv9_flow.orchestrator import build_flow_candidate
 from src.sv9_flow.reporting import build_flow_report
-from src.sv9_flow.tile_signal_worker import build_tile_signals_from_interpretation
 
 SV9_FLOW_SHADOW_RUN_VERSION = "sv9-flow-shadow-run-v1"
 INTERPRETATION_SOURCES = ("cached-pass1", "live-pass1", "provided-tldr", "flow-llm")
@@ -98,7 +95,10 @@ def build_shadow_flow_for_run(
     get_cached_detection_fn: Callable[[int, str], dict[str, Any] | None] | None = None,
     detect_fn: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
     visual_signature_fn: Callable[[dict[str, Any]], dict[str, Any] | None] | None = None,
-    flow_interpretation_fn: Callable[[Any], tuple[BrandInterpretation, dict[str, Any]]] | None = None,
+    flow_candidate_fn: Callable[
+        [dict[str, Any], dict[str, Any] | None], tuple[Sv9FlowCandidate, dict[str, Any]]
+    ]
+    | None = None,
 ) -> dict[str, Any]:
     """Build a connected shadow candidate while keeping side effects out."""
 
@@ -106,7 +106,7 @@ def build_shadow_flow_for_run(
     get_cached_detection_fn = get_cached_detection_fn or _get_cached_detection
     detect_fn = detect_fn or _detect_for_snapshot
     visual_signature_fn = visual_signature_fn or _visual_signature_evidence_from_snapshot
-    flow_interpretation_fn = flow_interpretation_fn or _flow_interpretation_with_default_llm
+    flow_candidate_fn = flow_candidate_fn or _flow_candidate_with_default_llm
 
     snapshot = load_snapshot_fn(run_id, db_path=db_path)
     visual_signature = visual_signature_fn(snapshot)
@@ -114,21 +114,7 @@ def build_shadow_flow_for_run(
     detection_source = "missing"
 
     if interpretation_source == "flow-llm":
-        evidence_pack = build_evidence_pack_from_snapshot(
-            snapshot,
-            visual_signature_evidence=visual_signature,
-        )
-        interpretation, llm_payload = flow_interpretation_fn(evidence_pack)
-        tile_signals = build_tile_signals_from_interpretation(
-            interpretation,
-            visual_signature_evidence=visual_signature,
-        )
-        candidate = Sv9FlowCandidate(
-            evidence_pack=evidence_pack,
-            interpretation=interpretation,
-            tile_signals=tile_signals,
-            limitations=unique_strings(list(evidence_pack.limitations) + list(interpretation.limitations)),
-        )
+        candidate, llm_payload = flow_candidate_fn(snapshot, visual_signature)
         detection_source = "flow_llm"
     else:
         if interpretation_source == "provided-tldr" or tldr_payload is not None:
@@ -198,17 +184,17 @@ def _detect_for_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
     return detect_for_snapshot(snapshot)
 
 
-def _flow_interpretation_with_default_llm(evidence_pack: Any) -> tuple[BrandInterpretation, dict[str, Any]]:
+def _flow_candidate_with_default_llm(
+    snapshot: dict[str, Any],
+    visual_signature_evidence: dict[str, Any] | None,
+) -> tuple[Sv9FlowCandidate, dict[str, Any]]:
     from src.features.llm_analyzer import LLMAnalyzer
 
-    shortlists = build_block_evidence_shortlists(evidence_pack)
-    interpretation, debug = build_brand_interpretation_with_llm(
-        evidence_pack,
+    return build_flow_candidate(
+        snapshot=snapshot,
         llm=LLMAnalyzer(),
-        block_evidence_shortlists=shortlists,
+        visual_signature_evidence=visual_signature_evidence,
     )
-    debug["block_evidence_shortlists"] = shortlists
-    return interpretation, debug
 
 
 def _visual_signature_evidence_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any] | None:

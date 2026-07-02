@@ -67,6 +67,21 @@ class BrandInterpretation:
         return asdict(self)
 
 
+def interpretation_contract_violations(interpretation: BrandInterpretation) -> list[str]:
+    """Return violations of the canonical contract: detected requires content and refs."""
+
+    violations: list[str] = []
+    for name, block in sorted(interpretation.blocks.items()):
+        if not isinstance(block, dict) or block.get("detected") is not True:
+            continue
+        if not str(block.get("content") or "").strip():
+            violations.append(f"{name}_detected_without_content")
+        refs = [ref for ref in interpretation.evidence_refs.get(name) or [] if str(ref or "").strip()]
+        if not refs:
+            violations.append(f"{name}_detected_without_evidence_refs")
+    return violations
+
+
 @dataclass(slots=True)
 class TileSignal:
     """One evidence-backed influence on one SV9 tile."""

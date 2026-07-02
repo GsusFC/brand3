@@ -12,6 +12,7 @@ from src.sv9_flow import (
     EvidenceRecord,
     Sv9FlowCandidate,
 )
+from src.sv9_flow.contracts import interpretation_contract_violations
 from scripts.sv9_flow_legacy_compat import build_flow_candidate_from_current_outputs
 from src.sv9_flow.orchestrator import build_flow_candidate
 from src.sv9_flow.reporting import SV9_FLOW_REPORT_VERSION, build_flow_report
@@ -596,6 +597,28 @@ def test_sv9_flow_candidate_script_reads_json_and_prints_report(tmp_path) -> Non
     assert payload["tile_signal_effects"] == {"supports": 1}
 
 
+def test_interpretation_contract_requires_content_and_refs_when_detected() -> None:
+    interpretation = BrandInterpretation(
+        brand_name="Acme",
+        url="https://acme.example",
+        blocks={
+            "mission": {"detected": True, "content": "Help teams ship.", "confidence": "high"},
+            "vision": {"detected": True, "content": "", "confidence": "medium"},
+            "values": {"detected": True, "content": "Implied values.", "confidence": "low"},
+            "personality": {"detected": False, "content": "", "confidence": "low"},
+        },
+        evidence_refs={"mission": ["raw_inputs.0"], "values": []},
+    )
+
+    violations = interpretation_contract_violations(interpretation)
+
+    assert violations == [
+        "values_detected_without_evidence_refs",
+        "vision_detected_without_content",
+        "vision_detected_without_evidence_refs",
+    ]
+
+
 def test_canonical_orchestrator_builds_candidate_from_evidence_and_llm() -> None:
     class FlowLLM:
         api_key = "test-key"
@@ -644,6 +667,7 @@ def test_canonical_orchestrator_builds_candidate_from_evidence_and_llm() -> None
     )
     assert debug["gate_authority"] == "veto_only"
     assert "raw_inputs.0" in debug["block_evidence_shortlists"]["mission"]
+    assert not [item for item in candidate.limitations if item.startswith("contract_violation:")]
 
 
 def test_flow_sv9_shadow_eval_runs_current_sv9_from_flow_interpretation() -> None:

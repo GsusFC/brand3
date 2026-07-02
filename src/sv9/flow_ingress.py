@@ -36,13 +36,19 @@ def detection_blocks_from_flow_candidate(candidate: Sv9FlowCandidate) -> dict[st
             continue
         refs = _unique_strings(candidate.interpretation.evidence_refs.get(block_name, []))
         content = str(block.get("content") or "").strip()
+        # SV9 must never score a detected block without evidence refs,
+        # regardless of which producer built the candidate.
+        detected = bool(block.get("detected")) and bool(content) and bool(refs)
+        limitations = _block_limitations(block_name, candidate.limitations)
+        if bool(block.get("detected")) and bool(content) and not refs:
+            limitations = limitations + ["contract_violation:detected_without_evidence_refs"]
         blocks[block_name] = {
-            "detected": bool(block.get("detected")) and bool(content),
+            "detected": detected,
             "content": content,
             "confidence": _confidence(block.get("confidence")),
             "mode": SV9_FLOW_DETECTION_MODE,
             "rationale": str(block.get("rationale") or "").strip(),
-            "limitations": _block_limitations(block_name, candidate.limitations),
+            "limitations": limitations,
             "evidence": _evidence_snippets(refs, evidence_by_ref),
             "evidence_refs": refs[:_MAX_EVIDENCE_ITEMS],
             "source": "sv9_flow",

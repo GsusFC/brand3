@@ -135,6 +135,23 @@ def test_flow_candidate_extra_signals_group_by_component() -> None:
     assert signals["mission"][0]["evidence_refs"] == ["raw_inputs.0.text"]
 
 
+def test_ingress_demotes_detected_blocks_without_evidence_refs() -> None:
+    candidate = _candidate()
+    candidate.interpretation.blocks["values"] = {
+        "detected": True,
+        "content": "Implied values without citations.",
+        "confidence": "medium",
+        "rationale": "No refs were kept for this block.",
+    }
+    candidate.interpretation.evidence_refs.pop("values", None)
+
+    blocks = detection_blocks_from_flow_candidate(candidate)
+
+    assert blocks["values"]["detected"] is False
+    assert "contract_violation:detected_without_evidence_refs" in blocks["values"]["limitations"]
+    assert blocks["mission"]["detected"] is True
+
+
 def test_run_sv9_rejects_two_detection_inputs() -> None:
     with pytest.raises(ValueError, match="exactly one detection input"):
         run_sv9_from_audit_snapshot(

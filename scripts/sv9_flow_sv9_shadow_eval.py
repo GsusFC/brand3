@@ -181,6 +181,7 @@ def _compact_interpretation_debug(debug: dict[str, Any]) -> dict[str, Any]:
             "status",
             "prompt_version",
             "shortlist_version",
+            "gate_authority",
             "mode",
             "detected_count",
             "failed_blocks",

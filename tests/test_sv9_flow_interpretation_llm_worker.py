@@ -206,7 +206,7 @@ def test_sensitive_block_gate_uses_deterministic_shortlist_not_llm_selected_refs
     assert "magnetism_structural_negative_evidence" not in interpretation.limitations
 
 
-def test_sensitive_block_gate_overrides_llm_false_negative_when_evidence_supports_detection() -> None:
+def test_gate_positive_llm_negative_never_grants_detection() -> None:
     pack = BrandEvidencePack(
         brand_name="Acme",
         url="https://acme.example",
@@ -238,21 +238,22 @@ def test_sensitive_block_gate_overrides_llm_false_negative_when_evidence_support
         block_evidence_shortlists={"magnetism": ["features.0"]},
     )
 
-    assert interpretation.blocks["magnetism"]["detected"] is True
-    assert interpretation.blocks["magnetism"]["confidence"] == "low"
-    assert "momentum" in interpretation.blocks["magnetism"]["content"]
-    assert interpretation.evidence_refs["magnetism"] == ["features.0"]
-    assert "magnetism_llm_detection_overridden_by_gate" in interpretation.limitations
+    assert interpretation.blocks["magnetism"]["detected"] is False
+    assert interpretation.blocks["magnetism"]["content"] == ""
+    assert "magnetism" not in interpretation.evidence_refs
+    assert "magnetism_gate_positive_llm_negative" in interpretation.limitations
+    assert "magnetism_llm_detection_overridden_by_gate" not in interpretation.limitations
     assert interpretation.blocks["magnetism"]["detection_provenance"] == {
         "llm_detected": False,
         "gate_detected": True,
-        "final_detected": True,
-        "final_source": "gate_override",
+        "final_detected": False,
+        "final_source": "llm_rejected_gate_candidate",
         "gate_reason": "support_terms:momentum,press,market pull",
+        "review_queue_reason": "gate_positive_llm_negative",
     }
 
 
-def test_mission_gate_overrides_llm_false_negative_when_action_evidence_exists() -> None:
+def test_mission_gate_positive_llm_negative_stays_undetected() -> None:
     pack = BrandEvidencePack(
         brand_name="Acme",
         url="https://acme.example",
@@ -284,9 +285,50 @@ def test_mission_gate_overrides_llm_false_negative_when_action_evidence_exists()
         block_evidence_shortlists={"mission": ["raw_inputs.0"]},
     )
 
-    assert interpretation.blocks["mission"]["detected"] is True
-    assert "we help" in interpretation.blocks["mission"]["content"].lower()
-    assert "mission_llm_detection_overridden_by_gate" in interpretation.limitations
+    assert interpretation.blocks["mission"]["detected"] is False
+    assert interpretation.blocks["mission"]["content"] == ""
+    assert "mission_gate_positive_llm_negative" in interpretation.limitations
+    provenance = interpretation.blocks["mission"]["detection_provenance"]
+    assert provenance["final_source"] == "llm_rejected_gate_candidate"
+    assert provenance["review_queue_reason"] == "gate_positive_llm_negative"
+
+
+def test_sensitive_detection_requires_llm_cited_refs_even_when_gate_supports() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="web",
+                evidence_type="raw_input",
+                content="Our mission is to help support teams automate high-stakes calls.",
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "mission": {
+                "detected": True,
+                "content": "Automate high-stakes calls for support teams.",
+                "confidence": "high",
+                "evidence_refs": [],
+                "rationale": "Stated on the homepage.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"mission": ["raw_inputs.0"]},
+    )
+
+    assert interpretation.blocks["mission"]["detected"] is False
+    assert "mission" not in interpretation.evidence_refs
+    assert "mission_dropped_missing_evidence_refs" in interpretation.limitations
+    assert interpretation.blocks["mission"]["detection_provenance"]["final_source"] == "llm_missing_evidence_refs"
 
 
 def test_magnetism_market_momentum_only_is_marked_as_limited() -> None:

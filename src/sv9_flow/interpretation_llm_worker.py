@@ -155,6 +155,7 @@ def build_brand_interpretation_with_llm(
         "status": "ok" if raw_blocks and detected_count else "empty",
         "prompt_version": FLOW_INTERPRETATION_PROMPT_VERSION,
         "shortlist_version": "sv9-flow-block-evidence-shortlists-v1",
+        "gate_authority": "veto_only",
         "shortlisted_blocks": sorted(shortlists.keys()),
         "mode": "per_block" if per_block else "all_blocks",
         "detected_count": detected_count,
@@ -234,12 +235,15 @@ def normalize_llm_interpretation_response(
             if key in SENSITIVE_BLOCKS and policy_refs
             else None
         )
-        override_by_gate = bool(block and decision and decision.supports_detection and not truthy_detected(block))
-        detected = (
-            bool(block and decision and decision.supports_detection)
-            if key in SENSITIVE_BLOCKS and policy_refs
-            else _detected_from_evidence_policy(key, block, policy_refs, evidence_pack)
-        )
+        llm_detected = truthy_detected(block)
+        # Gate authority is veto-only: it can reject an LLM detection, never
+        # grant one. A gate-positive/LLM-negative block stays undetected and is
+        # only recorded as a review-queue candidate.
+        gate_candidate_rejected = bool(decision and decision.supports_detection and not llm_detected)
+        if key in SENSITIVE_BLOCKS and policy_refs:
+            detected = llm_detected and bool(refs) and bool(decision and decision.supports_detection)
+        else:
+            detected = _detected_from_evidence_policy(key, block, policy_refs, evidence_pack)
         if truthy_detected(block) and not refs:
             limitations.append(f"{key}_dropped_missing_evidence_refs")
         elif truthy_detected(block) and block_evidence_shortlists is not None:
@@ -251,14 +255,14 @@ def normalize_llm_interpretation_response(
             decision = decision or resolve_block_detection(key, evidence_pack, evidence_refs=policy_refs)
             if decision.limitation_code:
                 limitations.append(decision.limitation_code)
-        if override_by_gate:
-            limitations.append(f"{key}_llm_detection_overridden_by_gate")
+        if gate_candidate_rejected:
+            limitations.append(f"{key}_gate_positive_llm_negative")
         block_refs = (
             unique_strings(list(refs) + list(policy_refs))
             if detected and key in SENSITIVE_BLOCKS
             else refs
         )
-        if decision is not None and decision.supports_detection:
+        if detected and decision is not None and decision.supports_detection:
             if key == "magnetism":
                 if _magnetism_market_momentum_only(decision):
                     limitations.append("magnetism_market_momentum_only")
@@ -270,15 +274,14 @@ def normalize_llm_interpretation_response(
             limitations.append("core_purpose_derived_strategy_evidence")
         blocks[key] = {
             "detected": detected,
-            "content": _block_content(key, block, decision=decision, override_by_gate=override_by_gate),
-            "confidence": "low" if override_by_gate else _confidence(block.get("confidence")),
-            "rationale": _block_rationale(key, block, decision=decision, override_by_gate=override_by_gate),
+            "content": _block_content(block),
+            "confidence": _confidence(block.get("confidence")),
+            "rationale": _block_rationale(block),
             "detection_provenance": _detection_provenance(
                 key=key,
                 block=block,
                 decision=decision,
                 detected=detected,
-                override_by_gate=override_by_gate,
                 policy_refs=policy_refs,
             ),
         }
@@ -706,31 +709,35 @@ def _detection_provenance(
     block: dict[str, Any],
     decision: Any,
     detected: bool,
-    override_by_gate: bool,
     policy_refs: list[str],
 ) -> dict[str, Any]:
     llm_detected = truthy_detected(block)
     gate_applied = key in SENSITIVE_BLOCKS and bool(policy_refs)
     gate_detected = bool(decision and decision.supports_detection) if gate_applied else None
-    if override_by_gate:
-        final_source = "gate_override"
-    elif gate_applied and llm_detected and not detected:
-        final_source = "gate_rejected"
+    review_queue_reason = ""
+    if gate_applied and gate_detected and not llm_detected:
+        final_source = "llm_rejected_gate_candidate"
+        review_queue_reason = "gate_positive_llm_negative"
     elif gate_applied and llm_detected and detected:
         final_source = "llm_confirmed_by_gate"
-    elif gate_applied and detected:
-        final_source = "gate"
+    elif gate_applied and llm_detected and gate_detected and not detected:
+        final_source = "llm_missing_evidence_refs"
+    elif gate_applied and llm_detected and not detected:
+        final_source = "gate_rejected"
     elif detected:
         final_source = "llm"
     else:
         final_source = "insufficient_evidence"
-    return {
+    provenance: dict[str, Any] = {
         "llm_detected": llm_detected,
         "gate_detected": gate_detected,
         "final_detected": detected,
         "final_source": final_source,
         "gate_reason": _gate_reason(decision),
     }
+    if review_queue_reason:
+        provenance["review_queue_reason"] = review_queue_reason
+    return provenance
 
 
 def _gate_reason(decision: Any) -> str:
@@ -748,41 +755,12 @@ def _gate_reason(decision: Any) -> str:
     return str(getattr(decision, "outcome", "") or "")
 
 
-def _block_content(
-    key: str,
-    block: dict[str, Any],
-    *,
-    decision: Any,
-    override_by_gate: bool,
-) -> str:
-    content = str(block.get("content") or "").strip()
-    if content:
-        return content[:700]
-    if override_by_gate and decision is not None:
-        terms = list(getattr(decision, "support_terms", []) or getattr(decision, "weaken_terms", []) or [])
-        term_text = ", ".join(terms) if terms else "shortlisted evidence"
-        return f"{key} has enough evidence to evaluate via deterministic gate signals: {term_text}."[:700]
-    return ""
+def _block_content(block: dict[str, Any]) -> str:
+    return str(block.get("content") or "").strip()[:700]
 
 
-def _block_rationale(
-    key: str,
-    block: dict[str, Any],
-    *,
-    decision: Any,
-    override_by_gate: bool,
-) -> str:
-    rationale = str(block.get("rationale") or "").strip()
-    if rationale:
-        return rationale[:700]
-    if override_by_gate and decision is not None:
-        terms = list(getattr(decision, "support_terms", []) or getattr(decision, "weaken_terms", []) or [])
-        term_text = ", ".join(terms) if terms else "evidence shortlist"
-        return (
-            f"The LLM did not return a detected {key} block, but the deterministic gate found "
-            f"supporting evidence signals: {term_text}."
-        )[:700]
-    return ""
+def _block_rationale(block: dict[str, Any]) -> str:
+    return str(block.get("rationale") or "").strip()[:700]
 
 
 def _confidence(value: Any) -> str:

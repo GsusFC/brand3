@@ -168,13 +168,44 @@ def test_batch_report_surfaces_material_gate_overrides_as_policy_review() -> Non
             "block": "magnetism",
             "llm_detected": False,
             "gate_detected": True,
+            "final_source": "gate_override",
             "gate_reason": "supports_detection",
+            "review_queue_reason": "",
             "support_terms": ["momentum"],
             "weaken_terms": [],
         }
     ]
     assert report["summary"]["gate_override_count"] == 1
     assert report["summary"]["gate_override_brands"] == ["Gate Override"]
+
+
+def test_batch_report_queues_gate_positive_llm_negative_candidates() -> None:
+    report = build_batch_report(
+        [
+            _payload(
+                "Gate Candidate",
+                delta=1,
+                gate_outcome="supports_detection",
+                gate_override_block="magnetism",
+                gate_override_source="llm_rejected_gate_candidate",
+                comparison_components={
+                    "magnetism": {
+                        "score_delta": -4,
+                        "status": {"flow": "scored", "legacy": "scored"},
+                        "status_changed": False,
+                        "tile_changes": {"changed": True},
+                    }
+                },
+            )
+        ]
+    )
+
+    run = report["runs"][0]
+    assert run["assessment"] == "review"
+    assert "gate_override_review:magnetism" in run["assessment_reasons"]
+    assert run["gate_overrides"][0]["final_source"] == "llm_rejected_gate_candidate"
+    assert run["gate_overrides"][0]["review_queue_reason"] == "gate_positive_llm_negative"
+    assert report["summary"]["gate_override_count"] == 1
 
 
 def test_batch_markdown_report_includes_scores_gate_decisions_and_tile_changes() -> None:
@@ -211,6 +242,7 @@ def _payload(
     flow_not_evaluated: list[str] | None = None,
     flow_reliability_status: str = "shadow",
     gate_override_block: str | None = None,
+    gate_override_source: str = "gate_override",
 ) -> dict:
     components = {
         "magnetism": {"score": 4},
@@ -268,9 +300,14 @@ def _payload(
                         gate_override_block: {
                             "llm_detected": False,
                             "gate_detected": True,
-                            "final_detected": True,
-                            "final_source": "gate_override",
+                            "final_detected": gate_override_source == "gate_override",
+                            "final_source": gate_override_source,
                             "gate_reason": "supports_detection",
+                            **(
+                                {"review_queue_reason": "gate_positive_llm_negative"}
+                                if gate_override_source == "llm_rejected_gate_candidate"
+                                else {}
+                            ),
                         }
                     }
                     if gate_override_block

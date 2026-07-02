@@ -394,7 +394,12 @@ def _gate_overrides(
     decisions = gate_decisions or _gate_decisions(payload)
     overrides: list[dict[str, Any]] = []
     for block, item in sorted(provenance.items()):
-        if not isinstance(item, dict) or item.get("final_source") != "gate_override":
+        if not isinstance(item, dict):
+            continue
+        final_source = str(item.get("final_source") or "")
+        # "gate_override" only exists in payloads produced before the gate
+        # became veto-only; keep matching it so older batches stay reviewable.
+        if final_source not in {"gate_override", "llm_rejected_gate_candidate"}:
             continue
         decision = decisions.get(str(block), {})
         overrides.append(
@@ -402,7 +407,9 @@ def _gate_overrides(
                 "block": str(block),
                 "llm_detected": bool(item.get("llm_detected")),
                 "gate_detected": bool(item.get("gate_detected")),
+                "final_source": final_source,
                 "gate_reason": item.get("gate_reason") or "",
+                "review_queue_reason": str(item.get("review_queue_reason") or ""),
                 "support_terms": [str(term) for term in decision.get("support_terms") or []],
                 "weaken_terms": [str(term) for term in decision.get("weaken_terms") or []],
             }

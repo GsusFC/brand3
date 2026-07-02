@@ -207,6 +207,19 @@ def test_batch_report_queues_gate_positive_llm_negative_candidates_regardless_of
     assert report["summary"]["gate_override_count"] == 1
 
 
+def test_batch_report_labels_gate_authority_per_run_and_in_summary() -> None:
+    labeled = _payload("Labeled", delta=0)
+    unlabeled = _payload("Unlabeled", delta=0)
+    del unlabeled["flow"]["interpretation_debug"]["gate_authority"]
+
+    report = build_batch_report([labeled, unlabeled])
+
+    assert report["runs"][0]["gate_authority"] == "veto_only"
+    assert report["runs"][1]["gate_authority"] == "unlabeled"
+    assert report["summary"]["gate_authorities"] == {"unlabeled": 1, "veto_only": 1}
+    assert "gate authorities: `unlabeled:1, veto_only:1`" in render_markdown_report(report)
+
+
 def test_batch_markdown_report_includes_scores_gate_decisions_and_tile_changes() -> None:
     report = build_batch_report(
         [
@@ -285,6 +298,7 @@ def _payload(
         },
         "flow": {
             "interpretation_debug": {
+                "gate_authority": "veto_only",
                 "block_detection_decisions": [
                     {
                         "block": "magnetism",

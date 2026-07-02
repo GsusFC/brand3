@@ -144,6 +144,7 @@ def test_review_queue_includes_gate_candidates_even_without_material_delta() -> 
     )
     entry = packet["cohort_manifest"]["entries"][0]
     assert "gate_candidate:magnetism" in entry["risk_tags"]
+    assert entry["gate_authority"] == "veto_only"
 
 
 def test_write_calibration_packet_persists_expected_artifacts(tmp_path) -> None:
@@ -216,6 +217,7 @@ def _payload(
         },
         "flow": {
             "interpretation_debug": {
+                "gate_authority": "veto_only",
                 "block_detection_decisions": [
                     {
                         "block": gate_override_block or "magnetism",

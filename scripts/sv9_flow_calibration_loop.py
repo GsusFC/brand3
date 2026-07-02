@@ -129,6 +129,7 @@ def build_cohort_manifest(
                 "score_delta": run.get("score_delta"),
                 "risk_tags": _risk_tags(payload, run),
                 "visual_acquisition_present": bool(payload.get("visual_acquisition_present")),
+                "gate_authority": run.get("gate_authority") or "unlabeled",
                 "flow_reliability_status": ((payload.get("sv9") or {}).get("reliability_status")),
                 "legacy_reliability_status": ((payload.get("legacy_sv9") or {}).get("reliability_status")),
             }

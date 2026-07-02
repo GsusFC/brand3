@@ -71,6 +71,12 @@ def render_markdown_report(report: dict[str, Any]) -> str:
         "- assessment kinds: `"
         + ", ".join(f"{key}:{value}" for key, value in sorted(assessment_kinds.items()))
         + "`",
+        "- gate authorities: `"
+        + ", ".join(
+            f"{key}:{value}"
+            for key, value in sorted((summary.get("gate_authorities") or {}).items())
+        )
+        + "`",
         "",
         "| brand | status | flow | legacy | delta | not detected | reasons |",
         "|---|---|---:|---:|---:|---|---|",
@@ -143,6 +149,9 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "blocker_brands": [row.get("brand_name") for row in rows if row.get("assessment") == "blocker"],
         "review_brands": [row.get("brand_name") for row in rows if row.get("assessment") == "review"],
         "assessment_kinds": dict(Counter(str(row.get("assessment_kind") or "unknown") for row in rows)),
+        # Metrics from batches with mixed gate authorities are not 1:1
+        # comparable; a mixed counter here is the warning sign.
+        "gate_authorities": dict(Counter(str(row.get("gate_authority") or "unlabeled") for row in rows)),
         "gate_override_count": sum(len(row.get("gate_overrides") or []) for row in rows),
         "gate_override_brands": [
             row.get("brand_name")
@@ -192,9 +201,16 @@ def _summarize_payload(payload: dict[str, Any], *, source: str | None) -> dict[s
         "assessment_kind": _assessment_kind(assessment, reasons),
         "assessment_reasons": reasons,
         "components": components,
+        "gate_authority": _gate_authority(payload),
         "gate_decisions": gate_decisions,
         "gate_overrides": gate_overrides,
     }
+
+
+def _gate_authority(payload: dict[str, Any]) -> str:
+    flow = payload.get("flow") if isinstance(payload.get("flow"), dict) else {}
+    debug = flow.get("interpretation_debug") if isinstance(flow.get("interpretation_debug"), dict) else {}
+    return str(debug.get("gate_authority") or "unlabeled")
 
 
 def _assessment(

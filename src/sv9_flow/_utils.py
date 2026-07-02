@@ -21,13 +21,17 @@ def feature_confidence(value: Any) -> str:
 
 
 def truthy_detected(payload: dict[str, Any]) -> bool:
+    """Strict canonical detection: `detected` bool, else non-empty `content`.
+
+    TLDR field tolerance (present/answer) lives only in
+    scripts/sv9_flow_legacy_compat.py.
+    """
+
     if payload.get("detected") is True:
         return True
-    if payload.get("present") is True:
-        return True
-    if payload.get("detected") is False or payload.get("present") is False:
+    if payload.get("detected") is False:
         return False
-    return bool(str(payload.get("content") or payload.get("answer") or "").strip())
+    return bool(str(payload.get("content") or "").strip())
 
 
 def first_string(*values: Any) -> str | None:

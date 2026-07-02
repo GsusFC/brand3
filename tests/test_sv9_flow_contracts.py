@@ -15,12 +15,6 @@ from src.sv9_flow import (
 from scripts.sv9_flow_legacy_compat import build_flow_candidate_from_current_outputs
 from src.sv9_flow.orchestrator import build_flow_candidate
 from src.sv9_flow.reporting import SV9_FLOW_REPORT_VERSION, build_flow_report
-from src.sv9_flow.surface import (
-    CURRENT_SURFACE_INVENTORY,
-    legacy_score_artifacts,
-    pre_sv9_authority_violations,
-    worker_artifacts,
-)
 from src.sv9_flow.tile_signal_worker import build_tile_signals_from_interpretation
 from src.sv9.rubric import COMPONENTS, tile_ids
 from scripts.sv9_flow_sv9_shadow_eval import build_flow_sv9_shadow_eval, compare_sv9_summaries
@@ -600,29 +594,6 @@ def test_sv9_flow_candidate_script_reads_json_and_prints_report(tmp_path) -> Non
     assert payload["brand_name"] == "Acme"
     assert payload["counts"]["evidence_records"] == 1
     assert payload["tile_signal_effects"] == {"supports": 1}
-
-
-def test_surface_inventory_keeps_scores_out_of_pre_sv9_canonical_path() -> None:
-    assert pre_sv9_authority_violations() == []
-
-    legacy_names = {artifact.name for artifact in legacy_score_artifacts()}
-    assert "Magnetism score" in legacy_names
-    assert "Visual Signature score" in legacy_names
-    assert "SV9 scan" not in legacy_names
-
-
-def test_surface_inventory_identifies_workers_to_extract_before_orchestrators() -> None:
-    worker_names = {artifact.name for artifact in worker_artifacts()}
-
-    assert {
-        "Pass 1",
-        "tldr_brand3",
-        "Research Pack",
-        "EvidenceGraph / Evidence vNext",
-        "Visual Signature evidence",
-        "SV9 tile signals",
-    }.issubset(worker_names)
-    assert len(CURRENT_SURFACE_INVENTORY) >= len(worker_names)
 
 
 def test_canonical_orchestrator_builds_candidate_from_evidence_and_llm() -> None:

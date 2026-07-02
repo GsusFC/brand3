@@ -17,14 +17,6 @@ from src.sv9_flow.contracts import (
     TileSignal,
 )
 from src.sv9_flow.orchestrator import build_flow_candidate
-from src.sv9_flow.surface import (
-    CURRENT_SURFACE_INVENTORY,
-    PRE_SV9_ALLOWED_ROLES,
-    SurfaceArtifact,
-    legacy_score_artifacts,
-    pre_sv9_authority_violations,
-    worker_artifacts,
-)
 
 __all__ = [
     "BRAND_EVIDENCE_PACK_VERSION",
@@ -37,10 +29,4 @@ __all__ = [
     "Sv9FlowCandidate",
     "TileSignal",
     "build_flow_candidate",
-    "CURRENT_SURFACE_INVENTORY",
-    "PRE_SV9_ALLOWED_ROLES",
-    "SurfaceArtifact",
-    "legacy_score_artifacts",
-    "pre_sv9_authority_violations",
-    "worker_artifacts",
 ]

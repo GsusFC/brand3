@@ -11,10 +11,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.sv9_flow._utils import truthy_detected, unique_strings
+from src.sv9_flow._utils import unique_strings
 from src.sv9_flow.contracts import BrandEvidencePack, BrandInterpretation, Sv9FlowCandidate
 from src.sv9_flow.evidence_worker import build_evidence_pack_from_snapshot
 from src.sv9_flow.tile_signal_worker import build_tile_signals_from_interpretation
+
+_LEGACY_BLOCK_NAME_ALIASES = {"offer": "value_proposition", "purpose": "core_purpose"}
 
 
 def build_flow_candidate_from_current_outputs(
@@ -64,16 +66,20 @@ def build_brand_interpretation_from_tldr(
 
     blocks: dict[str, dict[str, Any]] = {}
     evidence_refs: dict[str, list[str]] = {}
-    for block_name, block_payload in sorted(tldr.items()):
+    for raw_block_name, block_payload in sorted(tldr.items()):
         if not isinstance(block_payload, dict):
             continue
+        block_name = _LEGACY_BLOCK_NAME_ALIASES.get(str(raw_block_name), str(raw_block_name))
         normalized = dict(block_payload)
-        detected = truthy_detected(normalized)
-        normalized["detected"] = detected
-        blocks[str(block_name)] = normalized
-        refs = _refs_for_block(str(block_name), evidence_pack)
+        if not str(normalized.get("content") or "").strip():
+            answer = str(normalized.get("answer") or "").strip()
+            if answer:
+                normalized["content"] = answer
+        normalized["detected"] = _truthy_detected_tldr(normalized)
+        blocks[block_name] = normalized
+        refs = _refs_for_block(block_name, evidence_pack)
         if refs:
-            evidence_refs[str(block_name)] = refs
+            evidence_refs[block_name] = refs
 
     return BrandInterpretation(
         brand_name=evidence_pack.brand_name,
@@ -82,6 +88,16 @@ def build_brand_interpretation_from_tldr(
         evidence_refs=evidence_refs,
         limitations=unique_strings(limitations),
     )
+
+
+def _truthy_detected_tldr(payload: dict[str, Any]) -> bool:
+    """TLDR payloads may use present/answer instead of detected/content."""
+
+    if payload.get("detected") is True or payload.get("present") is True:
+        return True
+    if payload.get("detected") is False or payload.get("present") is False:
+        return False
+    return bool(str(payload.get("content") or payload.get("answer") or "").strip())
 
 
 def _extract_tldr(payload: dict[str, Any] | None) -> dict[str, Any]:

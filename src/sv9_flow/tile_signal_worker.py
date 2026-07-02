@@ -7,17 +7,18 @@ from typing import Any
 from src.sv9_flow._utils import feature_confidence, truthy_detected
 from src.sv9_flow.contracts import BrandInterpretation, TileSignal
 
-_TLDR_TO_TILE: dict[str, tuple[str, str]] = {
+# Anchor tile per canonical interpretation block. v1 signals are
+# block-anchored, not per-tile; legacy block-name aliases are normalized in
+# scripts/sv9_flow_legacy_compat.py before reaching this worker.
+_BLOCK_TO_ANCHOR_TILE: dict[str, tuple[str, str]] = {
     "mission": ("mission", "mission.M1"),
     "vision": ("vision", "vision.V1"),
     "values": ("values", "values.VA1"),
     "attributes": ("attributes", "attributes.A1"),
     "value_proposition": ("value_proposition", "value_proposition.P1"),
-    "offer": ("value_proposition", "value_proposition.P1"),
     "personality": ("personality", "personality.PE1"),
     "brand_idea": ("brand_idea", "brand_idea.I1"),
     "magnetism": ("magnetism", "magnetism.MG1"),
-    "purpose": ("core_purpose", "core_purpose.PR1"),
     "core_purpose": ("core_purpose", "core_purpose.PR1"),
 }
 
@@ -29,10 +30,10 @@ def build_tile_signals_from_interpretation(
 ) -> list[TileSignal]:
     signals: list[TileSignal] = []
     for block_name, block_payload in sorted(interpretation.blocks.items()):
-        component, tile = _TLDR_TO_TILE.get(block_name, (block_name, f"{block_name}.unknown"))
+        component, tile = _BLOCK_TO_ANCHOR_TILE.get(block_name, (block_name, f"{block_name}.unknown"))
         detected = truthy_detected(block_payload)
         refs = interpretation.evidence_refs.get(block_name, [])
-        content = str(block_payload.get("content") or block_payload.get("answer") or "").strip()
+        content = str(block_payload.get("content") or "").strip()
         if detected and content:
             signals.extend(
                 _detected_block_tile_signals(

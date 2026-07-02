@@ -5,7 +5,24 @@ from __future__ import annotations
 from typing import Any
 
 from src.sv9_flow._utils import feature_confidence, truthy_detected
+from src.sv9_flow.calibration_terms import (
+    core_purpose_heuristics,
+    magnetism_direct_pull_gap_markers,
+)
 from src.sv9_flow.contracts import BrandInterpretation, TileSignal
+
+_CORE_PURPOSE_HEURISTICS = core_purpose_heuristics()
+_GENERIC_CATEGORY_MARKERS = tuple(_CORE_PURPOSE_HEURISTICS["generic_category_markers"])
+_RELIES_ON_STANDARD_COMPOUND = tuple(_CORE_PURPOSE_HEURISTICS["relies_on_standard_compound"])
+_PRODUCT_BOUND_TERMS = tuple(_CORE_PURPOSE_HEURISTICS["product_bound_terms"])
+_BEYOND_PRODUCT_TERMS = tuple(_CORE_PURPOSE_HEURISTICS["beyond_product_terms"])
+_ACTION_TERMS = tuple(_CORE_PURPOSE_HEURISTICS["action_terms"])
+_PRODUCT_TERMS = tuple(_CORE_PURPOSE_HEURISTICS["product_terms"])
+_MISSION_VISION_OVERLAP_TERMS = tuple(_CORE_PURPOSE_HEURISTICS["mission_vision_overlap_terms"])
+_MISSION_VISION_OVERLAP_GUARD_TERMS = tuple(_CORE_PURPOSE_HEURISTICS["mission_vision_overlap_guard_terms"])
+_STRATEGIC_STOP_WORDS = frozenset(_CORE_PURPOSE_HEURISTICS["strategic_stop_words"])
+_TOKEN_ROOTS = dict(_CORE_PURPOSE_HEURISTICS["token_roots"])
+_MAGNETISM_DIRECT_PULL_GAP_MARKERS = magnetism_direct_pull_gap_markers()
 
 # Anchor tile per canonical interpretation block. v1 signals are
 # block-anchored, not per-tile; legacy block-name aliases are normalized in
@@ -205,14 +222,7 @@ def _has_limitation(limitations: list[str], code: str) -> bool:
 def _magnetism_lacks_direct_pull_evidence(limitations: list[str]) -> bool:
     for limitation in limitations:
         text = str(limitation or "").lower()
-        if (
-            "no direct community metrics" in text
-            or "developer advocacy" in text
-            or "organic growth statistics" in text
-            or "growth statistics" in text
-            or "customer loyalty" in text
-            or "qualitative data regarding brand magnetism" in text
-        ):
+        if any(marker in text for marker in _MAGNETISM_DIRECT_PULL_GAP_MARKERS):
             return True
     return False
 
@@ -229,105 +239,34 @@ def _core_purpose_reads_as_generic_mission_or_offer(
             " ".join(str(limitation or "") for limitation in limitations),
         )
     ).lower()
-    if "standard saas category" in text or "standard category benefits" in text:
+    if any(marker in text for marker in _GENERIC_CATEGORY_MARKERS):
         return True
     if "core_purpose_derived_strategy_evidence" in text:
         return True
-    if "relies heavily on standard" in text and "category" in text:
+    if all(term in text for term in _RELIES_ON_STANDARD_COMPOUND):
         return True
-    product_bound_terms = (
-        "agency that manages",
-        "browser designed to",
-        "consulting firm",
-        "designed to provide",
-        "financial infrastructure",
-        "manages paid",
-        "marketing agency",
-        "platform for",
-        "provide a",
-        "provide an",
-        "provides a",
-        "software platform",
-    )
-    beyond_product_terms = (
-        "why exists",
-        "why the company exists",
-        "beyond the product",
-        "belief",
-        "conviction",
-        "change the way",
-        "make it possible",
-    )
-    if any(term in text for term in product_bound_terms) and not any(term in text for term in beyond_product_terms):
+    if any(term in text for term in _PRODUCT_BOUND_TERMS) and not any(
+        term in text for term in _BEYOND_PRODUCT_TERMS
+    ):
         return True
     if _core_purpose_reads_as_functional_product_purpose(text) and not any(
-        term in text for term in beyond_product_terms
+        term in text for term in _BEYOND_PRODUCT_TERMS
     ):
         return True
     if _core_purpose_duplicates_adjacent_block(block_payload, sibling_blocks or {}) and not any(
-        term in text for term in beyond_product_terms
+        term in text for term in _BEYOND_PRODUCT_TERMS
     ):
         return True
     return (
         "mission" in text
         and "vision" in text
-        and any(term in text for term in ("automate", "expense", "spend management", "category"))
-        and not any(term in text for term in ("why exists", "why the company exists", "beyond the product"))
+        and any(term in text for term in _MISSION_VISION_OVERLAP_TERMS)
+        and not any(term in text for term in _MISSION_VISION_OVERLAP_GUARD_TERMS)
     )
 
 
 def _core_purpose_reads_as_functional_product_purpose(text: str) -> bool:
-    action_terms = (
-        "automates",
-        "automating",
-        "auto-generate",
-        "designed to",
-        "delivers",
-        "delivering",
-        "discovers",
-        "discovering",
-        "enables",
-        "enabling",
-        "executes",
-        "executing",
-        "features",
-        "offers",
-        "offering",
-        "optimizes",
-        "optimizing",
-        "replaces",
-        "replacing",
-        "running across",
-        "ships",
-        "shipping",
-    )
-    product_terms = (
-        "agent",
-        "agents",
-        "application",
-        "automated",
-        "automation",
-        "autonomous",
-        "interface",
-        "interfaces",
-        "memory",
-        "messaging",
-        "patch",
-        "patches",
-        "penetration testing",
-        "persistent",
-        "platform",
-        "platforms",
-        "product",
-        "security validation",
-        "service",
-        "skills",
-        "testing",
-        "validation",
-        "workflow",
-        "workflows",
-    )
-    return any(term in text for term in action_terms) and any(term in text for term in product_terms)
+    return any(term in text for term in _ACTION_TERMS) and any(term in text for term in _PRODUCT_TERMS)
 
 
 def _core_purpose_duplicates_adjacent_block(
@@ -364,32 +303,6 @@ def _core_purpose_duplicates_adjacent_block(
     return False
 
 
-_STRATEGIC_STOP_WORDS = {
-    "and",
-    "are",
-    "brand",
-    "brands",
-    "business",
-    "businesses",
-    "company",
-    "core",
-    "for",
-    "from",
-    "has",
-    "have",
-    "into",
-    "its",
-    "purpose",
-    "that",
-    "the",
-    "their",
-    "them",
-    "this",
-    "through",
-    "with",
-}
-
-
 def _strategic_tokens(text: str) -> set[str]:
     normalized = "".join(char.lower() if char.isalnum() else " " for char in text)
     return {
@@ -400,12 +313,9 @@ def _strategic_tokens(text: str) -> set[str]:
 
 
 def _strategic_token_root(token: str) -> str:
-    if token.startswith("prov"):
-        return "prove"
-    if token.startswith("fix"):
-        return "fix"
-    if token.startswith("ship"):
-        return "ship"
+    for prefix, root in _TOKEN_ROOTS.items():
+        if token.startswith(prefix):
+            return root
     if token.endswith("ies") and len(token) > 5:
         return token[:-3] + "y"
     if token.endswith("es") and len(token) > 5:

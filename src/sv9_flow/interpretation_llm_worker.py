@@ -7,6 +7,7 @@ from typing import Any
 
 from src.sv9_flow._utils import truthy_detected, unique_strings
 from src.sv9_flow.block_detection_worker import SENSITIVE_BLOCKS, resolve_block_detection
+from src.sv9_flow.calibration_terms import magnetism_families
 from src.sv9_flow.block_evidence_worker import build_block_evidence_shortlists
 from src.sv9_flow.contracts import BrandEvidencePack, BrandInterpretation
 
@@ -768,99 +769,40 @@ def _confidence(value: Any) -> str:
     return candidate if candidate in {"low", "medium", "high"} else "medium"
 
 
+_MAGNETISM_FAMILIES = magnetism_families()
+
+
 def _magnetism_market_momentum_only(decision: Any) -> bool:
-    support_terms = {
-        str(term or "").strip().lower()
-        for term in getattr(decision, "support_terms", []) or []
-        if str(term or "").strip()
-    }
+    support_terms = _decision_support_terms(decision)
     if not support_terms:
         return False
-    direct_pull_terms = {
-        "demand",
-        "traction",
-        "community engagement",
-        "customer engagement",
-        "organic engagement",
-        "community",
-        "customer love",
-        "customer reviews",
-        "user growth",
-        "follower growth",
-        "audience growth",
-        "market pull",
-        "word of mouth",
-    }
-    if support_terms & direct_pull_terms:
+    if support_terms & _MAGNETISM_FAMILIES["direct_pull"]:
         return False
-    broad_market_terms = {"momentum", "funding", "press", "revenue growth"}
-    return bool(support_terms) and support_terms <= broad_market_terms
+    return support_terms <= _MAGNETISM_FAMILIES["broad_market"]
 
 
 def _magnetism_family_limitations(decision: Any) -> list[str]:
-    support_terms = {
+    support_terms = _decision_support_terms(decision)
+    if not support_terms:
+        return []
+    limitations: list[str] = []
+    if not support_terms & _MAGNETISM_FAMILIES["owned_hook"]:
+        limitations.append("magnetism_no_owned_hook_evidence")
+    if not support_terms & _MAGNETISM_FAMILIES["preference"]:
+        limitations.append("magnetism_no_preference_evidence")
+    if not support_terms & _MAGNETISM_FAMILIES["belonging_status"]:
+        limitations.append("magnetism_no_belonging_status_evidence")
+    if not support_terms & _MAGNETISM_FAMILIES["gravity"]:
+        limitations.append("magnetism_no_gravity_evidence")
+    return limitations
+
+
+def _decision_support_terms(decision: Any) -> set[str]:
+    return {
         str(term or "").strip().lower()
         for term in getattr(decision, "support_terms", []) or []
         if str(term or "").strip()
     }
-    if not support_terms:
-        return []
-    owned_hook_terms = {
-        "demand",
-        "traction",
-        "community engagement",
-        "customer engagement",
-        "organic engagement",
-        "community",
-        "customer love",
-        "customer reviews",
-        "user growth",
-        "market pull",
-        "word of mouth",
-    }
-    preference_terms = {
-        "preference",
-        "differentiator",
-        "differentiation",
-        "unique",
-        "distinctive",
-        "superior",
-        "reason to choose",
-        "choose",
-        "competitor",
-        "competitors",
-        "native integration",
-    }
-    belonging_status_terms = {
-        "community engagement",
-        "customer engagement",
-        "organic engagement",
-        "community",
-        "customer love",
-        "customer reviews",
-        "user growth",
-        "follower growth",
-        "audience growth",
-        "word of mouth",
-    }
-    gravity_terms = {
-        "demand",
-        "traction",
-        "market pull",
-        "funding",
-        "press",
-        "revenue growth",
-    }
-    limitations: list[str] = []
-    if not support_terms & owned_hook_terms:
-        limitations.append("magnetism_no_owned_hook_evidence")
-    if not support_terms & preference_terms:
-        limitations.append("magnetism_no_preference_evidence")
-    if not support_terms & belonging_status_terms:
-        limitations.append("magnetism_no_belonging_status_evidence")
-    if not support_terms & gravity_terms:
-        limitations.append("magnetism_no_gravity_evidence")
-    return limitations
 
 
 def _core_purpose_uses_derived_strategy_evidence(

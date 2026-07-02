@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from src.sv9_flow.calibration_terms import block_evidence_policy
 from src.sv9_flow.contracts import BrandEvidencePack, EvidenceRecord
 from src.sv9_flow.evidence_source import (
     SOURCE_CLASS_ACQUISITION_METADATA,
@@ -14,121 +15,14 @@ from src.sv9_flow.evidence_source import (
     source_class_for_record,
 )
 
-BLOCK_EVIDENCE_SHORTLIST_VERSION = "sv9-flow-block-evidence-shortlists-v1"
+_POLICY = block_evidence_policy()
+
+BLOCK_EVIDENCE_SHORTLIST_VERSION = str(_POLICY["version"])
 
 _DEFAULT_LIMIT = 5
 
 _BLOCK_TERMS: dict[str, tuple[str, ...]] = {
-    "vision": (
-        "vision",
-        "future",
-        "aspiration",
-        "ambition",
-        "become",
-        "goal",
-        "manifesto",
-        "succeed",
-        "transform",
-        "toward",
-        "long-term",
-        "next generation",
-        "category leader",
-    ),
-    "brand_idea": (
-        "idea",
-        "concept",
-        "tagline",
-        "slogan",
-        "methodology",
-        "platform",
-        "visual",
-        "signature",
-        "distinctive",
-        "ownable",
-        "unique",
-        "unique_phrases",
-        "phrase",
-        "vocabulary",
-        "brand_vocabulary",
-        "differentiator",
-        "differentiator_claimed",
-        "claimed",
-    ),
-    "attributes": (
-        "attribute",
-        "attributes",
-        "specialized",
-        "boutique",
-        "fast",
-        "simple",
-        "modern",
-        "expert",
-        "developer",
-        "professional",
-    ),
-    "personality": (
-        "personality",
-        "tone",
-        "voice",
-        "pragmatic",
-        "direct",
-        "human",
-        "professional",
-        "technical",
-        "casual",
-        "accessible",
-    ),
-    "mission": ("mission", "helps", "provide", "enable", "specializes", "serves", "build"),
-    "value_proposition": (
-        "value proposition",
-        "offer",
-        "offers",
-        "helps",
-        "provides",
-        "for teams",
-        "customers",
-        "financial",
-        "measurable",
-        "defendable",
-        "investment",
-        "capital",
-        "euros",
-        "translate",
-        "traduce",
-        "argumento",
-        "monetización",
-    ),
-    "core_purpose": ("purpose", "why", "enable", "help", "free", "maximize", "discover"),
-    "values": (
-        "values",
-        "principles",
-        "beliefs",
-        "believe",
-        "conviction",
-        "clarity",
-        "efficiency",
-        "empathy",
-        "collaboration",
-    ),
-    "magnetism": (
-        "magnetism",
-        "momentum",
-        "affinity",
-        "engagement",
-        "community",
-        "recognizable",
-        "demand",
-        "preference",
-        "differentiator",
-        "differentiation",
-        "unique",
-        "distinctive",
-        "superior",
-        "reason to choose",
-        "choose",
-        "competitor",
-        "native integration",
-    ),
+    key: tuple(values) for key, values in _POLICY["block_terms"].items()
 }
 
 _TYPE_BONUS: dict[str, int] = {
@@ -137,16 +31,7 @@ _TYPE_BONUS: dict[str, int] = {
     "visual_capture": 0,
 }
 
-_FEATURE_BONUS_TERMS = (
-    "positioning",
-    "tone",
-    "visual",
-    "brand",
-    "personality",
-    "consistency",
-    "diferenciacion",
-    "coherencia",
-)
+_FEATURE_BONUS_TERMS = tuple(_POLICY["feature_bonus_terms"])
 
 _TEXT_STRATEGY_BLOCKS = {
     "brand_idea",

@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 import re
 from typing import Literal
 
+from src.sv9_flow.calibration_terms import block_detection_policy
 from src.sv9_flow.contracts import BrandEvidencePack
 from src.sv9_flow.evidence_source import (
     SOURCE_CLASS_ACQUISITION_METADATA,
@@ -14,125 +15,19 @@ from src.sv9_flow.evidence_source import (
     source_class_for_record,
 )
 
-BLOCK_DETECTION_POLICY_VERSION = "sv9-flow-block-detection-policy-v2"
+_POLICY = block_detection_policy()
+
+BLOCK_DETECTION_POLICY_VERSION = str(_POLICY["version"])
 
 BlockDetectionOutcome = Literal["supports_detection", "insufficient_evidence"]
 
 SENSITIVE_BLOCKS = frozenset({"mission", "values", "vision", "magnetism"})
 
 _SUPPORT_TERMS: dict[str, tuple[str, ...]] = {
-    "values": (
-        "our values",
-        "core values",
-        "values are",
-        "principles",
-        "beliefs",
-        "we believe",
-        "guiding principles",
-        "commitment to",
-        "committed to",
-        "what unites us",
-        "relentless focus",
-        "fast execution",
-        "deep care",
-        "craftsmanship",
-    ),
-    "vision": (
-        "our vision",
-        "vision is",
-        "future where",
-        "our goal is",
-        "if we succeed",
-        "transform the experience",
-        "long-term",
-        "long term",
-        "aspire",
-        "aspires",
-        "aspiration",
-        "ambition",
-        "envision",
-        "next generation",
-        "operating system for",
-    ),
-    "mission": (
-        "our mission",
-        "mission is",
-        "we help",
-        "we decided to create",
-        "helps",
-        "enable",
-        "enables",
-        "provide",
-        "provides",
-        "build",
-        "built to",
-        "built for",
-        "designed to",
-        "designed for",
-        "automate",
-        "solves",
-        "solve",
-        "platform for",
-        "specializes in",
-        "specialize in",
-        "somos especialistas",
-        "especialistas en",
-        "decidimos crear",
-        "convertimos",
-        "diseñado para",
-        "diseñados para",
-        "para que",
-        "so your team can",
-        "so teams can",
-        "so you can",
-        "proves which",
-        "ships the fix",
-        "cuts noise",
-        "open-source agent that",
-        "self-improving ai agent",
-        "focused automation",
-    ),
-    "magnetism": (
-        "momentum",
-        "demand",
-        "traction",
-        "community engagement",
-        "customer engagement",
-        "organic engagement",
-        "community",
-        "customer love",
-        "customer reviews",
-        "user growth",
-        "revenue growth",
-        "funding",
-        "press",
-        "follower growth",
-        "audience growth",
-        "market pull",
-        "word of mouth",
-        "preference",
-        "differentiator",
-        "differentiation",
-        "unique",
-        "distinctive",
-        "superior",
-        "reason to choose",
-        "choose",
-        "competitor",
-        "competitors",
-        "native integration",
-    ),
+    key: tuple(values) for key, values in _POLICY["support_terms"].items()
 }
-
 _WEAKEN_TERMS: dict[str, tuple[str, ...]] = {
-    "magnetism": (
-        "lack of active engagement",
-        "lack active engagement",
-        "stagnation",
-        "no active public social channels",
-        "absence of engagement",
-        "no independent third-party evidence",
-    ),
+    key: tuple(values) for key, values in _POLICY["weaken_terms"].items()
 }
 
 

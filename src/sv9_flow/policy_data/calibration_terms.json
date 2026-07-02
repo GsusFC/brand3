@@ -1,5 +1,8 @@
 {
   "block_detection": {
+    "changelog": {
+      "v3": "2026-07-02: generalize overfit 'transform the experience' to transform/transformation. Justified by Nium run 361: owned copy 'leading a transformation in payments' was LLM-detected with cited refs and wrongly vetoed by the gate."
+    },
     "support_terms": {
       "magnetism": [
         "momentum",
@@ -91,7 +94,6 @@
         "future where",
         "our goal is",
         "if we succeed",
-        "transform the experience",
         "long-term",
         "long term",
         "aspire",
@@ -100,10 +102,12 @@
         "ambition",
         "envision",
         "next generation",
-        "operating system for"
+        "operating system for",
+        "transform",
+        "transformation"
       ]
     },
-    "version": "sv9-flow-block-detection-policy-v2",
+    "version": "sv9-flow-block-detection-policy-v3",
     "weaken_terms": {
       "magnetism": [
         "lack of active engagement",

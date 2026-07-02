@@ -484,7 +484,7 @@ def test_block_detection_decision_serializes_for_debug_payloads() -> None:
     decision = resolve_block_detection("magnetism", pack, evidence_refs=["raw_inputs.0"])
 
     assert decision.to_dict() == {
-        "version": "sv9-flow-block-detection-policy-v2",
+        "version": "sv9-flow-block-detection-policy-v3",
         "block": "magnetism",
         "outcome": "supports_detection",
         "evidence_refs": ["raw_inputs.0"],

@@ -1,14 +1,12 @@
-"""GET / — scanner-first landing + latest analyses."""
+"""GET / — scanner-first landing."""
 
-import asyncio
 from typing import Literal
+from urllib.parse import urlencode
 
 from fastapi import APIRouter, Query, Request
-
-from src.config import BRAND3_DB_PATH
+from fastapi.responses import RedirectResponse
 
 from ..i18n import magnetism_landing_copy, normalize_lang
-from ..observatory_index import build_observatory_index
 from ..templates_env import templates
 
 router = APIRouter()
@@ -26,36 +24,34 @@ async def index(
 ):
     ui_lang = normalize_lang(lang)
     sort = {"recent": "newest", "score": "score_desc"}.get(sort, sort)
-    observatory = await asyncio.to_thread(
-        build_observatory_index,
-        db_path=BRAND3_DB_PATH,
-        query=q,
-        sort=sort,
-        category=category,
-        tag=tag,
-        page=page,
-        per_page=25,
-        lang=ui_lang,
-    )
+    if q or category or tag or sort != "newest" or page != 1:
+        params = {"lang": ui_lang, "sort": sort, "page": page}
+        if q:
+            params["q"] = q
+        if category:
+            params["category"] = category
+        if tag:
+            params["tag"] = tag
+        return RedirectResponse(f"/reports?{urlencode(params)}", status_code=303)
     return templates.TemplateResponse(
         request,
         "index.html.j2",
         {
-            "latest_analyses": observatory["rows"],
+            "latest_analyses": [],
             "ui_lang": ui_lang,
             "landing": magnetism_landing_copy(ui_lang),
             "observatory": {
                 "sort": sort,
                 "category": category,
-                "tag": observatory["tag"],
+                "tag": "",
                 "query": q or "",
-                "categories": observatory["categories"],
-                "tags": observatory["tags"],
-                "page": observatory["page"],
-                "total": observatory["total"],
-                "total_pages": observatory["total_pages"],
-                "has_prev": observatory["has_prev"],
-                "has_next": observatory["has_next"],
+                "categories": {},
+                "tags": {},
+                "page": 1,
+                "total": 0,
+                "total_pages": 1,
+                "has_prev": False,
+                "has_next": False,
             },
         },
     )

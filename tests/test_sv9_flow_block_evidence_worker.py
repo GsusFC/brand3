@@ -45,6 +45,35 @@ def test_block_evidence_shortlists_are_deterministic_and_block_specific() -> Non
     assert shortlists["brand_idea"][0] == "features.1"
 
 
+def test_repository_proof_ranks_into_magnetism_shortlist() -> None:
+    filler = [
+        EvidenceRecord(
+            ref=f"raw_inputs.1.subpage.{index}.chunk.1",
+            source="web",
+            evidence_type="raw_input",
+            content=f"Owned page {index} mentions the developer community and engagement.",
+        )
+        for index in range(1, 7)
+    ]
+    repo = EvidenceRecord(
+        ref="raw_inputs.3.github.repos.0",
+        source="github",
+        evidence_type="external_proof.repository",
+        content="GitHub repository vercel/next.js. The React Framework. 140318 stars. 31297 forks. language: JavaScript.",
+        confidence="high",
+        metadata={"source_class": "external_proof"},
+    )
+    pack = BrandEvidencePack(
+        brand_name="Vercel",
+        url="https://vercel.com",
+        evidence=filler + [repo],
+    )
+
+    shortlists = build_block_evidence_shortlists(pack, blocks=("magnetism",), limit=5)
+
+    assert "raw_inputs.3.github.repos.0" in shortlists["magnetism"]
+
+
 def test_block_evidence_shortlist_serializes_version() -> None:
     item = BlockEvidenceShortlist(block="vision", evidence_refs=["raw_inputs.0"])
 

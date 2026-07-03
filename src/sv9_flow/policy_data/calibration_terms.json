@@ -1,7 +1,8 @@
 {
   "block_detection": {
     "changelog": {
-      "v3": "2026-07-02: generalize overfit 'transform the experience' to transform/transformation. Justified by Nium run 361: owned copy 'leading a transformation in payments' was LLM-detected with cited refs and wrongly vetoed by the gate."
+      "v3": "2026-07-02: generalize overfit 'transform the experience' to transform/transformation. Justified by Nium run 361: owned copy 'leading a transformation in payments' was LLM-detected with cited refs and wrongly vetoed by the gate.",
+      "v4": "2026-07-03: add repository-proof terms (github repository, stars, forks, open source) to magnetism support terms, gravity family, and block-evidence magnetism terms. Justified by Vercel live capture 900400: vercel/next.js (140k stars) reached the pack via the org-level GitHub fallback but scored too low for the magnetism shortlist, so magnetism_no_gravity_evidence persisted despite direct ecosystem-gravity proof."
     },
     "support_terms": {
       "magnetism": [
@@ -32,7 +33,11 @@
         "choose",
         "competitor",
         "competitors",
-        "native integration"
+        "native integration",
+        "github repository",
+        "stars",
+        "forks",
+        "open source"
       ],
       "mission": [
         "our mission",
@@ -107,7 +112,7 @@
         "transformation"
       ]
     },
-    "version": "sv9-flow-block-detection-policy-v3",
+    "version": "sv9-flow-block-detection-policy-v4",
     "weaken_terms": {
       "magnetism": [
         "lack of active engagement",
@@ -179,7 +184,11 @@
         "reason to choose",
         "choose",
         "competitor",
-        "native integration"
+        "native integration",
+        "github repository",
+        "stars",
+        "forks",
+        "open source"
       ],
       "mission": [
         "mission",
@@ -258,7 +267,7 @@
       "diferenciacion",
       "coherencia"
     ],
-    "version": "sv9-flow-block-evidence-shortlists-v1"
+    "version": "sv9-flow-block-evidence-shortlists-v2"
   },
   "core_purpose_heuristics": {
     "action_terms": [
@@ -431,7 +440,11 @@
       "market pull",
       "funding",
       "press",
-      "revenue growth"
+      "revenue growth",
+      "github repository",
+      "stars",
+      "forks",
+      "open source"
     ],
     "owned_hook": [
       "demand",

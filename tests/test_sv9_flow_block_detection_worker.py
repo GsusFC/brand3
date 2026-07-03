@@ -484,7 +484,7 @@ def test_block_detection_decision_serializes_for_debug_payloads() -> None:
     decision = resolve_block_detection("magnetism", pack, evidence_refs=["raw_inputs.0"])
 
     assert decision.to_dict() == {
-        "version": "sv9-flow-block-detection-policy-v3",
+        "version": "sv9-flow-block-detection-policy-v4",
         "block": "magnetism",
         "outcome": "supports_detection",
         "evidence_refs": ["raw_inputs.0"],
@@ -492,3 +492,28 @@ def test_block_detection_decision_serializes_for_debug_payloads() -> None:
         "weaken_terms": [],
         "limitation_code": "",
     }
+
+
+def test_magnetism_gate_accepts_repository_proof_as_gravity() -> None:
+    from src.sv9_flow.calibration_terms import magnetism_families
+
+    pack = BrandEvidencePack(
+        brand_name="Vercel",
+        url="https://vercel.com",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.3.github.repos.0",
+                source="github",
+                evidence_type="external_proof.repository",
+                content="GitHub repository vercel/next.js. The React Framework. 140318 stars. 31297 forks. language: JavaScript.",
+                confidence="high",
+                metadata={"source_class": "external_proof"},
+            )
+        ],
+    )
+
+    decision = resolve_block_detection("magnetism", pack, evidence_refs=["raw_inputs.3.github.repos.0"])
+
+    assert decision.outcome == "supports_detection"
+    assert {"github repository", "stars", "forks"} <= set(decision.support_terms)
+    assert set(decision.support_terms) & magnetism_families()["gravity"]

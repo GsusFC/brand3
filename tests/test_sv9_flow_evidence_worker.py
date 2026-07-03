@@ -357,6 +357,54 @@ def test_evidence_worker_keeps_exa_failed_intents_as_acquisition_metadata() -> N
     assert records["raw_inputs.0.exa.diagnostics.no_results.0"].metadata["intent"] == "ai_visibility"
 
 
+def test_evidence_worker_dedups_exa_results_repeated_across_groups() -> None:
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "raw_inputs": [
+                {
+                    "source": "exa",
+                    "payload": {
+                        "mentions": [
+                            {
+                                "url": "https://news.example/acme-funding",
+                                "title": "Acme raises funding",
+                                "text": "Acme announces a new funding round.",
+                                "intent": "external_mentions",
+                            }
+                        ],
+                        "news": [
+                            {
+                                "url": "https://news.example/acme-funding/",
+                                "title": "Acme raises funding",
+                                "highlights": ["Acme announces a new funding round."],
+                                "intent": "news",
+                            },
+                            {
+                                "url": "https://news.example/acme-partnership",
+                                "title": "Acme partners with Beta",
+                                "highlights": ["Acme signs a partnership."],
+                                "intent": "news",
+                            },
+                        ],
+                        "diagnostics": {
+                            "failed_intents": [],
+                            "no_result_intents": [],
+                            "intent_results": {},
+                        },
+                    },
+                }
+            ],
+        }
+    )
+
+    refs = [record.ref for record in pack.evidence if ".exa." in record.ref and "diagnostics" not in record.ref]
+
+    assert "raw_inputs.0.exa.mentions.0" in refs
+    assert "raw_inputs.0.exa.news.0" not in refs
+    assert "raw_inputs.0.exa.news.1" in refs
+
+
 def test_evidence_worker_exposes_searchapi_results_as_external_proof() -> None:
     pack = build_evidence_pack_from_snapshot(
         {
@@ -465,6 +513,54 @@ def test_evidence_worker_records_github_skipped_as_acquisition_attempt() -> None
     assert record.metadata["source_class"] == "acquisition_metadata"
     assert record.metadata["provider"] == "github"
     assert record.metadata["status"] == "skipped"
+
+
+def test_evidence_worker_exposes_acquisition_steps_without_raw_payloads() -> None:
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "acquisition_steps": {
+                "github": {
+                    "source": "github",
+                    "status": "skipped",
+                    "cache_status": "skipped",
+                    "eligible": False,
+                    "details": {"reason": "no GitHub repository links observed on owned capture"},
+                },
+                "searchapi": {
+                    "source": "searchapi",
+                    "status": "skipped",
+                    "cache_status": "skipped",
+                    "eligible": False,
+                    "details": {"reason": "no failed or empty Exa intents eligible for SearchAPI fallback"},
+                },
+                "hyperbrowser": {
+                    "source": "hyperbrowser",
+                    "status": "disabled",
+                    "cache_status": "disabled",
+                    "eligible": False,
+                    "details": {"reason": "not requested"},
+                },
+                "social": {
+                    "source": "social",
+                    "status": "skipped",
+                    "cache_status": "skipped",
+                    "eligible": False,
+                    "details": {},
+                },
+            },
+        }
+    )
+
+    records = {record.ref: record for record in pack.evidence}
+
+    assert records["acquisition_steps.github"].evidence_type == "acquisition.attempt.repository_proof"
+    assert records["acquisition_steps.github"].metadata["source_class"] == "acquisition_metadata"
+    assert records["acquisition_steps.github"].metadata["status"] == "skipped"
+    assert records["acquisition_steps.searchapi"].evidence_type == "acquisition.attempt.external_proof"
+    assert records["acquisition_steps.searchapi"].metadata["provider"] == "searchapi"
+    assert "acquisition_steps.hyperbrowser" not in records
+    assert "acquisition_steps.social" not in records
 
 
 def test_evidence_worker_classifies_entity_research_packet_as_acquisition_metadata() -> None:

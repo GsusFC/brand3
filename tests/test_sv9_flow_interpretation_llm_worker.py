@@ -1100,3 +1100,23 @@ def test_block_prompt_uses_small_required_json_contract() -> None:
     assert '"required_json"' in prompt
     assert '"output_contract"' not in prompt
     assert "Return only one valid JSON object with the required_json keys." in prompt
+
+
+def test_magnetism_block_prompt_allows_external_proof_grounds() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0.exa.news.0",
+                source="exa",
+                evidence_type="external_proof.news",
+                content="Acme closes Series B and announces an enterprise partnership.",
+            )
+        ],
+    )
+
+    prompt = _block_user_prompt(pack, block="magnetism", evidence_refs=["raw_inputs.0.exa.news.0"])
+
+    assert "Third-party external proof is valid" in prompt
+    assert "Owned copy is not required to confirm magnetism." in prompt

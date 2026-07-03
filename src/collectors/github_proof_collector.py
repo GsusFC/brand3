@@ -17,6 +17,9 @@ GITHUB_API_URL = "https://api.github.com"
 GITHUB_PROOF_VERSION = "github-proof-v1"
 USER_AGENT = "Brand3/0.1"
 _GITHUB_REPO_RE = re.compile(r"github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)")
+_GITHUB_URL_RE = re.compile(r"https?://github\.com/[^\s\"'<>)\]]+")
+_GITHUB_ORG_RE = re.compile(r"github\.com/([A-Za-z0-9_.-]+)/?$")
+_MAX_ORGS = 2
 _NON_REPO_NAMES = {
     "about",
     "apps",
@@ -147,7 +150,10 @@ class GitHubProofCollector:
 
     def collect(self, brand_name: str, brand_url: str, observed_urls: list[str]) -> GitHubProofData:
         repos = _extract_repo_slugs(observed_urls)[: self.limit]
-        if not repos:
+        # Org-level links (github.com/<org>, the common footer pattern) only
+        # resolve when no explicit repo link was observed.
+        orgs = [] if repos else _extract_org_slugs(observed_urls)[:_MAX_ORGS]
+        if not repos and not orgs:
             return GitHubProofData(
                 brand_name=brand_name,
                 brand_url=brand_url,
@@ -162,6 +168,11 @@ class GitHubProofCollector:
                 proofs.append(proof)
             elif error:
                 errors.append({"repo": slug, "error": error})
+        for org, source_url in orgs:
+            org_proofs, error = self._fetch_org_repos(org, source_url=source_url)
+            proofs.extend(org_proofs[: max(0, self.limit - len(proofs))])
+            if error:
+                errors.append({"repo": org, "error": error})
         status = "ok" if proofs else "error"
         if proofs and errors:
             status = "partial"
@@ -173,6 +184,7 @@ class GitHubProofCollector:
             diagnostics={
                 "strategy": GITHUB_PROOF_VERSION,
                 "observed_repo_count": len(repos),
+                "observed_org_count": len(orgs),
                 "fetched_repo_count": len(proofs),
                 "errors": errors,
             },
@@ -193,25 +205,30 @@ class GitHubProofCollector:
             return None, str(exc)
         if not isinstance(payload, dict):
             return None, "github_response_not_object"
-        license_payload = payload.get("license") if isinstance(payload.get("license"), dict) else {}
+        return _proof_from_payload(payload, slug=slug, source_url=source_url), ""
+
+    def _fetch_org_repos(self, org: str, *, source_url: str) -> tuple[list[GitHubRepoProof], str]:
+        request = Request(
+            f"{GITHUB_API_URL}/orgs/{org}/repos?per_page=30&type=public",
+            headers=self._headers(),
+            method="GET",
+        )
+        try:
+            with urlopen(request, timeout=self.timeout_seconds) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+        except HTTPError as exc:
+            return [], _http_error_message(exc)
+        except Exception as exc:
+            return [], str(exc)
+        if not isinstance(payload, list):
+            return [], "github_org_response_not_list"
+        entries = [item for item in payload if isinstance(item, dict) and not item.get("archived")]
+        entries.sort(key=lambda item: int(item.get("stargazers_count") or 0), reverse=True)
         return (
-            GitHubRepoProof(
-                full_name=str(payload.get("full_name") or slug),
-                html_url=str(payload.get("html_url") or f"https://github.com/{slug}"),
-                description=str(payload.get("description") or ""),
-                stars=int(payload.get("stargazers_count") or 0),
-                forks=int(payload.get("forks_count") or 0),
-                watchers=int(payload.get("watchers_count") or 0),
-                open_issues=int(payload.get("open_issues_count") or 0),
-                topics=[str(item) for item in payload.get("topics") or [] if str(item).strip()],
-                license_name=str(license_payload.get("name") or ""),
-                language=str(payload.get("language") or ""),
-                pushed_at=str(payload.get("pushed_at") or ""),
-                updated_at=str(payload.get("updated_at") or ""),
-                archived=bool(payload.get("archived")),
-                disabled=bool(payload.get("disabled")),
-                source_url=source_url,
-            ),
+            [
+                _proof_from_payload(item, slug=str(item.get("full_name") or f"{org}/unknown"), source_url=source_url)
+                for item in entries[: self.limit]
+            ],
             "",
         )
 
@@ -233,9 +250,54 @@ def observed_github_urls_from_web_data(web_data: Any) -> list[str]:
     for item in getattr(web_data, "links", None) or []:
         if "github.com/" in str(item).lower():
             urls.append(str(item))
-    markdown = str(getattr(web_data, "markdown_content", "") or "")
-    urls.extend(match.group(0) for match in re.finditer(r"https?://github\.com/[^\s)\"']+", markdown))
+    # Markdown captures usually strip hrefs, so the raw HTML is often the only
+    # place footer/nav GitHub links survive.
+    for attr in ("markdown_content", "html"):
+        text = str(getattr(web_data, attr, "") or "")
+        urls.extend(match.group(0) for match in _GITHUB_URL_RE.finditer(text))
     return urls
+
+
+def _proof_from_payload(payload: dict[str, Any], *, slug: str, source_url: str) -> GitHubRepoProof:
+    license_payload = payload.get("license") if isinstance(payload.get("license"), dict) else {}
+    return GitHubRepoProof(
+        full_name=str(payload.get("full_name") or slug),
+        html_url=str(payload.get("html_url") or f"https://github.com/{slug}"),
+        description=str(payload.get("description") or ""),
+        stars=int(payload.get("stargazers_count") or 0),
+        forks=int(payload.get("forks_count") or 0),
+        watchers=int(payload.get("watchers_count") or 0),
+        open_issues=int(payload.get("open_issues_count") or 0),
+        topics=[str(item) for item in payload.get("topics") or [] if str(item).strip()],
+        license_name=str(license_payload.get("name") or ""),
+        language=str(payload.get("language") or ""),
+        pushed_at=str(payload.get("pushed_at") or ""),
+        updated_at=str(payload.get("updated_at") or ""),
+        archived=bool(payload.get("archived")),
+        disabled=bool(payload.get("disabled")),
+        source_url=source_url,
+    )
+
+
+def _extract_org_slugs(urls: list[str]) -> list[tuple[str, str]]:
+    seen: set[str] = set()
+    orgs: list[tuple[str, str]] = []
+    for raw_url in urls:
+        url = str(raw_url or "").strip()
+        if _GITHUB_REPO_RE.search(url):
+            continue
+        match = _GITHUB_ORG_RE.search(url)
+        if not match:
+            continue
+        org = match.group(1).strip(".")
+        if not org or org.lower() in _NON_REPO_NAMES:
+            continue
+        key = org.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        orgs.append((org, url))
+    return orgs
 
 
 def _extract_repo_slugs(urls: list[str]) -> list[tuple[str, str]]:

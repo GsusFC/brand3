@@ -16,7 +16,12 @@ from src.sv9_flow.evidence_source import (
     source_class_for_record,
 )
 
-BlockCoverageStatus = Literal["positive_evidence", "verified_absent", "insufficient_acquisition"]
+BlockCoverageStatus = Literal[
+    "positive_evidence",
+    "implied_not_explicit",
+    "verified_absent",
+    "insufficient_acquisition",
+]
 
 _CANONICAL_BLOCKS = (
     "brand_idea",
@@ -74,6 +79,7 @@ def block_coverage(pack: BrandEvidencePack, interpretation: BrandInterpretation)
     """Join pack evidence with interpretation refs to classify each block."""
 
     records_by_ref = {record.ref: record for record in pack.evidence}
+    absence_blocks_by_surface = _absence_blocks_by_surface(pack)
     blocks = tuple(dict.fromkeys(_CANONICAL_BLOCKS + tuple(interpretation.blocks.keys())))
     coverage: dict[str, dict[str, Any]] = {}
     for block in blocks:
@@ -92,6 +98,8 @@ def block_coverage(pack: BrandEvidencePack, interpretation: BrandInterpretation)
         ]
         if positive_refs:
             status: BlockCoverageStatus = "positive_evidence"
+        elif _is_implied_not_explicit(block_payload, block, absence_blocks_by_surface):
+            status = "implied_not_explicit"
         elif absence_refs:
             status = "verified_absent"
         else:
@@ -113,9 +121,46 @@ def coverage_limitations(blocks: dict[str, dict[str, Any]]) -> list[str]:
         status = str(payload.get("status") or "")
         if status == "verified_absent":
             out.append(f"coverage:{block}_verified_absent")
+        elif status == "implied_not_explicit":
+            out.append(f"coverage:{block}_implied_not_explicit")
         elif status == "insufficient_acquisition":
             out.append(f"coverage:{block}_insufficient_acquisition")
     return out
+
+
+def _absence_blocks_by_surface(pack: BrandEvidencePack) -> dict[str, set[str]]:
+    """Map each checked strategic surface (absence-record ref prefix) to the blocks it lacked."""
+
+    by_surface: dict[str, set[str]] = {}
+    for record in pack.evidence:
+        if not record.evidence_type.startswith("acquisition.absence."):
+            continue
+        block = record.evidence_type.rsplit(".", 1)[-1]
+        surface = record.ref.split(".absence.", 1)[0]
+        by_surface.setdefault(surface, set()).add(block)
+    return by_surface
+
+
+def _is_implied_not_explicit(
+    block_payload: dict[str, Any],
+    name: str,
+    absence_blocks_by_surface: dict[str, set[str]],
+) -> bool:
+    """The LLM read the block off owned copy but the structural gate vetoed it.
+
+    Only claim "implied" when some checked strategic surface actually carried
+    the block's terms — it emitted absence records for other blocks but not for
+    this one. Otherwise the gate veto plus absence records mean verified_absent.
+    """
+
+    provenance = block_payload.get("detection_provenance")
+    if not isinstance(provenance, dict):
+        return False
+    if provenance.get("llm_detected") is not True:
+        return False
+    if provenance.get("final_source") != "gate_rejected":
+        return False
+    return any(name not in lacked for lacked in absence_blocks_by_surface.values())
 
 
 def _is_positive_ref(record: EvidenceRecord | None) -> bool:

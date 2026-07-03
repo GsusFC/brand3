@@ -1026,3 +1026,79 @@ def test_flow_sv9_shadow_eval_compares_flow_and_legacy_tile_profiles() -> None:
         "blind_spot_added": ["M3"],
         "blind_spot_removed": [],
     }
+
+
+def test_block_coverage_derives_implied_not_explicit_from_gate_veto() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0.subpage.1.absence.values",
+                source="web",
+                evidence_type="acquisition.absence.values",
+                content="Crawled owned page https://acme.example/about; no explicit values section terms were observed.",
+                url="https://acme.example/about",
+                metadata={"source_class": "acquisition_metadata", "checked_block": "values"},
+            ),
+            EvidenceRecord(
+                ref="raw_inputs.0.subpage.2.absence.values",
+                source="web",
+                evidence_type="acquisition.absence.values",
+                content="Crawled owned page https://acme.example/careers; no explicit values section terms were observed.",
+                url="https://acme.example/careers",
+                metadata={"source_class": "acquisition_metadata", "checked_block": "values"},
+            ),
+            EvidenceRecord(
+                ref="raw_inputs.0.subpage.2.absence.vision",
+                source="web",
+                evidence_type="acquisition.absence.vision",
+                content="Crawled owned page https://acme.example/careers; no explicit vision section terms were observed.",
+                url="https://acme.example/careers",
+                metadata={"source_class": "acquisition_metadata", "checked_block": "vision"},
+            ),
+        ],
+    )
+    interpretation = BrandInterpretation(
+        brand_name="Acme",
+        url="https://acme.example",
+        blocks={
+            "vision": {
+                "detected": False,
+                "content": "",
+                "confidence": "low",
+                "detection_provenance": {
+                    "llm_detected": True,
+                    "gate_detected": False,
+                    "final_detected": False,
+                    "final_source": "gate_rejected",
+                    "gate_reason": "vision_structural_gate_rejected",
+                },
+            },
+            "values": {
+                "detected": False,
+                "content": "",
+                "confidence": "low",
+                "detection_provenance": {
+                    "llm_detected": True,
+                    "gate_detected": False,
+                    "final_detected": False,
+                    "final_source": "gate_rejected",
+                    "gate_reason": "values_structural_gate_rejected",
+                },
+            },
+        },
+        evidence_refs={},
+    )
+
+    coverage = block_coverage(pack, interpretation)
+
+    # /about emitted no vision absence record, so it carried vision terms:
+    # the LLM-read, gate-vetoed vision is implicit rather than verified absent.
+    assert coverage["vision"]["status"] == "implied_not_explicit"
+    # Every checked strategic surface lacked values terms, so the gate veto
+    # resolves to verified absence even though the LLM claimed a detection.
+    assert coverage["values"]["status"] == "verified_absent"
+    limitations = coverage_limitations(coverage)
+    assert "coverage:vision_implied_not_explicit" in limitations
+    assert "coverage:values_verified_absent" in limitations

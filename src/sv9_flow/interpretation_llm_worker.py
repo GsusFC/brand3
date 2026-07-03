@@ -31,6 +31,11 @@ _BLOCK_GUIDANCE: dict[str, list[str]] = {
         "Look for ownable language, distinctive methodology, named concepts, repeated phrases, and vocabulary that could summarize the brand's core idea.",
         "Do not infer brand_idea from visual style alone when textual differentiation evidence is weak.",
     ],
+    "magnetism": [
+        "Magnetism is market pull. Third-party external proof is valid and often the strongest grounds: press coverage, funding announcements, partnerships, customer adoption stories, analyst or industry coverage, and developer-ecosystem traction.",
+        "When external_proof evidence supports real-world pull, set detected=true and cite those refs. Owned copy is not required to confirm magnetism.",
+        "A brand's own marketing claims about traction are weaker evidence than third-party proof of the same traction.",
+    ],
     "value_proposition": [
         "Look for who gets what concrete value: measurable business outcomes, financial value, capital, investment, speed, or operational benefit.",
         "Prefer a concrete offer statement over a broad mission statement.",

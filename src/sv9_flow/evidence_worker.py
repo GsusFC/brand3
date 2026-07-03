@@ -57,6 +57,7 @@ def build_evidence_pack_from_snapshot(
         _evidence_from_raw_inputs(snapshot.get("raw_inputs") or [])
     )
     records.extend(raw_records)
+    records.extend(_evidence_from_acquisition_steps(snapshot.get("acquisition_steps")))
     records.extend(_evidence_from_features(snapshot.get("features") or []))
     records.extend(_evidence_from_visual_signature(visual_signature_evidence))
 
@@ -127,6 +128,50 @@ def _evidence_from_raw_inputs(raw_inputs: list[Any]) -> list[EvidenceRecord]:
     return records
 
 
+def _evidence_from_acquisition_steps(value: Any) -> list[EvidenceRecord]:
+    """Expose acquisition attempts that did not create raw input payloads."""
+
+    if not isinstance(value, dict):
+        return []
+    records: list[EvidenceRecord] = []
+    for source, raw_step in sorted(value.items()):
+        step = raw_step if isinstance(raw_step, dict) else {}
+        status = str(step.get("status") or "")
+        if status not in {"skipped", "error", "failed", "no_results", "not_found"}:
+            continue
+        details = step.get("details") if isinstance(step.get("details"), dict) else {}
+        if status == "skipped" and not details:
+            continue
+        intent = _intent_from_acquisition_source(str(source), details)
+        records.append(
+            _acquisition_attempt_record(
+                ref=f"acquisition_steps.{source}",
+                source=str(source),
+                provider=str(source),
+                intent=intent,
+                status=status,
+                query=str(details.get("query") or details.get("reason") or ""),
+                error=str(step.get("error") or details.get("error") or ""),
+            )
+        )
+    return records
+
+
+def _intent_from_acquisition_source(source: str, details: dict[str, Any]) -> str:
+    if source in {"github", "github_proof"}:
+        return "repository_proof"
+    if source in {"searchapi", "searchapi_fallback"}:
+        intents = details.get("intents")
+        if isinstance(intents, list) and intents:
+            return ",".join(str(item) for item in intents if str(item).strip())
+        return "external_proof"
+    if source == "web":
+        return "owned_surface"
+    if source == "exa":
+        return "external_proof"
+    return source or "acquisition"
+
+
 def _evidence_from_exa_payload(*, index: int, source: str, payload: dict[str, Any]) -> list[EvidenceRecord]:
     """Expose Exa results as individually citable external-proof records."""
 
@@ -138,6 +183,7 @@ def _evidence_from_exa_payload(*, index: int, source: str, payload: dict[str, An
         ("ai_visibility_results", "ai_visibility"),
         ("competitors", "competitors"),
     )
+    seen_urls: set[str] = set()
     for group, fallback_intent in groups:
         for result_index, result in enumerate(_list(payload.get(group))):
             if not isinstance(result, dict):
@@ -145,6 +191,14 @@ def _evidence_from_exa_payload(*, index: int, source: str, payload: dict[str, An
             content = _external_result_content(result)
             if not content:
                 continue
+            url = first_string(result.get("url"))
+            # Exa repeats the same article across groups (e.g. mentions + news);
+            # keep only the first group's record per URL.
+            if url:
+                url_key = url.strip().lower().rstrip("/")
+                if url_key in seen_urls:
+                    continue
+                seen_urls.add(url_key)
             intent = str(result.get("intent") or fallback_intent)
             source_class = "owned_copy" if intent == "owned_confirmation" else "external_proof"
             records.append(
@@ -153,7 +207,7 @@ def _evidence_from_exa_payload(*, index: int, source: str, payload: dict[str, An
                     source=source,
                     evidence_type=f"external_proof.{intent}",
                     content=content[:_RAW_INPUT_CONTENT_CHARS],
-                    url=first_string(result.get("url")),
+                    url=url,
                     confidence=_external_result_confidence(result),
                     metadata={
                         "source_class": source_class,

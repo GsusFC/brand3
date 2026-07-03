@@ -79,13 +79,13 @@ def build_flow_sv9_shadow_eval(
     snapshot, run_id = snapshot_and_run_id_from_envelope(envelope)
     visual_evidence_fn = visual_evidence_fn or _visual_evidence_packet_from_snapshot
     visual_evidence_packet = visual_evidence_fn(snapshot)
-    interpretation_llm = interpretation_llm or LLMAnalyzer()
+    interpretation_llm = interpretation_llm or _default_interpretation_llm()
     candidate, debug = build_flow_candidate(
         snapshot=snapshot,
         llm=interpretation_llm,
         visual_signature_evidence=visual_evidence_packet,
     )
-    evaluator_llm = evaluator_llm or LLMAnalyzer()
+    evaluator_llm = evaluator_llm or _default_evaluator_llm()
     result = sv9_runner(
         snapshot,
         llm=evaluator_llm,
@@ -139,6 +139,18 @@ def build_flow_sv9_shadow_eval(
         reasoning_llm=reasoning_llm,
     )
     return payload
+
+
+def _default_interpretation_llm() -> LLMAnalyzer:
+    """Interpretation tier; override per-role for asymmetric model configs."""
+
+    return LLMAnalyzer(model=os.environ.get("BRAND3_FLOW_INTERPRETATION_MODEL") or None)
+
+
+def _default_evaluator_llm() -> LLMAnalyzer:
+    """Tile evaluator tier; the score-sensitive role."""
+
+    return LLMAnalyzer(model=os.environ.get("BRAND3_FLOW_EVALUATOR_MODEL") or None)
 
 
 def _visual_evidence_packet_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any] | None:

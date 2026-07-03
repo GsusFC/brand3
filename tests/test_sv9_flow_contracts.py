@@ -670,6 +670,16 @@ def test_canonical_orchestrator_builds_candidate_from_evidence_and_llm() -> None
     assert not [item for item in candidate.limitations if item.startswith("contract_violation:")]
 
 
+def test_shadow_eval_model_tiers_read_env_overrides(monkeypatch) -> None:
+    from scripts import sv9_flow_sv9_shadow_eval as shadow_eval
+
+    monkeypatch.setenv("BRAND3_FLOW_INTERPRETATION_MODEL", "tier-lite")
+    monkeypatch.delenv("BRAND3_FLOW_EVALUATOR_MODEL", raising=False)
+
+    assert shadow_eval._default_interpretation_llm().model == "tier-lite"
+    assert shadow_eval._default_evaluator_llm().model != "tier-lite"
+
+
 def test_flow_sv9_shadow_eval_runs_current_sv9_from_flow_interpretation() -> None:
     class FlowLLM:
         api_key = "test-key"

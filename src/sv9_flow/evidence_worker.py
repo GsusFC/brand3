@@ -91,11 +91,227 @@ def _evidence_from_raw_inputs(raw_inputs: list[Any]) -> list[EvidenceRecord]:
         if source == "web":
             records.extend(_evidence_from_web_payload(index=index, source=source, payload=payload))
             continue
+        if source == "exa":
+            records.extend(_evidence_from_exa_payload(index=index, source=source, payload=payload))
+            continue
+        if source == "searchapi":
+            records.extend(_evidence_from_searchapi_payload(index=index, source=source, payload=payload))
+            continue
+        if source == "github":
+            records.extend(_evidence_from_github_payload(index=index, source=source, payload=payload))
+            continue
         url = first_string(payload.get("url"), payload.get("source_url"), payload.get("page_url"))
         text = _summarize_payload(payload)
         if not text:
             continue
         records.append(_raw_input_record(index=index, source=source, content=text, url=url))
+    return records
+
+
+def _evidence_from_exa_payload(*, index: int, source: str, payload: dict[str, Any]) -> list[EvidenceRecord]:
+    """Expose Exa results as individually citable external-proof records."""
+
+    records: list[EvidenceRecord] = []
+    groups = (
+        ("mentions", "external_mentions"),
+        ("profiles", "external_profiles"),
+        ("news", "news"),
+        ("ai_visibility_results", "ai_visibility"),
+        ("competitors", "competitors"),
+    )
+    for group, fallback_intent in groups:
+        for result_index, result in enumerate(_list(payload.get(group))):
+            if not isinstance(result, dict):
+                continue
+            content = _external_result_content(result)
+            if not content:
+                continue
+            intent = str(result.get("intent") or fallback_intent)
+            source_class = "owned_copy" if intent == "owned_confirmation" else "external_proof"
+            records.append(
+                EvidenceRecord(
+                    ref=f"raw_inputs.{index}.exa.{group}.{result_index}",
+                    source=source,
+                    evidence_type=f"external_proof.{intent}",
+                    content=content[:_RAW_INPUT_CONTENT_CHARS],
+                    url=first_string(result.get("url")),
+                    confidence=_external_result_confidence(result),
+                    metadata={
+                        "source_class": source_class,
+                        "provider": "exa",
+                        "intent": intent,
+                        "result_group": group,
+                        "score": result.get("score"),
+                        "published_date": result.get("published_date") or "",
+                    },
+                )
+            )
+    records.extend(_exa_diagnostic_records(index=index, source=source, diagnostics=payload.get("diagnostics")))
+    return records
+
+
+def _evidence_from_searchapi_payload(*, index: int, source: str, payload: dict[str, Any]) -> list[EvidenceRecord]:
+    records: list[EvidenceRecord] = []
+    intents = payload.get("intents") if isinstance(payload.get("intents"), dict) else {}
+    for intent, intent_payload in intents.items():
+        if not isinstance(intent_payload, dict):
+            continue
+        for result_index, result in enumerate(_list(intent_payload.get("results"))):
+            if not isinstance(result, dict):
+                continue
+            content = _searchapi_result_content(result)
+            if not content:
+                continue
+            records.append(
+                EvidenceRecord(
+                    ref=f"raw_inputs.{index}.searchapi.{intent}.{result_index}",
+                    source=source,
+                    evidence_type=f"external_proof.{intent}",
+                    content=content[:_RAW_INPUT_CONTENT_CHARS],
+                    url=first_string(result.get("url"), result.get("link")),
+                    confidence="medium",
+                    metadata={
+                        "source_class": "external_proof",
+                        "provider": "searchapi",
+                        "intent": str(intent),
+                        "engine": result.get("engine") or intent_payload.get("engine") or "google_light",
+                        "query": result.get("query") or intent_payload.get("query") or "",
+                        "position": result.get("position") or 0,
+                        "domain": result.get("domain") or "",
+                    },
+                )
+            )
+    return records
+
+
+def _searchapi_result_content(result: dict[str, Any]) -> str:
+    title = str(result.get("title") or "").strip()
+    snippet = str(result.get("snippet") or "").strip()
+    source = str(result.get("source") or result.get("domain") or "").strip()
+    parts = [part for part in (title, source, snippet) if part]
+    return " ".join(" ".join(part.split()) for part in parts).strip()
+
+
+def _evidence_from_github_payload(*, index: int, source: str, payload: dict[str, Any]) -> list[EvidenceRecord]:
+    records: list[EvidenceRecord] = []
+    for repo_index, repo in enumerate(_list(payload.get("repos"))):
+        if not isinstance(repo, dict):
+            continue
+        full_name = str(repo.get("full_name") or "").strip()
+        html_url = first_string(repo.get("html_url"))
+        if not full_name and not html_url:
+            continue
+        content = _github_repo_content(repo)
+        if not content:
+            continue
+        records.append(
+            EvidenceRecord(
+                ref=f"raw_inputs.{index}.github.repos.{repo_index}",
+                source=source,
+                evidence_type="external_proof.repository",
+                content=content[:_RAW_INPUT_CONTENT_CHARS],
+                url=html_url,
+                confidence=_github_repo_confidence(repo),
+                metadata={
+                    "source_class": "external_proof",
+                    "provider": "github",
+                    "intent": "repository_proof",
+                    "repo": full_name,
+                    "stars": repo.get("stars") or 0,
+                    "forks": repo.get("forks") or 0,
+                    "topics": repo.get("topics") or [],
+                    "pushed_at": repo.get("pushed_at") or "",
+                },
+            )
+        )
+    return records
+
+
+def _github_repo_content(repo: dict[str, Any]) -> str:
+    full_name = str(repo.get("full_name") or "").strip()
+    description = str(repo.get("description") or "").strip()
+    language = str(repo.get("language") or "").strip()
+    topics = ", ".join(str(item) for item in _list(repo.get("topics")) if str(item).strip())
+    parts = [
+        f"GitHub repository {full_name}" if full_name else "",
+        description,
+        f"{int(repo.get('stars') or 0)} stars",
+        f"{int(repo.get('forks') or 0)} forks",
+        f"{int(repo.get('open_issues') or 0)} open issues",
+        f"language: {language}" if language else "",
+        f"topics: {topics}" if topics else "",
+        f"last pushed: {repo.get('pushed_at')}" if repo.get("pushed_at") else "",
+    ]
+    return ". ".join(part for part in parts if part).strip()
+
+
+def _github_repo_confidence(repo: dict[str, Any]) -> str:
+    stars = int(repo.get("stars") or 0)
+    forks = int(repo.get("forks") or 0)
+    if stars >= 1000 or forks >= 100:
+        return "high"
+    if stars >= 50 or forks >= 10:
+        return "medium"
+    return "low"
+
+
+def _external_result_content(result: dict[str, Any]) -> str:
+    title = str(result.get("title") or "").strip()
+    summary = str(result.get("summary") or "").strip()
+    text = str(result.get("text") or "").strip()
+    highlights = " ".join(str(item) for item in _list(result.get("highlights")) if str(item).strip())
+    parts = [part for part in (title, summary, highlights, text) if part]
+    return " ".join(" ".join(part.split()) for part in parts).strip()
+
+
+def _external_result_confidence(result: dict[str, Any]) -> str:
+    try:
+        score = float(result.get("score") or 0)
+    except (TypeError, ValueError):
+        score = 0
+    if score >= 0.75:
+        return "high"
+    if score <= 0.1:
+        return "low"
+    return "medium"
+
+
+def _exa_diagnostic_records(*, index: int, source: str, diagnostics: Any) -> list[EvidenceRecord]:
+    if not isinstance(diagnostics, dict):
+        return []
+    records: list[EvidenceRecord] = []
+    intent_results = diagnostics.get("intent_results") if isinstance(diagnostics.get("intent_results"), dict) else {}
+    for status_name, intents in (
+        ("failed", diagnostics.get("failed_intents") or []),
+        ("no_results", diagnostics.get("no_result_intents") or []),
+    ):
+        for intent_index, intent_value in enumerate(_list(intents)):
+            intent = str(intent_value or "").strip()
+            if not intent:
+                continue
+            details = intent_results.get(intent) if isinstance(intent_results, dict) else {}
+            query = str(details.get("query") or "") if isinstance(details, dict) else ""
+            error = str(details.get("error") or "") if isinstance(details, dict) else ""
+            content = f"Exa {status_name} for external proof intent '{intent}'."
+            if query:
+                content += f" Query: {query}."
+            if error:
+                content += f" Error: {error}."
+            records.append(
+                EvidenceRecord(
+                    ref=f"raw_inputs.{index}.exa.diagnostics.{status_name}.{intent_index}",
+                    source=source,
+                    evidence_type=f"acquisition.{status_name}",
+                    content=content[:_RAW_INPUT_CONTENT_CHARS],
+                    confidence="low",
+                    metadata={
+                        "source_class": "acquisition_metadata",
+                        "provider": "exa",
+                        "intent": intent,
+                        "status": status_name,
+                    },
+                )
+            )
     return records
 
 
@@ -328,3 +544,7 @@ def _summarize_payload(payload: dict[str, Any], *, limit: int | None = _RAW_INPU
         text = json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str)
         return text if limit is None else text[:limit]
     return ""
+
+
+def _list(value: Any) -> list[Any]:
+    return value if isinstance(value, list) else []

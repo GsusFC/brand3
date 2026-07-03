@@ -12,8 +12,10 @@ from src.collectors.competitor_collector import (
 )
 from src.collectors.context_collector import ContextCollector, ContextData
 from src.collectors.exa_collector import ExaCollector, ExaData
+from src.collectors.github_proof_collector import GitHubProofCollector, GitHubProofData
 from src.collectors.hyperbrowser_collector import HyperbrowserCollector, HyperbrowserFetchData
 from src.collectors.parallel_shadow_collector import ParallelShadowCollector, ParallelShadowData
+from src.collectors.searchapi_collector import SearchApiCollector, SearchApiData
 from src.collectors.social_collector import SocialData
 from src.collectors.web_collector import WebCollector, WebData
 from src.config import (
@@ -28,8 +30,10 @@ from src.services.input_collection_payloads import (
     from_competitor_payload as _from_competitor_payload_impl,
     from_context_payload as _from_context_payload_impl,
     from_exa_payload as _from_exa_payload_impl,
+    from_github_payload as _from_github_payload_impl,
     from_hyperbrowser_payload as _from_hyperbrowser_payload_impl,
     from_parallel_shadow_payload as _from_parallel_shadow_payload_impl,
+    from_searchapi_payload as _from_searchapi_payload_impl,
     from_social_payload as _from_social_payload_impl,
     from_web_payload as _from_web_payload_impl,
 )
@@ -38,8 +42,10 @@ from src.services.input_collection_sources import (
     _collect_competitor_input,
     _collect_context_input,
     _collect_exa_input,
+    _collect_github_proof_input,
     _collect_hyperbrowser_input,
     _collect_parallel_shadow_input,
+    _collect_searchapi_fallback_input,
     _collect_social_input,
     _collect_web_input,
     _hyperbrowser_enabled,
@@ -66,8 +72,10 @@ logger = logging.getLogger(__name__)
 
 from_web_payload = _from_web_payload_impl
 from_exa_payload = _from_exa_payload_impl
+from_github_payload = _from_github_payload_impl
 from_hyperbrowser_payload = _from_hyperbrowser_payload_impl
 from_parallel_shadow_payload = _from_parallel_shadow_payload_impl
+from_searchapi_payload = _from_searchapi_payload_impl
 from_social_payload = _from_social_payload_impl
 from_competitor_payload = _from_competitor_payload_impl
 from_context_payload = _from_context_payload_impl
@@ -124,6 +132,8 @@ def collect_raw_inputs(
     context_collector_cls=ContextCollector,
     web_collector_cls=WebCollector,
     exa_collector_cls=ExaCollector,
+    github_collector_cls=GitHubProofCollector,
+    searchapi_collector_cls=SearchApiCollector,
     hyperbrowser_collector_cls=HyperbrowserCollector,
     run_input_sources: set[str] | None = None,
 ) -> RawInputs:
@@ -171,6 +181,19 @@ def collect_raw_inputs(
     )
     step_started = _log_timing("raw input hyperbrowser", step_started)
     effective_brand_url = effective_brand_url_builder(url, web_data)
+    github_data = _collect_github_proof_input(
+        store=store,
+        run_id=run_id,
+        brand_name=brand_name,
+        effective_brand_url=effective_brand_url,
+        web_data=web_data,
+        cache_read=cache_read,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        run_input_sources=run_input_sources,
+        github_collector_cls=github_collector_cls,
+    )
+    step_started = _log_timing("raw input github", step_started)
     exa_data, exa_collector = _collect_exa_input(
         store=store,
         run_id=run_id,
@@ -183,6 +206,19 @@ def collect_raw_inputs(
         exa_collector_cls=exa_collector_cls,
     )
     step_started = _log_timing("raw input exa", step_started)
+    searchapi_data = _collect_searchapi_fallback_input(
+        store=store,
+        run_id=run_id,
+        brand_name=brand_name,
+        effective_brand_url=effective_brand_url,
+        exa_data=exa_data,
+        cache_read=cache_read,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        run_input_sources=run_input_sources,
+        searchapi_collector_cls=searchapi_collector_cls,
+    )
+    step_started = _log_timing("raw input searchapi", step_started)
     parallel_shadow_data = _collect_parallel_shadow_input(
         store=store,
         run_id=run_id,
@@ -224,8 +260,10 @@ def collect_raw_inputs(
         context_data=context_data,
         web_data=web_data,
         hyperbrowser_data=hyperbrowser_data,
+        github_data=github_data,
         effective_brand_url=effective_brand_url,
         exa_data=exa_data,
+        searchapi_data=searchapi_data,
         parallel_shadow_data=parallel_shadow_data,
         social_data=social_data,
         social_limitation=social_limitation,

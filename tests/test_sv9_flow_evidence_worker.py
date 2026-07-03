@@ -143,6 +143,175 @@ def test_evidence_worker_classifies_acquisition_metadata() -> None:
     assert pack.evidence[0].metadata["source_class"] == "acquisition_metadata"
 
 
+def test_evidence_worker_exposes_exa_results_as_citable_external_proof() -> None:
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "raw_inputs": [
+                {
+                    "source": "exa",
+                    "payload": {
+                        "mentions": [
+                            {
+                                "url": "https://review.example/acme",
+                                "title": "Acme reviewed by operators",
+                                "text": "Customers praise Acme's active community and adoption.",
+                                "score": 0.82,
+                                "intent": "external_mentions",
+                            }
+                        ],
+                        "news": [
+                            {
+                                "url": "https://news.example/acme-funding",
+                                "title": "Acme raises funding",
+                                "highlights": ["Acme is growing quickly in the market."],
+                                "intent": "news",
+                            }
+                        ],
+                        "diagnostics": {
+                            "failed_intents": [],
+                            "no_result_intents": [],
+                            "intent_results": {},
+                        },
+                    },
+                }
+            ],
+        }
+    )
+
+    refs = {record.ref: record for record in pack.evidence}
+
+    mention = refs["raw_inputs.0.exa.mentions.0"]
+    assert mention.source == "exa"
+    assert mention.evidence_type == "external_proof.external_mentions"
+    assert mention.url == "https://review.example/acme"
+    assert mention.confidence == "high"
+    assert mention.metadata["source_class"] == "external_proof"
+    assert "active community" in mention.content
+    assert refs["raw_inputs.0.exa.news.0"].metadata["intent"] == "news"
+
+
+def test_evidence_worker_keeps_exa_failed_intents_as_acquisition_metadata() -> None:
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "raw_inputs": [
+                {
+                    "source": "exa",
+                    "payload": {
+                        "mentions": [],
+                        "news": [],
+                        "diagnostics": {
+                            "failed_intents": ["news"],
+                            "no_result_intents": ["ai_visibility"],
+                            "intent_results": {
+                                "news": {
+                                    "query": "Acme recent news",
+                                    "error": "provider timeout",
+                                },
+                                "ai_visibility": {
+                                    "query": "Acme llms.txt",
+                                },
+                            },
+                        },
+                    },
+                }
+            ],
+        }
+    )
+
+    records = {record.ref: record for record in pack.evidence}
+
+    failed = records["raw_inputs.0.exa.diagnostics.failed.0"]
+    assert failed.metadata["source_class"] == "acquisition_metadata"
+    assert failed.metadata["intent"] == "news"
+    assert "provider timeout" in failed.content
+    assert records["raw_inputs.0.exa.diagnostics.no_results.0"].metadata["intent"] == "ai_visibility"
+
+
+def test_evidence_worker_exposes_searchapi_results_as_external_proof() -> None:
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "raw_inputs": [
+                {
+                    "source": "searchapi",
+                    "payload": {
+                        "version": "vertical_fallback_v1",
+                        "provider": "searchapi",
+                        "intents": {
+                            "news": {
+                                "status": "ok",
+                                "query": "Acme news funding",
+                                "engine": "google_light",
+                                "results": [
+                                    {
+                                        "url": "https://news.example/acme",
+                                        "title": "Acme launches community program",
+                                        "snippet": "Acme customers are forming an active operator community.",
+                                        "domain": "news.example",
+                                        "position": 1,
+                                    }
+                                ],
+                            }
+                        },
+                    },
+                }
+            ],
+        }
+    )
+
+    record = next(item for item in pack.evidence if item.ref == "raw_inputs.0.searchapi.news.0")
+
+    assert record.source == "searchapi"
+    assert record.evidence_type == "external_proof.news"
+    assert record.url == "https://news.example/acme"
+    assert record.metadata["source_class"] == "external_proof"
+    assert record.metadata["provider"] == "searchapi"
+    assert "operator community" in record.content
+
+
+def test_evidence_worker_exposes_github_repo_metrics_as_external_proof() -> None:
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "raw_inputs": [
+                {
+                    "source": "github",
+                    "payload": {
+                        "version": "github-proof-v1",
+                        "provider": "github",
+                        "repos": [
+                            {
+                                "full_name": "acme/acme",
+                                "html_url": "https://github.com/acme/acme",
+                                "description": "Open source runtime for Acme developers.",
+                                "stars": 2400,
+                                "forks": 180,
+                                "open_issues": 42,
+                                "language": "TypeScript",
+                                "topics": ["developer-tools", "runtime"],
+                                "pushed_at": "2026-07-01T10:00:00Z",
+                            }
+                        ],
+                    },
+                }
+            ],
+        }
+    )
+
+    record = next(item for item in pack.evidence if item.ref == "raw_inputs.0.github.repos.0")
+
+    assert record.evidence_type == "external_proof.repository"
+    assert record.url == "https://github.com/acme/acme"
+    assert record.confidence == "high"
+    assert record.metadata["source_class"] == "external_proof"
+    assert record.metadata["provider"] == "github"
+    assert record.metadata["stars"] == 2400
+    assert "2400 stars" in record.content
+    assert "developer-tools" in record.content
+
+
 def test_evidence_worker_classifies_entity_research_packet_as_acquisition_metadata() -> None:
     pack = build_evidence_pack_from_snapshot(
         {

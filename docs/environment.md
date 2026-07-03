@@ -58,6 +58,9 @@ These are already part of the current Brand3 provider-backed setup:
 | --- | --- | --- | --- |
 | `FIRECRAWL_API_KEY` | Firecrawl | Current web scrape/social/optional screenshot provider | Yes |
 | `EXA_API_KEY` | Exa | Current search, mentions, competitor/context discovery provider | Yes |
+| `SEARCHAPI_API_KEY` | SearchAPI.io | Optional vertical external-proof fallback; only used when `BRAND3_SEARCHAPI_VERTICAL_FALLBACK_ENABLED=true` | Yes |
+| `GITHUB_TOKEN` | GitHub REST API | Optional higher rate limit for repository proof; unauthenticated requests work for observed public repos | Yes |
+| `BRAND3_GITHUB_PROOF_ENABLED` | Brand3 flag | Enables repository proof for GitHub links observed on owned pages; defaults to `true` | No |
 | `BRAND3_LLM_API_KEY` | OpenAI-compatible LLM provider | Current scoring/report narrative/vision LLM key | Yes |
 
 ### New Lab Provider Key Slots

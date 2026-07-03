@@ -16,6 +16,7 @@ if env_file.exists():
 # API Keys
 FIRECRAWL_API_KEY = os.environ.get("FIRECRAWL_API_KEY", "")
 EXA_API_KEY = os.environ.get("EXA_API_KEY", "")
+SEARCHAPI_API_KEY = os.environ.get("SEARCHAPI_API_KEY", "")
 HYPERBROWSER_API_KEY = os.environ.get("HYPERBROWSER_API_KEY", "")
 HYPERBROWSER_API_URL = os.environ.get(
     "HYPERBROWSER_API_URL",
@@ -24,6 +25,15 @@ HYPERBROWSER_API_URL = os.environ.get(
 BRAND3_HYPERBROWSER_ENABLED = os.environ.get(
     "BRAND3_HYPERBROWSER_ENABLED",
     "false",
+).strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+BRAND3_GITHUB_PROOF_ENABLED = os.environ.get(
+    "BRAND3_GITHUB_PROOF_ENABLED",
+    "true",
 ).strip().lower() in {
     "1",
     "true",
@@ -58,7 +68,22 @@ BRAND3_CACHE_TTL_HOURS_BY_SOURCE = {
     "web": int(os.environ.get("BRAND3_CACHE_TTL_HOURS_WEB", "1")),
     "context": int(os.environ.get("BRAND3_CACHE_TTL_HOURS_CONTEXT", "1")),
     "hyperbrowser": int(os.environ.get("BRAND3_CACHE_TTL_HOURS_HYPERBROWSER", "1")),
+    "github": int(os.environ.get("BRAND3_CACHE_TTL_HOURS_GITHUB", "24")),
 }
+BRAND3_SEARCHAPI_VERTICAL_FALLBACK_ENABLED = os.environ.get(
+    "BRAND3_SEARCHAPI_VERTICAL_FALLBACK_ENABLED",
+    "false",
+).strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+BRAND3_SEARCHAPI_FALLBACK_INTENTS = tuple(
+    item.strip()
+    for item in os.environ.get("BRAND3_SEARCHAPI_FALLBACK_INTENTS", "news").split(",")
+    if item.strip()
+)
 BRAND3_NICHE_AUTO_APPLY_MIN_CONFIDENCE = float(
     os.environ.get("BRAND3_NICHE_AUTO_APPLY_MIN_CONFIDENCE", "0.65")
 )

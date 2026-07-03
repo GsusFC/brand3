@@ -3,6 +3,8 @@
 from .web_collector import WebCollector, WebData
 from .context_collector import ContextCollector, ContextData
 from .exa_collector import ExaCollector, ExaData
+from .github_proof_collector import GitHubProofCollector, GitHubProofData
+from .searchapi_collector import SearchApiCollector, SearchApiData
 from .competitor_collector import CompetitorCollector, CompetitorData, ComparisonResult
 
 try:
@@ -14,5 +16,7 @@ __all__ = [
     "WebCollector", "WebData",
     "ContextCollector", "ContextData",
     "ExaCollector", "ExaData",
+    "GitHubProofCollector", "GitHubProofData",
+    "SearchApiCollector", "SearchApiData",
     "CompetitorCollector", "CompetitorData", "ComparisonResult",
 ]

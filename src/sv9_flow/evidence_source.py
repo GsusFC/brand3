@@ -50,7 +50,9 @@ def classify_source(
         return SOURCE_CLASS_ACQUISITION_METADATA
     if source_l == "report_narrative":
         return SOURCE_CLASS_DERIVED_STRATEGY
-    if source_l in {"context", "social", "competitors", "screenshot_capture"}:
+    if source_l in {"exa", "searchapi", "search_api", "github"}:
+        return SOURCE_CLASS_EXTERNAL_PROOF
+    if source_l in {"context", "social", "competitors", "parallel_shadow", "screenshot_capture"}:
         return SOURCE_CLASS_ACQUISITION_METADATA
     if source_l == "legacy_feature":
         if type_l.startswith("vitalidad.") or type_l.startswith("percepcion."):

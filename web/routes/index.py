@@ -85,34 +85,68 @@ def _load_latest_scanner_rows(db_path: str, *, lang: str, limit: int = 25) -> li
             ).fetchone()
             if table is None:
                 return []
-            rows = conn.execute(
+            sv9_table = conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='sv9_scans'"
+            ).fetchone()
+            # One ranked join keeps the landing at a single statement while
+            # restoring the SV9 link/score preference the lightweight rewrite
+            # lost.
+            sv9_join = (
                 """
+                LEFT JOIN (
+                  SELECT
+                    source_run_id,
+                    id,
+                    brand3_score,
+                    ROW_NUMBER() OVER (
+                      PARTITION BY source_run_id ORDER BY created_at DESC, id DESC
+                    ) AS rn
+                  FROM sv9_scans
+                ) sv9
+                  ON sv9.rn = 1
+                  AND sv9.source_run_id = COALESCE(
+                    CASE WHEN json_valid(m.raw_payload) THEN json_extract(m.raw_payload, '$.source_run_id') END,
+                    m.source_run_id
+                  )
+                """
+                if sv9_table is not None
+                else ""
+            )
+            sv9_columns = (
+                "sv9.id AS sv9_scan_id, sv9.brand3_score AS sv9_brand3_score,"
+                if sv9_table is not None
+                else "NULL AS sv9_scan_id, NULL AS sv9_brand3_score,"
+            )
+            rows = conn.execute(
+                f"""
                 SELECT
-                  id,
+                  m.id,
+                  {sv9_columns}
                   COALESCE(
-                    CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.brand_name') END,
-                    brand_name
+                    CASE WHEN json_valid(m.raw_payload) THEN json_extract(m.raw_payload, '$.brand_name') END,
+                    m.brand_name
                   ) AS brand_name,
                   COALESCE(
-                    CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.url') END,
-                    url
+                    CASE WHEN json_valid(m.raw_payload) THEN json_extract(m.raw_payload, '$.url') END,
+                    m.url
                   ) AS url,
                   COALESCE(
-                    CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.magnetism_score') END,
-                    magnetism_score
+                    CASE WHEN json_valid(m.raw_payload) THEN json_extract(m.raw_payload, '$.magnetism_score') END,
+                    m.magnetism_score
                   ) AS magnetism_score,
                   COALESCE(
-                    CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.quadrant') END,
-                    quadrant
+                    CASE WHEN json_valid(m.raw_payload) THEN json_extract(m.raw_payload, '$.quadrant') END,
+                    m.quadrant
                   ) AS quadrant,
                   COALESCE(
-                    CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.source_run_id') END,
-                    source_run_id
+                    CASE WHEN json_valid(m.raw_payload) THEN json_extract(m.raw_payload, '$.source_run_id') END,
+                    m.source_run_id
                   ) AS source_run_id,
-                  created_at
-                FROM magnetism_scans
-                WHERE status = 'ready'
-                ORDER BY created_at DESC, id DESC
+                  m.created_at
+                FROM magnetism_scans m
+                {sv9_join}
+                WHERE m.status = 'ready'
+                ORDER BY m.created_at DESC, m.id DESC
                 LIMIT ?
                 """,
                 (max(1, min(int(limit or 25), 50)),),
@@ -128,8 +162,14 @@ def _scanner_row_payload(row: sqlite3.Row, *, lang: str) -> dict:
     url = str(row["url"] or "")
     display_name = brand_name or _domain_from_url(url) or f"Scan #{row['id']}"
     domain = _domain_from_url(url)
-    href = f"/magnetism-scanner/scan/{row['id']}?lang={lang}"
-    score = _float_or_none(row["magnetism_score"])
+    sv9_scan_id = row["sv9_scan_id"] if "sv9_scan_id" in row.keys() else None
+    href = (
+        f"/sv9/scan/{int(sv9_scan_id)}?lang={lang}"
+        if sv9_scan_id
+        else f"/magnetism-scanner/scan/{row['id']}?lang={lang}"
+    )
+    sv9_score = _float_or_none(row["sv9_brand3_score"]) if "sv9_brand3_score" in row.keys() else None
+    score = sv9_score if sv9_scan_id else _float_or_none(row["magnetism_score"])
     return {
         "brand_key": domain or display_name.lower(),
         "display_name": display_name,
@@ -139,7 +179,7 @@ def _scanner_row_payload(row: sqlite3.Row, *, lang: str) -> dict:
         "compact_date": _compact_date(row["created_at"] or ""),
         "score": score,
         "score_compact": _score_compact(score),
-        "score_model": "magnetism",
+        "score_model": "sv9" if sv9_scan_id else "magnetism",
         "quadrant": row["quadrant"] or "",
         "category": None,
         "category_label": None,
@@ -147,8 +187,8 @@ def _scanner_row_payload(row: sqlite3.Row, *, lang: str) -> dict:
         "classification_tag_keys": [],
         "scan_count": 1,
         "primary_href": href,
-        "needs_sv9": bool(row["source_run_id"]),
-        "sv9_generate_scan_id": int(row["id"]) if row["source_run_id"] else None,
+        "needs_sv9": bool(row["source_run_id"]) and not sv9_scan_id,
+        "sv9_generate_scan_id": int(row["id"]) if row["source_run_id"] and not sv9_scan_id else None,
         "legacy_source_run_id": int(row["source_run_id"]) if row["source_run_id"] else None,
     }
 

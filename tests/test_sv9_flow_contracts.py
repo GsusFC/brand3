@@ -13,6 +13,7 @@ from src.sv9_flow import (
     Sv9FlowCandidate,
 )
 from src.sv9_flow.contracts import interpretation_contract_violations
+from src.sv9_flow.evidence_coverage import acquisition_coverage, block_coverage, coverage_limitations
 from scripts.sv9_flow_legacy_compat import build_flow_candidate_from_current_outputs
 from src.sv9_flow.orchestrator import build_flow_candidate
 from src.sv9_flow.reporting import SV9_FLOW_REPORT_VERSION, build_flow_report
@@ -619,6 +620,109 @@ def test_interpretation_contract_requires_content_and_refs_when_detected() -> No
     ]
 
 
+def test_block_coverage_derives_verified_absent_without_interpreter_claim() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="web",
+                evidence_type="raw_input",
+                content="Acme helps finance teams automate payments.",
+                url="https://acme.example",
+                metadata={"source_class": "owned_copy"},
+            ),
+            EvidenceRecord(
+                ref="raw_inputs.0.subpage.1.absence.values",
+                source="web",
+                evidence_type="acquisition.absence.values",
+                content="Crawled owned page https://acme.example/about; no explicit values section terms were observed.",
+                url="https://acme.example/about",
+                metadata={"source_class": "acquisition_metadata", "checked_block": "values"},
+            ),
+        ],
+    )
+    interpretation = BrandInterpretation(
+        brand_name="Acme",
+        url="https://acme.example",
+        blocks={
+            "mission": {"detected": True, "content": "Acme helps finance teams.", "confidence": "high"},
+            "values": {"detected": False, "content": "", "confidence": "low"},
+            "vision": {"detected": False, "content": "", "confidence": "low"},
+        },
+        evidence_refs={"mission": ["raw_inputs.0"]},
+    )
+
+    coverage = block_coverage(pack, interpretation)
+
+    assert coverage["mission"]["status"] == "positive_evidence"
+    assert coverage["values"]["status"] == "verified_absent"
+    assert coverage["values"]["absence_refs"] == ["raw_inputs.0.subpage.1.absence.values"]
+    assert coverage["vision"]["status"] == "insufficient_acquisition"
+    assert "coverage:values_verified_absent" in coverage_limitations(coverage)
+    assert "coverage:vision_insufficient_acquisition" in coverage_limitations(coverage)
+
+
+def test_acquisition_coverage_summarizes_external_attempts_and_absence_refs() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="web",
+                evidence_type="raw_input",
+                content="Homepage copy.",
+                url="https://acme.example",
+                metadata={"source_class": "owned_copy"},
+            ),
+            EvidenceRecord(
+                ref="raw_inputs.1.searchapi.diagnostics.news",
+                source="searchapi",
+                evidence_type="acquisition.attempt.news",
+                content="searchapi acquisition attempt for news ended with status no_results.",
+                metadata={
+                    "source_class": "acquisition_metadata",
+                    "provider": "searchapi",
+                    "intent": "news",
+                    "status": "no_results",
+                    "query": "Acme funding news",
+                },
+            ),
+            EvidenceRecord(
+                ref="raw_inputs.0.subpage.1.absence.values",
+                source="web",
+                evidence_type="acquisition.absence.values",
+                content="No values terms observed.",
+                url="https://acme.example/about",
+                metadata={"source_class": "acquisition_metadata"},
+            ),
+        ],
+    )
+
+    coverage = acquisition_coverage(pack)
+
+    assert coverage["owned_urls"] == ["https://acme.example"]
+    assert coverage["external_attempts"] == [
+        {
+            "ref": "raw_inputs.1.searchapi.diagnostics.news",
+            "provider": "searchapi",
+            "intent": "news",
+            "status": "no_results",
+            "query": "Acme funding news",
+            "error": "",
+        }
+    ]
+    assert coverage["absence_refs"] == [
+        {
+            "ref": "raw_inputs.0.subpage.1.absence.values",
+            "block": "values",
+            "url": "https://acme.example/about",
+        }
+    ]
+
+
 def test_canonical_orchestrator_builds_candidate_from_evidence_and_llm() -> None:
     class FlowLLM:
         api_key = "test-key"
@@ -668,6 +772,75 @@ def test_canonical_orchestrator_builds_candidate_from_evidence_and_llm() -> None
     assert debug["gate_authority"] == "veto_only"
     assert "raw_inputs.0" in debug["block_evidence_shortlists"]["mission"]
     assert not [item for item in candidate.limitations if item.startswith("contract_violation:")]
+
+
+def test_canonical_orchestrator_emits_evidence_coverage_debug_and_limitations() -> None:
+    class FlowLLM:
+        api_key = "test-key"
+
+        def _call_json(self, _system, user, **_kwargs):
+            if '"mission"' in user:
+                block = {
+                    "detected": True,
+                    "content": "Acme helps finance teams automate payments.",
+                    "confidence": "high",
+                    "evidence_refs": ["raw_inputs.0"],
+                    "rationale": "The homepage states this directly.",
+                }
+            elif '"values"' in user:
+                block = {
+                    "detected": False,
+                    "content": "",
+                    "confidence": "low",
+                    "evidence_refs": [],
+                    "rationale": "No explicit values statement in cited evidence.",
+                }
+            elif '"vision"' in user:
+                block = {
+                    "detected": False,
+                    "content": "",
+                    "confidence": "low",
+                    "evidence_refs": [],
+                    "rationale": "No explicit future-state statement in cited evidence.",
+                }
+            else:
+                block = {
+                    "detected": False,
+                    "content": "",
+                    "confidence": "low",
+                    "evidence_refs": [],
+                    "rationale": "No cited evidence.",
+                }
+            return block
+
+    snapshot = {
+        "run": {"brand_name": "Acme", "url": "https://acme.example"},
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "url": "https://acme.example",
+                    "markdown_content": (
+                        "Acme helps finance teams automate payments.\n"
+                        "\n---\n## Subpage: https://acme.example/about\n"
+                        "# About Acme\n"
+                        "Acme builds operational software for finance teams."
+                    ),
+                },
+            }
+        ],
+    }
+
+    candidate, debug = build_flow_candidate(snapshot=snapshot, llm=FlowLLM())
+
+    coverage = debug["evidence_coverage"]
+    assert coverage["blocks"]["mission"]["status"] == "positive_evidence"
+    assert coverage["blocks"]["values"]["status"] == "verified_absent"
+    assert coverage["blocks"]["vision"]["status"] == "verified_absent"
+    assert coverage["blocks"]["values"]["absence_refs"] == ["raw_inputs.0.subpage.1.absence.values"]
+    assert "coverage:values_verified_absent" in candidate.limitations
+    assert "coverage:vision_verified_absent" in candidate.limitations
+    assert not candidate.interpretation.evidence_refs.get("values")
 
 
 def test_shadow_eval_model_tiers_read_env_overrides(monkeypatch) -> None:

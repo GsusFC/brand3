@@ -190,6 +190,40 @@ def test_evidence_worker_skips_not_found_subpage_chunks() -> None:
 
     assert "raw_inputs.0" in refs
     assert "raw_inputs.0.subpage.1.chunk.1" not in refs
+    assert "raw_inputs.0.subpage.1.diagnostics.not_found" in refs
+
+
+def test_evidence_worker_records_searchapi_no_results_as_acquisition_attempt() -> None:
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "raw_inputs": [
+                {
+                    "source": "searchapi",
+                    "payload": {
+                        "version": "vertical_fallback_v1",
+                        "provider": "searchapi",
+                        "status": "ok",
+                        "intents": {
+                            "news": {
+                                "status": "no_results",
+                                "query": "Acme funding news",
+                                "engine": "google_light",
+                                "results": [],
+                            }
+                        },
+                    },
+                }
+            ],
+        }
+    )
+
+    record = next(item for item in pack.evidence if item.ref == "raw_inputs.0.searchapi.diagnostics.news")
+
+    assert record.evidence_type == "acquisition.attempt.news"
+    assert record.metadata["source_class"] == "acquisition_metadata"
+    assert record.metadata["provider"] == "searchapi"
+    assert record.metadata["status"] == "no_results"
 
 
 def test_evidence_worker_classifies_acquisition_metadata() -> None:
@@ -404,6 +438,33 @@ def test_evidence_worker_exposes_github_repo_metrics_as_external_proof() -> None
     assert record.metadata["stars"] == 2400
     assert "2400 stars" in record.content
     assert "developer-tools" in record.content
+
+
+def test_evidence_worker_records_github_skipped_as_acquisition_attempt() -> None:
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "raw_inputs": [
+                {
+                    "source": "github",
+                    "payload": {
+                        "version": "github-proof-v1",
+                        "provider": "github",
+                        "status": "skipped",
+                        "repos": [],
+                        "diagnostics": {"reason": "no GitHub repository links observed on owned capture"},
+                    },
+                }
+            ],
+        }
+    )
+
+    record = next(item for item in pack.evidence if item.ref == "raw_inputs.0.github.diagnostics.status")
+
+    assert record.evidence_type == "acquisition.attempt.repository_proof"
+    assert record.metadata["source_class"] == "acquisition_metadata"
+    assert record.metadata["provider"] == "github"
+    assert record.metadata["status"] == "skipped"
 
 
 def test_evidence_worker_classifies_entity_research_packet_as_acquisition_metadata() -> None:

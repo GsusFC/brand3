@@ -172,9 +172,35 @@ def _evidence_from_exa_payload(*, index: int, source: str, payload: dict[str, An
 def _evidence_from_searchapi_payload(*, index: int, source: str, payload: dict[str, Any]) -> list[EvidenceRecord]:
     records: list[EvidenceRecord] = []
     intents = payload.get("intents") if isinstance(payload.get("intents"), dict) else {}
+    diagnostics = payload.get("diagnostics") if isinstance(payload.get("diagnostics"), dict) else {}
+    if not intents and str(payload.get("status") or "") in {"skipped", "error"}:
+        records.append(
+            _acquisition_attempt_record(
+                ref=f"raw_inputs.{index}.searchapi.diagnostics.status",
+                source=source,
+                provider="searchapi",
+                intent="external_proof",
+                status=str(payload.get("status") or "unknown"),
+                query="",
+                error=str(diagnostics.get("reason") or ""),
+            )
+        )
     for intent, intent_payload in intents.items():
         if not isinstance(intent_payload, dict):
             continue
+        status = str(intent_payload.get("status") or "unknown")
+        if status != "ok":
+            records.append(
+                _acquisition_attempt_record(
+                    ref=f"raw_inputs.{index}.searchapi.diagnostics.{intent}",
+                    source=source,
+                    provider="searchapi",
+                    intent=str(intent),
+                    status=status,
+                    query=str(intent_payload.get("query") or ""),
+                    error=str(intent_payload.get("error") or ""),
+                )
+            )
         for result_index, result in enumerate(_list(intent_payload.get("results"))):
             if not isinstance(result, dict):
                 continue
@@ -241,6 +267,34 @@ def _evidence_from_github_payload(*, index: int, source: str, payload: dict[str,
                     "topics": repo.get("topics") or [],
                     "pushed_at": repo.get("pushed_at") or "",
                 },
+            )
+        )
+    diagnostics = payload.get("diagnostics") if isinstance(payload.get("diagnostics"), dict) else {}
+    status = str(payload.get("status") or "")
+    if not records and status in {"skipped", "error"}:
+        records.append(
+            _acquisition_attempt_record(
+                ref=f"raw_inputs.{index}.github.diagnostics.status",
+                source=source,
+                provider="github",
+                intent="repository_proof",
+                status=status,
+                query="observed GitHub repository links on owned capture",
+                error=str(diagnostics.get("reason") or ""),
+            )
+        )
+    for error_index, error in enumerate(_list(diagnostics.get("errors"))):
+        if not isinstance(error, dict):
+            continue
+        records.append(
+            _acquisition_attempt_record(
+                ref=f"raw_inputs.{index}.github.diagnostics.error.{error_index}",
+                source=source,
+                provider="github",
+                intent="repository_proof",
+                status="error",
+                query=str(error.get("repo") or ""),
+                error=str(error.get("error") or ""),
             )
         )
     return records
@@ -339,7 +393,7 @@ def _evidence_from_web_payload(*, index: int, source: str, payload: dict[str, An
     if not text:
         return []
     url = first_string(payload.get("url"), payload.get("source_url"), payload.get("page_url"))
-    homepage, subpages = _split_web_subpages(text)
+    homepage, subpages, missing_subpages = _split_web_subpages(text)
     subpages = _strip_cross_page_boilerplate(homepage, subpages)
     records: list[EvidenceRecord] = []
     if homepage:
@@ -363,6 +417,19 @@ def _evidence_from_web_payload(*, index: int, source: str, payload: dict[str, An
                 subpage_index=subpage_index,
                 url=subpage_url or url,
                 text=subpage_text,
+            )
+        )
+    for subpage_index, (subpage_url, _) in missing_subpages:
+        records.append(
+            _acquisition_attempt_record(
+                ref=f"raw_inputs.{index}.subpage.{subpage_index}.diagnostics.not_found",
+                source=source,
+                provider="web",
+                intent="owned_surface",
+                status="not_found",
+                query=subpage_url,
+                error="Captured page looked like a 404/not found response.",
+                url=subpage_url or url,
             )
         )
     return records
@@ -535,21 +602,26 @@ def _normalized_line(line: str) -> str:
     return " ".join(line.split()).lower()
 
 
-def _split_web_subpages(text: str) -> tuple[str, list[tuple[str, str]]]:
+def _split_web_subpages(text: str) -> tuple[str, list[tuple[str, str]], list[tuple[int, tuple[str, str]]]]:
     marker = "\n---\n## Subpage: "
     if marker not in text:
-        return text.strip(), []
+        return text.strip(), [], []
     first, *raw_subpages = text.split(marker)
     subpages: list[tuple[str, str]] = []
-    for raw_subpage in raw_subpages:
+    missing_subpages: list[tuple[int, tuple[str, str]]] = []
+    for subpage_index, raw_subpage in enumerate(raw_subpages, start=1):
         lines = raw_subpage.splitlines()
         if not lines:
             continue
         subpage_url = lines[0].strip()
         subpage_text = "\n".join(lines[1:]).strip()
-        if subpage_text and not _is_not_found_page(subpage_text):
+        if not subpage_text:
+            continue
+        if _is_not_found_page(subpage_text):
+            missing_subpages.append((subpage_index, (subpage_url, subpage_text)))
+        else:
             subpages.append((subpage_url, subpage_text))
-    return first.strip(), subpages
+    return first.strip(), subpages, missing_subpages
 
 
 def _is_not_found_page(text: str) -> bool:
@@ -647,6 +719,41 @@ def _absence_records_for_owned_page(
 def _is_strategic_surface(url: str) -> bool:
     value = str(url or "").lower()
     return any(marker in value for marker in _ABSENCE_SURFACE_MARKERS)
+
+
+def _acquisition_attempt_record(
+    *,
+    ref: str,
+    source: str,
+    provider: str,
+    intent: str,
+    status: str,
+    query: str = "",
+    error: str = "",
+    url: str | None = None,
+) -> EvidenceRecord:
+    status_text = status or "unknown"
+    content = f"{provider} acquisition attempt for '{intent}' ended with status '{status_text}'."
+    if query:
+        content += f" Query: {query}."
+    if error:
+        content += f" Error: {error}."
+    return EvidenceRecord(
+        ref=ref,
+        source=source,
+        evidence_type=f"acquisition.attempt.{intent}",
+        content=content[:_RAW_INPUT_CONTENT_CHARS],
+        url=url,
+        confidence="low",
+        metadata={
+            "source_class": "acquisition_metadata",
+            "provider": provider,
+            "intent": intent,
+            "status": status_text,
+            "query": query,
+            "error": error,
+        },
+    )
 
 
 def _summarize_payload(payload: dict[str, Any], *, limit: int | None = _RAW_INPUT_CONTENT_CHARS) -> str:

@@ -99,6 +99,71 @@ def test_evidence_worker_splits_owned_subpages_into_addressable_chunks() -> None
     )
 
 
+def test_evidence_worker_chunks_owned_subpages_by_markdown_sections() -> None:
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "url": "https://acme.example",
+                        "markdown_content": (
+                            "Homepage copy.\n"
+                            "\n---\n## Subpage: https://acme.example/about\n"
+                            "# About Acme\n"
+                            "Acme helps operators move faster.\n\n"
+                            "## Our values\n"
+                            "We value craft, clarity, and customer trust.\n\n"
+                            "## Careers\n"
+                            "Join the team building durable financial tools."
+                        ),
+                    },
+                }
+            ],
+        }
+    )
+
+    subpage_chunks = [record.content for record in pack.evidence if ".subpage.1.chunk." in record.ref]
+
+    assert any(chunk.startswith("# About Acme") for chunk in subpage_chunks)
+    assert any(chunk.startswith("## Our values") and "craft, clarity" in chunk for chunk in subpage_chunks)
+    assert any(chunk.startswith("## Careers") for chunk in subpage_chunks)
+
+
+def test_evidence_worker_records_absence_on_crawled_strategic_surfaces() -> None:
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "url": "https://acme.example",
+                        "markdown_content": (
+                            "Homepage copy.\n"
+                            "\n---\n## Subpage: https://acme.example/about\n"
+                            "# About Acme\n"
+                            "Acme builds operational software for finance teams."
+                        ),
+                    },
+                }
+            ],
+        }
+    )
+
+    absence = {
+        record.ref: record
+        for record in pack.evidence
+        if record.evidence_type.startswith("acquisition.absence.")
+    }
+
+    assert "raw_inputs.0.subpage.1.absence.values" in absence
+    assert "raw_inputs.0.subpage.1.absence.vision" in absence
+    assert absence["raw_inputs.0.subpage.1.absence.values"].metadata["source_class"] == "acquisition_metadata"
+    assert "no explicit values" in absence["raw_inputs.0.subpage.1.absence.values"].content
+
+
 def test_evidence_worker_skips_not_found_subpage_chunks() -> None:
     pack = build_evidence_pack_from_snapshot(
         {
@@ -141,6 +206,35 @@ def test_evidence_worker_classifies_acquisition_metadata() -> None:
     )
 
     assert pack.evidence[0].metadata["source_class"] == "acquisition_metadata"
+
+
+def test_evidence_worker_drops_legacy_derived_strategy_features() -> None:
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "features": [
+                {
+                    "dimension_name": "coherencia",
+                    "feature_name": "tone_analysis",
+                    "raw_value": "Derived tone verdict from a previous pass.",
+                    "confidence": "high",
+                },
+                {
+                    "dimension_name": "vitalidad",
+                    "feature_name": "community_signal",
+                    "raw_value": "External users discuss Acme in public forums.",
+                    "confidence": "medium",
+                },
+            ],
+        }
+    )
+
+    refs = {record.ref: record for record in pack.evidence}
+
+    assert "features.0" not in refs
+    assert refs["features.1"].metadata["source_class"] == "external_proof"
+    assert refs["features.dropped_derived_strategy"].metadata["source_class"] == "acquisition_metadata"
+    assert "Dropped 1 legacy derived-strategy" in refs["features.dropped_derived_strategy"].content
 
 
 def test_evidence_worker_exposes_exa_results_as_citable_external_proof() -> None:

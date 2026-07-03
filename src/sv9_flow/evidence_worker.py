@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
-from src.sv9_flow.evidence_source import classify_source
+from src.sv9_flow.evidence_source import SOURCE_CLASS_DERIVED_STRATEGY, classify_source
 from src.sv9_flow._utils import feature_confidence, first_string, unique_strings
 from src.sv9_flow.contracts import BrandEvidencePack, EvidenceRecord
 
@@ -14,6 +15,24 @@ _WEB_CHUNK_CHARS = 900
 _WEB_CHUNK_OVERLAP = 100
 _MAX_WEB_SUBPAGE_CHUNKS = 6
 _BOILERPLATE_MIN_PAGES = 3
+_ABSENCE_BLOCK_TERMS: dict[str, tuple[str, ...]] = {
+    "values": ("values", "valores", "principles", "principios", "culture", "cultura"),
+    "vision": ("vision", "visión", "future", "futuro", "ambition", "ambición", "transform"),
+}
+_ABSENCE_SURFACE_MARKERS = (
+    "about",
+    "company",
+    "careers",
+    "jobs",
+    "culture",
+    "values",
+    "mission",
+    "manifesto",
+    "nosotros",
+    "empleo",
+    "cultura",
+    "valores",
+)
 
 
 def build_evidence_pack_from_snapshot(
@@ -326,7 +345,7 @@ def _evidence_from_web_payload(*, index: int, source: str, payload: dict[str, An
     if homepage:
         records.append(_raw_input_record(index=index, source=source, content=homepage[:_RAW_INPUT_CONTENT_CHARS], url=url))
     for subpage_index, (subpage_url, subpage_text) in enumerate(subpages, start=1):
-        for chunk_index, chunk in enumerate(_chunk_text(subpage_text), start=1):
+        for chunk_index, chunk in enumerate(_chunk_text_by_section(subpage_text), start=1):
             records.append(
                 _raw_input_record(
                     index=index,
@@ -337,6 +356,15 @@ def _evidence_from_web_payload(*, index: int, source: str, payload: dict[str, An
                     metadata={"subpage_url": subpage_url},
                 )
             )
+        records.extend(
+            _absence_records_for_owned_page(
+                index=index,
+                source=source,
+                subpage_index=subpage_index,
+                url=subpage_url or url,
+                text=subpage_text,
+            )
+        )
     return records
 
 
@@ -371,6 +399,7 @@ def _raw_input_record(
 
 def _evidence_from_features(features: list[Any]) -> list[EvidenceRecord]:
     records: list[EvidenceRecord] = []
+    dropped_derived_strategy = 0
     for index, row in enumerate(features):
         feature = row if isinstance(row, dict) else {}
         feature_name = str(feature.get("feature_name") or "")
@@ -383,6 +412,15 @@ def _evidence_from_features(features: list[Any]) -> list[EvidenceRecord]:
             continue
         ref = f"features.{index}"
         evidence_type = f"{dimension_name}.{feature_name}".strip(".")
+        source_class = classify_source(
+            ref=ref,
+            source="legacy_feature",
+            evidence_type=evidence_type,
+            content=content[:700],
+        )
+        if source_class == SOURCE_CLASS_DERIVED_STRATEGY:
+            dropped_derived_strategy += 1
+            continue
         records.append(
             EvidenceRecord(
                 ref=ref,
@@ -390,13 +428,20 @@ def _evidence_from_features(features: list[Any]) -> list[EvidenceRecord]:
                 evidence_type=evidence_type,
                 content=content[:700],
                 confidence=feature_confidence(feature.get("confidence")),
+                metadata={"source_class": source_class},
+            )
+        )
+    if dropped_derived_strategy:
+        records.append(
+            EvidenceRecord(
+                ref="features.dropped_derived_strategy",
+                source="legacy_feature",
+                evidence_type="acquisition.dropped_derived_strategy",
+                content=f"Dropped {dropped_derived_strategy} legacy derived-strategy feature(s) from SV9 Flow evidence.",
+                confidence="low",
                 metadata={
-                    "source_class": classify_source(
-                        ref=ref,
-                        source="legacy_feature",
-                        evidence_type=evidence_type,
-                        content=content[:700],
-                    )
+                    "source_class": "acquisition_metadata",
+                    "dropped_count": dropped_derived_strategy,
                 },
             )
         )
@@ -519,19 +564,89 @@ def _is_not_found_page(text: str) -> bool:
     )
 
 
-def _chunk_text(text: str) -> list[str]:
+def _chunk_text_by_section(text: str) -> list[str]:
     clean = str(text or "").strip()
     if not clean:
         return []
     chunks: list[str] = []
+    for section in _markdown_sections(clean):
+        if len(section) <= _WEB_CHUNK_CHARS:
+            chunks.append(section)
+        else:
+            chunks.extend(_fixed_size_chunks(section))
+        if len(chunks) >= _MAX_WEB_SUBPAGE_CHUNKS:
+            break
+    return chunks[:_MAX_WEB_SUBPAGE_CHUNKS]
+
+
+def _fixed_size_chunks(text: str) -> list[str]:
+    chunks: list[str] = []
     step = max(1, _WEB_CHUNK_CHARS - _WEB_CHUNK_OVERLAP)
-    for start in range(0, len(clean), step):
-        chunk = clean[start : start + _WEB_CHUNK_CHARS].strip()
+    for start in range(0, len(text), step):
+        chunk = text[start : start + _WEB_CHUNK_CHARS].strip()
         if chunk:
             chunks.append(chunk)
-        if len(chunks) >= _MAX_WEB_SUBPAGE_CHUNKS or start + _WEB_CHUNK_CHARS >= len(clean):
+        if len(chunks) >= _MAX_WEB_SUBPAGE_CHUNKS or start + _WEB_CHUNK_CHARS >= len(text):
             break
     return chunks
+
+
+def _markdown_sections(text: str) -> list[str]:
+    sections: list[list[str]] = []
+    current: list[str] = []
+    for line in str(text or "").splitlines():
+        if re.match(r"^\s{0,3}#{1,6}\s+\S", line) and current:
+            sections.append(current)
+            current = [line]
+            continue
+        current.append(line)
+    if current:
+        sections.append(current)
+    cleaned = ["\n".join(section).strip() for section in sections]
+    return [section for section in cleaned if section]
+
+
+def _absence_records_for_owned_page(
+    *,
+    index: int,
+    source: str,
+    subpage_index: int,
+    url: str,
+    text: str,
+) -> list[EvidenceRecord]:
+    if not _is_strategic_surface(url):
+        return []
+    normalized = " ".join(str(text or "").lower().split())
+    if not normalized:
+        return []
+    records: list[EvidenceRecord] = []
+    for block, terms in _ABSENCE_BLOCK_TERMS.items():
+        if any(term in normalized for term in terms):
+            continue
+        records.append(
+            EvidenceRecord(
+                ref=f"raw_inputs.{index}.subpage.{subpage_index}.absence.{block}",
+                source=source,
+                evidence_type=f"acquisition.absence.{block}",
+                content=(
+                    f"Crawled owned page {url or '(unknown URL)'}; no explicit {block} "
+                    "section terms were observed in the captured text."
+                )[:_RAW_INPUT_CONTENT_CHARS],
+                url=url,
+                confidence="low",
+                metadata={
+                    "source_class": "acquisition_metadata",
+                    "checked_block": block,
+                    "checked_url": url,
+                },
+            )
+        )
+    return records
+
+
+def _is_strategic_surface(url: str) -> bool:
+    value = str(url or "").lower()
+    return any(marker in value for marker in _ABSENCE_SURFACE_MARKERS)
 
 
 def _summarize_payload(payload: dict[str, Any], *, limit: int | None = _RAW_INPUT_CONTENT_CHARS) -> str:

@@ -13,6 +13,7 @@ _RAW_INPUT_CONTENT_CHARS = 700
 _WEB_CHUNK_CHARS = 900
 _WEB_CHUNK_OVERLAP = 100
 _MAX_WEB_SUBPAGE_CHUNKS = 6
+_BOILERPLATE_MIN_PAGES = 3
 
 
 def build_evidence_pack_from_snapshot(
@@ -104,6 +105,7 @@ def _evidence_from_web_payload(*, index: int, source: str, payload: dict[str, An
         return []
     url = first_string(payload.get("url"), payload.get("source_url"), payload.get("page_url"))
     homepage, subpages = _split_web_subpages(text)
+    subpages = _strip_cross_page_boilerplate(homepage, subpages)
     records: list[EvidenceRecord] = []
     if homepage:
         records.append(_raw_input_record(index=index, source=source, content=homepage[:_RAW_INPUT_CONTENT_CHARS], url=url))
@@ -235,6 +237,41 @@ def _payload_dict(entry: dict[str, Any]) -> dict[str, Any]:
             return {}
         return parsed if isinstance(parsed, dict) else {}
     return {}
+
+
+def _strip_cross_page_boilerplate(
+    homepage: str,
+    subpages: list[tuple[str, str]],
+) -> list[tuple[str, str]]:
+    """Drop lines repeated across several captured pages from subpage text.
+
+    Captures ingest shared chrome (nav menus, footers) on every page; those
+    lines are template, not evidence, and their keyword noise outranks real
+    strategy copy in block shortlists. The homepage keeps one copy untouched.
+    """
+
+    pages = [homepage] + [text for _, text in subpages]
+    if len(pages) < _BOILERPLATE_MIN_PAGES:
+        return subpages
+    counts: dict[str, int] = {}
+    for page in pages:
+        for line in {_normalized_line(raw) for raw in page.splitlines()}:
+            if line:
+                counts[line] = counts.get(line, 0) + 1
+    boilerplate = {line for line, count in counts.items() if count >= _BOILERPLATE_MIN_PAGES}
+    if not boilerplate:
+        return subpages
+    cleaned: list[tuple[str, str]] = []
+    for subpage_url, text in subpages:
+        kept = [raw for raw in text.splitlines() if _normalized_line(raw) not in boilerplate]
+        cleaned_text = "\n".join(kept).strip()
+        if cleaned_text:
+            cleaned.append((subpage_url, cleaned_text))
+    return cleaned
+
+
+def _normalized_line(line: str) -> str:
+    return " ".join(line.split()).lower()
 
 
 def _split_web_subpages(text: str) -> tuple[str, list[tuple[str, str]]]:

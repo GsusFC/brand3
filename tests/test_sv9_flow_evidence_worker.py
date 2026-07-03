@@ -42,6 +42,30 @@ def test_evidence_worker_dedups_repeated_raw_input_text() -> None:
     assert any("Different text." in record.content for record in pack.evidence)
 
 
+def test_evidence_worker_strips_cross_page_boilerplate_from_subpages() -> None:
+    nav = "Products Banking Solutions Pricing Bring clarity to your clients."
+    markdown = (
+        "Homepage copy.\n" + nav + "\n"
+        "\n---\n## Subpage: https://acme.example/about\n" + nav + "\nAbout body text with real substance here.\n"
+        "\n---\n## Subpage: https://acme.example/jobs\n" + nav + "\nOur values. Your strengths.\n"
+    )
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "raw_inputs": [
+                {"source": "web", "payload": {"url": "https://acme.example", "markdown_content": markdown}}
+            ],
+        }
+    )
+
+    subpage_contents = [r.content for r in pack.evidence if ".subpage." in r.ref]
+    assert subpage_contents
+    assert all(nav not in content for content in subpage_contents)
+    assert any("Our values" in content for content in subpage_contents)
+    homepage = next(r for r in pack.evidence if r.ref == "raw_inputs.0")
+    assert nav in homepage.content
+
+
 def test_evidence_worker_splits_owned_subpages_into_addressable_chunks() -> None:
     pack = build_evidence_pack_from_snapshot(
         {

@@ -1907,6 +1907,31 @@ Tabular foundation models for real-world data.
         self.assertIn("Runtime policy enforcement, steering, and audit trails", content)
         self.assertNotIn("ignore me", content)
 
+    def test_html_to_markdown_fallback_recovers_div_only_copy(self):
+        collector = WebCollector()
+        filler = "".join(
+            f"<p>Structured paragraph number {i} with enough length to count.</p>" for i in range(3)
+        )
+        html = f"""
+<html>
+  <head><title>Mercury Jobs</title></head>
+  <body>
+    {filler}
+    <div class="values-section">
+      <div>Our values. Your strengths.</div>
+      <div>We put our values into practice every day across the company.</div>
+    </div>
+    <script>window.__NEXT_DATA__ = {{"ignored": true}}</script>
+  </body>
+</html>
+"""
+
+        content = collector._html_to_markdown_fallback(html)
+
+        self.assertIn("Our values. Your strengths.", content)
+        self.assertIn("values into practice", content)
+        self.assertNotIn("__NEXT_DATA__", content)
+
     def test_extract_canonical_metadata_captures_alternate_domains(self):
         collector = WebCollector()
         html = """

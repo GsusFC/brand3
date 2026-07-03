@@ -21,6 +21,27 @@ def test_evidence_worker_prefers_markdown_content_before_title() -> None:
     assert pack.evidence[0].metadata["source_class"] == "owned_copy"
 
 
+def test_evidence_worker_dedups_repeated_raw_input_text() -> None:
+    pack = build_evidence_pack_from_snapshot(
+        {
+            "run": {"brand_name": "Acme", "url": "https://acme.example"},
+            "raw_inputs": [
+                {"source": "web", "payload": {"text": "Same capture text."}},
+                {"source": "hyperbrowser", "payload": {"text": "  Same   capture TEXT. "}},
+                {"source": "web", "payload": {"text": "Different text."}},
+            ],
+        }
+    )
+
+    normalized = [" ".join(record.content.split()).lower() for record in pack.evidence]
+    assert normalized.count("same capture text.") == 1
+    kept = next(record for record in pack.evidence if "Same capture" in record.content)
+    assert kept.ref == "raw_inputs.0"
+    assert kept.metadata["duplicate_refs"] == ["raw_inputs.1"]
+    assert "deduplicated_raw_input_records:1" in pack.limitations
+    assert any("Different text." in record.content for record in pack.evidence)
+
+
 def test_evidence_worker_splits_owned_subpages_into_addressable_chunks() -> None:
     pack = build_evidence_pack_from_snapshot(
         {

@@ -33,10 +33,15 @@ def build_evidence_pack_from_snapshot(
     if not url:
         limitations.append("missing_url")
 
-    records.extend(_evidence_from_raw_inputs(snapshot.get("raw_inputs") or []))
+    raw_records, duplicate_count = _dedup_raw_input_records(
+        _evidence_from_raw_inputs(snapshot.get("raw_inputs") or [])
+    )
+    records.extend(raw_records)
     records.extend(_evidence_from_features(snapshot.get("features") or []))
     records.extend(_evidence_from_visual_signature(visual_signature_evidence))
 
+    if duplicate_count:
+        limitations.append(f"deduplicated_raw_input_records:{duplicate_count}")
     if not records:
         limitations.append("no_evidence_records")
 
@@ -46,6 +51,34 @@ def build_evidence_pack_from_snapshot(
         evidence=records,
         limitations=unique_strings(limitations),
     )
+
+
+def _dedup_raw_input_records(records: list[EvidenceRecord]) -> tuple[list[EvidenceRecord], int]:
+    """Drop raw-input records whose text already appeared under another ref.
+
+    Multi-pass captures re-fetch the same pages; identical text would waste
+    block shortlist slots (capped at 5 refs), so only the first occurrence
+    stays citable and keeps the duplicate refs in its metadata.
+    """
+
+    kept: list[EvidenceRecord] = []
+    first_by_content: dict[str, EvidenceRecord] = {}
+    dropped = 0
+    for record in records:
+        key = " ".join(record.content.split()).lower()
+        if not key:
+            kept.append(record)
+            continue
+        existing = first_by_content.get(key)
+        if existing is None:
+            first_by_content[key] = record
+            kept.append(record)
+            continue
+        dropped += 1
+        duplicate_refs = existing.metadata.setdefault("duplicate_refs", [])
+        if len(duplicate_refs) < 5:
+            duplicate_refs.append(record.ref)
+    return kept, dropped
 
 
 def _evidence_from_raw_inputs(raw_inputs: list[Any]) -> list[EvidenceRecord]:

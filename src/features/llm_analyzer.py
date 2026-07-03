@@ -43,16 +43,7 @@ llm_failure_reason = _llm_runtime.llm_failure_reason
 _LOG = logging.getLogger(__name__)
 
 
-def _extract_usage_metadata(content: str | None) -> dict[str, Any] | None:
-    if not content:
-        return None
-    try:
-        payload = json.loads(content)
-    except (TypeError, ValueError):
-        return None
-    if not isinstance(payload, dict):
-        return None
-    usage = payload.get("usage") or payload.get("usageMetadata")
+def _normalize_usage_metadata(usage: Any) -> dict[str, Any] | None:
     if not isinstance(usage, dict):
         return None
     out: dict[str, Any] = {}
@@ -72,6 +63,14 @@ def _extract_usage_metadata(content: str | None) -> dict[str, Any] | None:
         if isinstance(value, (int, float)):
             out[key] = value
     return out or None
+
+
+def _llm_call_result(value: Any) -> tuple[str, str, dict[str, Any] | None]:
+    """Accept legacy (status, content) pairs from test doubles."""
+
+    if isinstance(value, tuple) and len(value) == 2:
+        return value[0], value[1], None
+    return value
 
 
 class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
@@ -131,14 +130,16 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
         }
         payload = json.dumps(body).encode()
 
-        status, content = _run_llm_http_call(
-            url=_chat_completions_url(self.base_url),
-            payload=payload,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-            },
-            timeout_seconds=self.timeout_seconds,
+        status, content, usage_payload = _llm_call_result(
+            _run_llm_http_call(
+                url=_chat_completions_url(self.base_url),
+                payload=payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.api_key}",
+                },
+                timeout_seconds=self.timeout_seconds,
+            )
         )
         self._record_usage_observation(
             event="provider_call",
@@ -146,7 +147,7 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             cache_key=cache_key,
             status=status,
             max_tokens=max_tokens,
-            usage_metadata=_extract_usage_metadata(content),
+            usage_metadata=_normalize_usage_metadata(usage_payload),
         )
         if status == "ok":
             if not content:
@@ -247,11 +248,13 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
                 "timeout_seconds": effective_timeout,
             }
             _LOG.debug("llm transport debug", extra={"request_debug": self.last_request_debug})
-        status, content = _run_llm_http_call(
-            url=final_url,
-            payload=payload,
-            headers=headers,
-            timeout_seconds=effective_timeout,
+        status, content, usage_payload = _llm_call_result(
+            _run_llm_http_call(
+                url=final_url,
+                payload=payload,
+                headers=headers,
+                timeout_seconds=effective_timeout,
+            )
         )
         self._record_usage_observation(
             event="provider_call",
@@ -260,7 +263,7 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             status=status,
             max_tokens=max_tokens,
             schema_name=normalized_schema_name,
-            usage_metadata=_extract_usage_metadata(content),
+            usage_metadata=_normalize_usage_metadata(usage_payload),
         )
         if status != "ok" and json_schema is not None:
             # Provider compatibility varies; keep production safe by falling back
@@ -268,11 +271,13 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             if status != "transport_error":
                 fallback_body = dict(body)
                 fallback_body["response_format"] = {"type": "json_object"}
-                status, content = _run_llm_http_call(
-                    url=final_url,
-                    payload=json.dumps(fallback_body).encode(),
-                    headers=headers,
-                    timeout_seconds=effective_timeout,
+                status, content, usage_payload = _llm_call_result(
+                    _run_llm_http_call(
+                        url=final_url,
+                        payload=json.dumps(fallback_body).encode(),
+                        headers=headers,
+                        timeout_seconds=effective_timeout,
+                    )
                 )
                 self._record_usage_observation(
                     event="provider_call",
@@ -282,7 +287,7 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
                     max_tokens=max_tokens,
                     schema_name=normalized_schema_name,
                     request_variant="json_object_fallback",
-                    usage_metadata=_extract_usage_metadata(content),
+                    usage_metadata=_normalize_usage_metadata(usage_payload),
                 )
         if status != "ok":
             if status == "timeout":
@@ -399,11 +404,13 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             "x-goog-api-key": self.api_key,
         }
         payload = json.dumps(body).encode("utf-8")
-        status, content = _run_gemini_http_call(
-            url=final_url,
-            payload=payload,
-            headers=headers,
-            timeout_seconds=effective_timeout,
+        status, content, usage_payload = _llm_call_result(
+            _run_gemini_http_call(
+                url=final_url,
+                payload=payload,
+                headers=headers,
+                timeout_seconds=effective_timeout,
+            )
         )
         self._record_usage_observation(
             event="provider_call",
@@ -412,7 +419,7 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             status=status,
             max_tokens=max_tokens,
             schema_name=schema_name or "brand3_json_response",
-            usage_metadata=_extract_usage_metadata(content),
+            usage_metadata=_normalize_usage_metadata(usage_payload),
         )
         if status != "ok":
             if status == "timeout":

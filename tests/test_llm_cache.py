@@ -98,10 +98,10 @@ class LLMCacheTests(unittest.TestCase):
             with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
                 with patch(
                     "src.features.llm_analyzer._run_llm_http_call",
-                    return_value=("ok", json.dumps({"score": 88, "usage": {"total_tokens": 123}})),
+                    return_value=("ok", json.dumps({"score": 88}), {"total_tokens": 123}),
                 ):
-                    self.assertEqual(first._call_json("system", "user"), {"score": 88, "usage": {"total_tokens": 123}})
-                    self.assertEqual(second._call_json("system", "user"), {"score": 88, "usage": {"total_tokens": 123}})
+                    self.assertEqual(first._call_json("system", "user"), {"score": 88})
+                    self.assertEqual(second._call_json("system", "user"), {"score": 88})
 
         first_summary = first.usage_observation_summary()
         second_summary = second.usage_observation_summary()

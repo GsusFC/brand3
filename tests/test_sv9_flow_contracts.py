@@ -651,7 +651,12 @@ def test_block_coverage_derives_verified_absent_without_interpreter_claim() -> N
             "values": {"detected": False, "content": "", "confidence": "low"},
             "vision": {"detected": False, "content": "", "confidence": "low"},
         },
-        evidence_refs={"mission": ["raw_inputs.0"]},
+        evidence_refs={
+            "mission": ["raw_inputs.0"],
+            # Rejected/not-detected candidates may keep refs for review, but
+            # they are not accepted positive evidence for coverage.
+            "values": ["raw_inputs.0"],
+        },
     )
 
     coverage = block_coverage(pack, interpretation)

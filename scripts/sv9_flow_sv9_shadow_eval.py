@@ -183,6 +183,7 @@ def _compact_interpretation_debug(debug: dict[str, Any]) -> dict[str, Any]:
             "block_failures",
             "block_detection_decisions",
             "detection_provenance",
+            "evidence_coverage",
             "failure_reason",
             "failure",
         }

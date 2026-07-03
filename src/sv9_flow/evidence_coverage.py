@@ -77,11 +77,13 @@ def block_coverage(pack: BrandEvidencePack, interpretation: BrandInterpretation)
     blocks = tuple(dict.fromkeys(_CANONICAL_BLOCKS + tuple(interpretation.blocks.keys())))
     coverage: dict[str, dict[str, Any]] = {}
     for block in blocks:
+        block_payload = interpretation.blocks.get(block) if isinstance(interpretation.blocks.get(block), dict) else {}
+        final_detected = block_payload.get("detected") is True
         cited_refs = [str(ref) for ref in interpretation.evidence_refs.get(block) or [] if str(ref).strip()]
         positive_refs = [
             ref
             for ref in cited_refs
-            if _is_positive_ref(records_by_ref.get(ref))
+            if final_detected and _is_positive_ref(records_by_ref.get(ref))
         ]
         absence_refs = [
             record.ref

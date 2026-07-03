@@ -2084,9 +2084,10 @@ Tabular foundation models for real-world data.
                 "https://example.com/about-us",
                 "https://example.com/customers",
                 "https://example.com/testimonials",
+                "https://example.com/pricing",
+                "https://example.com/features/ai-video",
             ],
         )
-        self.assertNotIn("https://example.com/pricing", selected)
         self.assertNotIn("https://example.com/privacy-policy", selected)
 
     def test_select_internal_links_to_crawl_prefers_manifesto_over_company_page(self):
@@ -2102,8 +2103,11 @@ Tabular foundation models for real-world data.
         selected = collector._select_internal_links_to_crawl(links, "https://example.com")
 
         self.assertIn("https://example.com/blog/manifesto", selected)
-        self.assertNotIn("https://example.com/company", selected)
-        self.assertLessEqual(len(selected), 4)
+        self.assertLess(
+            selected.index("https://example.com/blog/manifesto"),
+            selected.index("https://example.com/company"),
+        )
+        self.assertLessEqual(len(selected), 6)
 
     def test_select_internal_links_to_crawl_recognizes_spanish_proof_pages(self):
         collector = WebCollector()
@@ -2119,7 +2123,50 @@ Tabular foundation models for real-world data.
 
         self.assertIn("https://example.com/es/testimonios", selected)
         self.assertIn("https://example.com/es/resenas", selected)
-        self.assertLessEqual(len(selected), 4)
+        self.assertLessEqual(len(selected), 6)
+
+    def test_select_internal_links_to_crawl_guarantees_culture_page_slot(self):
+        collector = WebCollector()
+        links = [
+            "https://example.com/features/dashboard",
+            "https://example.com/features/ai-video",
+            "https://example.com/solutions/enterprise",
+            "https://example.com/about-us",
+            "https://example.com/customers",
+            "https://example.com/case-studies",
+            "https://example.com/jobs",
+        ]
+
+        selected = collector._select_internal_links_to_crawl(links, "https://example.com")
+
+        self.assertIn("https://example.com/jobs", selected)
+
+    def test_select_internal_links_to_crawl_prefers_values_page_over_careers(self):
+        collector = WebCollector()
+        links = [
+            "https://example.com/careers",
+            "https://example.com/company/values",
+            "https://example.com/features/dashboard",
+        ]
+
+        selected = collector._select_internal_links_to_crawl(links, "https://example.com")
+
+        self.assertIn("https://example.com/company/values", selected)
+        self.assertLess(
+            selected.index("https://example.com/company/values"),
+            selected.index("https://example.com/careers"),
+        )
+
+    def test_select_internal_links_recognizes_spanish_culture_pages(self):
+        collector = WebCollector()
+        links = [
+            "https://example.com/es/producto",
+            "https://example.com/es/cultura",
+        ]
+
+        selected = collector._select_internal_links_to_crawl(links, "https://example.com/es/")
+
+        self.assertIn("https://example.com/es/cultura", selected)
 
 
     def test_scrape_recursive_crawling(self):

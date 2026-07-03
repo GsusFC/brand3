@@ -6,11 +6,12 @@ import re
 from urllib.parse import urljoin, urlparse
 
 
-_MAX_OWNED_SUBPAGES = 4
+_MAX_OWNED_SUBPAGES = 6
 _OWNED_PAGE_ROLE_PRIORITY = (
     "product",
     "solutions",
     "about",
+    "culture",
     "customers",
     "case_studies",
     "reviews",
@@ -120,6 +121,10 @@ class WebCollectorLinkingSupport:
             "manifesto": 12,
             "mission": 10,
             "principles": 10,
+            "values": 10,
+            "valores": 10,
+            "culture": 8,
+            "cultura": 8,
             "about": 6,
             "nosotros": 6,
             "company": 5,
@@ -160,9 +165,6 @@ class WebCollectorLinkingSupport:
             "signin": -8,
             "signup": -8,
             "register": -8,
-            "careers": -5,
-            "jobs": -5,
-            "empleo": -5,
         }
 
         scored_links = []
@@ -224,6 +226,13 @@ class WebCollectorLinkingSupport:
             return "testimonials"
         if any(marker in path for marker in ("security", "trust", "privacy", "compliance")):
             return "trust"
+        if any(
+            marker in path
+            for marker in ("values", "valores", "culture", "cultura", "careers", "jobs", "empleo")
+        ):
+            # Values and culture usually live on careers pages, which feed the
+            # values/vision evidence the strategy blocks starve without.
+            return "culture"
         if any(marker in path for marker in ("about", "company", "nosotros", "manifesto")):
             return "about"
         if any(marker in path for marker in ("solution", "solucion", "use-case", "industry")):

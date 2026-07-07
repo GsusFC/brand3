@@ -248,8 +248,8 @@
       <div style="margin-top: 8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
         <span class="badge">{{ scan.reliability_label or "desconocido" }}</span>
         <span class="dim" style="font-family: var(--font-mono); font-size: 11px;">
-          {% if scan.reliability_reason_codes %}
-          {{ scan.reliability_reason_codes|join(" · ") }}
+          {% if scan.reliability_reason_labels %}
+          {{ scan.reliability_reason_labels|join(" · ") }}
           {% else %}
           sin bloqueos de confiabilidad
           {% endif %}
@@ -258,8 +258,8 @@
       <div style="margin-top: 6px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
         <span class="badge">{{ scan.canonical_label or "desconocido" }}</span>
         <span class="dim" style="font-family: var(--font-mono); font-size: 11px;">
-          {% if scan.canonical_reason_codes %}
-          {{ scan.canonical_reason_codes|join(" · ") }}
+          {% if scan.canonical_reason_labels %}
+          {{ scan.canonical_reason_labels|join(" · ") }}
           {% else %}
           salida principal
           {% endif %}

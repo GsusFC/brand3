@@ -35,6 +35,11 @@ from src.sv9.models import (
     STATUS_SCORED,
     TileVerdict,
 )
+from src.sv9.language_guard import (
+    spanish_component_verdict,
+    spanish_tile_contexto,
+    spanish_tile_motivo,
+)
 from src.sv9.rubric import (
     COMPONENTS,
     PRESENTATION_ORDER,
@@ -191,6 +196,8 @@ def evaluate_component(
             score=0,
             detection_mode=str(block.get("mode") or "not_detected"),
             detection_confidence=str(block.get("confidence") or "insufficient"),
+            detection_limitations=[str(item) for item in block.get("limitations") or []],
+            evidence_source_summary=_int_dict(block.get("evidence_source_summary")),
         )
 
     if llm is None or not getattr(llm, "api_key", None):
@@ -198,6 +205,10 @@ def evaluate_component(
             component=key,
             status=STATUS_NOT_EVALUATED,
             detected_content=_block_content_text(block),
+            detection_mode=str(block.get("mode") or ""),
+            detection_confidence=str(block.get("confidence") or ""),
+            detection_limitations=[str(item) for item in block.get("limitations") or []],
+            evidence_source_summary=_int_dict(block.get("evidence_source_summary")),
             error="llm_unavailable",
         )
 
@@ -218,6 +229,8 @@ def evaluate_component(
         detected_content=_block_content_text(block),
         detection_mode=str(block.get("mode") or ""),
         detection_confidence=str(block.get("confidence") or ""),
+        detection_limitations=[str(item) for item in block.get("limitations") or []],
+        evidence_source_summary=_int_dict(block.get("evidence_source_summary")),
         evidence=[str(e) for e in (block.get("evidence") or [])],
     )
 
@@ -264,6 +277,8 @@ def _run_tile_call(
     detected_content: str | None = None,
     detection_mode: str | None = None,
     detection_confidence: str | None = None,
+    detection_limitations: list[str] | None = None,
+    evidence_source_summary: dict[str, int] | None = None,
     evidence: list[str] | None = None,
 ) -> ComponentResult:
     ids = tile_ids(key)
@@ -289,7 +304,7 @@ def _run_tile_call(
         veredicto = str((raw or {}).get("veredicto") or "").strip() if isinstance(raw, dict) else ""
         if verdicts is not None and (veredicto or not requires_veredicto or is_last):
             verdicts = _apply_sv9_flow_tile_signal_overrides(verdicts, signals or [])
-            final_veredicto = veredicto
+            final_veredicto = spanish_component_verdict(key, veredicto, verdicts)
             if requires_veredicto and not final_veredicto:
                 # Product decision (2026-06-14): the evaluator failed to produce
                 # the mandatory synthesis sentence after retries. Rather than
@@ -307,6 +322,8 @@ def _run_tile_call(
                 detected_content=detected_content,
                 detection_mode=detection_mode,
                 detection_confidence=detection_confidence,
+                detection_limitations=list(detection_limitations or []),
+                evidence_source_summary=dict(evidence_source_summary or {}),
                 evidence=evidence or [],
             )
 
@@ -327,9 +344,23 @@ def _run_tile_call(
         detected_content=detected_content,
         detection_mode=detection_mode,
         detection_confidence=detection_confidence,
+        detection_limitations=list(detection_limitations or []),
+        evidence_source_summary=dict(evidence_source_summary or {}),
         evidence=evidence or [],
         error=last_error,
     )
+
+
+def _int_dict(value: Any) -> dict[str, int]:
+    if not isinstance(value, dict):
+        return {}
+    out: dict[str, int] = {}
+    for key, item in value.items():
+        try:
+            out[str(key)] = int(item)
+        except (TypeError, ValueError):
+            continue
+    return out
 
 
 def _apply_sv9_flow_tile_signal_overrides(
@@ -374,7 +405,7 @@ def _apply_sv9_flow_tile_signal_overrides(
                     tile_id=verdict.tile_id,
                     estado=ESTADO_NO,
                     motivo=_override_motivo(
-                        "SV9 Flow high-confidence tile signal weakens this tile.",
+                        "La señal SV9 Flow de alta confianza debilita esta baldosa.",
                         rationale,
                     ),
                 )
@@ -385,10 +416,10 @@ def _apply_sv9_flow_tile_signal_overrides(
                 tile_id=verdict.tile_id,
                 estado=ESTADO_SIN_EVIDENCIA,
                 motivo=_override_motivo(
-                    "SV9 Flow high-confidence tile signal marks this tile as insufficient evidence.",
+                    "La señal SV9 Flow de alta confianza marca esta baldosa como evidencia insuficiente.",
                     rationale,
                 ),
-                contexto_requerido=verdict.contexto_requerido,
+                contexto_requerido=spanish_tile_contexto(verdict.contexto_requerido),
             )
         )
     return normalized
@@ -518,6 +549,10 @@ def _normalize_tiles(
                 if verdict.estado == ESTADO_SIN_EVIDENCIA
                 else "sin evidencia que la encienda"
             )
+        if verdict.estado in (ESTADO_NO, ESTADO_SIN_EVIDENCIA):
+            verdict.motivo = spanish_tile_motivo(verdict.motivo, estado=verdict.estado)
+        if verdict.estado == ESTADO_SIN_EVIDENCIA and verdict.contexto_requerido:
+            verdict.contexto_requerido = spanish_tile_contexto(verdict.contexto_requerido)
         normalized.append(verdict)
     return normalized, ""
 

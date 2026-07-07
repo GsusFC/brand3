@@ -413,6 +413,53 @@ def test_magnetism_preference_evidence_does_not_mark_preference_as_missing() -> 
     assert "magnetism_no_gravity_evidence" in interpretation.limitations
 
 
+def test_magnetism_owned_product_hook_does_not_mark_owned_hook_as_missing() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Darwin Biomedical",
+        url="https://darwinbiomedical.com",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="homepage",
+                evidence_type="raw_input",
+                content=(
+                    "MICHELANGELO. Descubre el primer andador inteligente con prevención activa de caídas. "
+                    "Seguridad & libertad."
+                ),
+            ),
+            EvidenceRecord(
+                ref="raw_inputs.1",
+                source="external_profile",
+                evidence_type="external_proof",
+                content="Darwin Biomed has a funding announcement.",
+            ),
+        ],
+    )
+    raw = {
+        "blocks": {
+            "magnetism": {
+                "detected": True,
+                "content": "Darwin Biomedical combines product pull with external validation.",
+                "confidence": "medium",
+                "evidence_refs": ["raw_inputs.0", "raw_inputs.1"],
+                "rationale": "The owned copy names active fall prevention and the external profile validates momentum.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"magnetism": ["raw_inputs.0", "raw_inputs.1"]},
+    )
+
+    assert interpretation.blocks["magnetism"]["detected"] is True
+    assert "magnetism_market_momentum_only" not in interpretation.limitations
+    assert "magnetism_no_owned_hook_evidence" not in interpretation.limitations
+    assert "magnetism_no_belonging_status_evidence" in interpretation.limitations
+
+
 def test_sensitive_blocks_keep_only_llm_cited_refs() -> None:
     pack = BrandEvidencePack(
         brand_name="Acme",
@@ -828,7 +875,7 @@ def test_llm_worker_can_build_interpretation_per_block() -> None:
     assert debug["detected_count"] == 1
     assert debug["block_detection_decisions"] == [
         {
-            "version": "sv9-flow-block-detection-policy-v4",
+            "version": "sv9-flow-block-detection-policy-v6",
             "block": "magnetism",
             "outcome": "insufficient_evidence",
             "evidence_refs": [],
@@ -837,7 +884,7 @@ def test_llm_worker_can_build_interpretation_per_block() -> None:
             "limitation_code": "magnetism_insufficient_evidence_refs",
         },
         {
-            "version": "sv9-flow-block-detection-policy-v4",
+            "version": "sv9-flow-block-detection-policy-v6",
             "block": "mission",
             "outcome": "supports_detection",
             "evidence_refs": ["raw_inputs.0"],
@@ -846,7 +893,7 @@ def test_llm_worker_can_build_interpretation_per_block() -> None:
             "limitation_code": "",
         },
         {
-            "version": "sv9-flow-block-detection-policy-v4",
+            "version": "sv9-flow-block-detection-policy-v6",
             "block": "values",
             "outcome": "insufficient_evidence",
             "evidence_refs": [],
@@ -855,7 +902,7 @@ def test_llm_worker_can_build_interpretation_per_block() -> None:
             "limitation_code": "values_insufficient_evidence_refs",
         },
         {
-            "version": "sv9-flow-block-detection-policy-v4",
+            "version": "sv9-flow-block-detection-policy-v6",
             "block": "vision",
             "outcome": "insufficient_evidence",
             "evidence_refs": [],
@@ -909,7 +956,7 @@ def test_llm_worker_reports_block_detection_from_shortlists_not_llm_refs() -> No
     )
 
     assert debug["block_detection_decisions"][0] == {
-        "version": "sv9-flow-block-detection-policy-v4",
+        "version": "sv9-flow-block-detection-policy-v6",
         "block": "magnetism",
         "outcome": "supports_detection",
         "evidence_refs": ["raw_inputs.0"],
@@ -1118,5 +1165,5 @@ def test_magnetism_block_prompt_allows_external_proof_grounds() -> None:
 
     prompt = _block_user_prompt(pack, block="magnetism", evidence_refs=["raw_inputs.0.exa.news.0"])
 
-    assert "Third-party external proof is valid" in prompt
-    assert "Owned copy is not required to confirm magnetism." in prompt
+    assert "External proof is strongest for gravity and market validation" in prompt
+    assert "it must not replace owned-copy hook evidence" in prompt

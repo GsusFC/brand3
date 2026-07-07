@@ -14,6 +14,7 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
+from src.sv9.language_guard import spanish_generated_text
 from src.sv9.rubric import COMPONENTS, PRESENTATION_ORDER
 
 SV9_EDITORIAL_PROMPT_VERSION = "sv9-editorial-v0.2"
@@ -174,7 +175,7 @@ Escribe el mensaje. JSON estricto: {{"message": "..."}}"""
     except Exception:
         return None
     message = str((raw or {}).get("message") or "").strip()
-    return message or None
+    return spanish_generated_text(message) or None
 
 
 def _executive_reading(
@@ -219,4 +220,4 @@ Escribe la lectura ejecutiva. JSON estricto: {{"reading": "..."}}"""
     except Exception:
         return None
     reading = str((raw or {}).get("reading") or "").strip()
-    return reading or None
+    return spanish_generated_text(reading) or None

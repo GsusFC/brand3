@@ -17,6 +17,14 @@ from fastapi.responses import PlainTextResponse, RedirectResponse
 
 from src.config import BRAND3_DB_PATH
 from src.sv9.export_md import build_scan_markdown
+from src.sv9.language_guard import (
+    spanish_component_verdict,
+    spanish_generated_text,
+    spanish_reason_labels,
+    spanish_status_label,
+    spanish_tile_contexto,
+    spanish_tile_motivo,
+)
 from src.sv9.rubric import COMPONENTS, RUBRIC_VERSION, component_max_points
 from src.sv9.service import materialize_sv9_scan
 from src.sv9.store import Sv9Store
@@ -76,13 +84,13 @@ async def sv9_scan_view(request: Request, scan_id: int, lang: _Lang = Query("es"
                     "is_blind": estado == "sin_evidencia",
                     "is_missing": not has_verdict,
                     "evidencia": str(verdict_payload.get("evidencia") or ""),
-                    "motivo": str(
-                        verdict_payload.get("motivo")
+                    "motivo": (
+                        spanish_tile_motivo(verdict_payload.get("motivo"), estado=estado)
                         if has_verdict
                         else "sin veredicto persistido para esta baldosa"
                     ),
-                    "contexto_requerido": str(
-                        verdict_payload.get("contexto_requerido") or ""
+                    "contexto_requerido": spanish_tile_contexto(
+                        verdict_payload.get("contexto_requerido")
                     ),
                 }
             )
@@ -110,11 +118,11 @@ async def sv9_scan_view(request: Request, scan_id: int, lang: _Lang = Query("es"
             "status_label": _status_label(status),
             "confidence": component.get("confidence") or "alta",
             "blind_spot_count": component.get("blind_spot_count") or 0,
-            "veredicto": component.get("veredicto") or "",
+            "veredicto": spanish_component_verdict(key, component.get("veredicto"), component.get("tile_profile") or []),
             "is_technical_failure": status == "not_evaluated",
             "error": error,
             "content": component.get("detected_content") or "",
-            "message": component.get("message") or "",
+            "message": spanish_generated_text(component.get("message")),
             "v2_reference": v2_blocks.get(key, {}),
             "editorial_decision": editorial_decisions.get(key, {}),
             "is_chip": key in ("attributes", "values"),
@@ -165,13 +173,13 @@ async def sv9_scan_view(request: Request, scan_id: int, lang: _Lang = Query("es"
 
 
 @router.get("/sv9/scan/{scan_id}/export.md")
-async def sv9_scan_export(request: Request, scan_id: int):
+async def sv9_scan_export(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Download the scan as a Brand3 .md report (work plan + pending context)."""
     _require_team(request)
     scan = await asyncio.to_thread(_load_scan_for_export, scan_id)
     if scan is None:
         raise HTTPException(status_code=404, detail="scan not found")
-    markdown = build_scan_markdown(scan)
+    markdown = build_scan_markdown(scan, lang=lang)
     filename = f"brand3-scan-{scan_id}.md"
     return PlainTextResponse(
         markdown,
@@ -226,21 +234,13 @@ def _attach_display_identity(store: Sv9Store, scan: dict) -> None:
 
 def _attach_reliability_identity(scan: dict) -> None:
     status = str(scan.get("reliability_status") or "").strip()
-    label_map = {
-        "reliable": "confiable",
-        "usable": "usable",
-        "shadow": "sombra",
-        "broken": "rota",
-    }
-    scan["reliability_label"] = label_map.get(status, "desconocido")
+    scan["reliability_label"] = spanish_status_label(status)
     scan["reliability_reason_codes"] = list(scan.get("reliability_reason_codes") or [])
+    scan["reliability_reason_labels"] = spanish_reason_labels(scan["reliability_reason_codes"])
     scan["canonical_status"] = _canonical_status(scan)
-    scan["canonical_label"] = {
-        "canonical": "canónico",
-        "non_canonical": "no canónico",
-        "invalid": "inválido",
-    }.get(scan["canonical_status"], "desconocido")
+    scan["canonical_label"] = spanish_status_label(scan["canonical_status"])
     scan["canonical_reason_codes"] = _canonical_reason_codes(scan)
+    scan["canonical_reason_labels"] = spanish_reason_labels(scan["canonical_reason_codes"])
 
 
 def _canonical_status(scan: dict) -> str:

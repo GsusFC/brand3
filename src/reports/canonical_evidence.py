@@ -18,6 +18,7 @@ from src.reports.strategic_evidence_packet import (
     StrategicEvidencePacket,
     build_strategic_evidence_packet,
 )
+from src.reports.visual_semantics import reliable_visual_semantics_from_payload
 
 
 MAX_PUBLIC_MENTIONS = 8
@@ -343,16 +344,7 @@ def _raw_input_context(raw_inputs: list[dict[str, Any]]) -> RawInputContext:
             source == SOURCE_VISUAL_SIGNATURE
             and visual_semantics["status"] == "not_detected"
         ):
-            semantics = payload.get("semantics")
-            if semantics:
-                visual_semantics = {"status": "detected", "data": semantics}
-                continue
-            signature = payload.get("signature") or {}
-            if isinstance(signature, dict) and signature.get("semantics"):
-                visual_semantics = {
-                    "status": "detected",
-                    "data": signature["semantics"],
-                }
+            visual_semantics = reliable_visual_semantics_from_payload(payload)
 
     page_role_set = {page["role"] for page in web_pages if page.get("role")}
     page_roles = [role for role in PAGE_ROLE_ORDER if role in page_role_set]

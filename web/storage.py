@@ -277,6 +277,12 @@ def insert_magnetism_scan(
         raw_payload,
         source_run_id=source_run_id,
     )
+    magnetism_score, coherence_score, quadrant = _magnetism_public_fields_from_payload(
+        normalized_payload,
+        magnetism_score=magnetism_score,
+        coherence_score=coherence_score,
+        quadrant=quadrant,
+    )
     with _connect() as conn:
         cur = conn.execute(
             """
@@ -338,6 +344,39 @@ def _magnetism_payload_insert_state(
         return json.dumps(payload, ensure_ascii=False), "failed", f"failed:{reason}"
 
     return json.dumps(payload, ensure_ascii=False), "ready", None
+
+
+def _magnetism_public_fields_from_payload(
+    raw_payload: str,
+    *,
+    magnetism_score: int,
+    coherence_score: int,
+    quadrant: str,
+) -> tuple[int, int, str]:
+    try:
+        payload = json.loads(raw_payload)
+    except Exception:
+        return magnetism_score, coherence_score, quadrant
+    if not isinstance(payload, dict):
+        return magnetism_score, coherence_score, quadrant
+
+    payload_magnetism = _int_from_payload(payload.get("magnetism_score"))
+    payload_coherence = _int_from_payload(payload.get("coherence_score"))
+    payload_quadrant = payload.get("quadrant")
+    return (
+        payload_magnetism if payload_magnetism is not None else magnetism_score,
+        payload_coherence if payload_coherence is not None else coherence_score,
+        str(payload_quadrant) if payload_quadrant else quadrant,
+    )
+
+
+def _int_from_payload(value: object) -> int | None:
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
 
 
 def insert_magnetism_job(
@@ -450,11 +489,31 @@ def get_magnetism_scan(scan_id: int) -> dict | None:
 
 
 def update_magnetism_scan_payload(scan_id: int, raw_payload: str) -> None:
-    """Update a scan payload without changing its scores or public metadata."""
+    """Update a scan payload and keep cached public score columns in sync."""
     with _connect() as conn:
+        row = conn.execute(
+            "SELECT magnetism_score, coherence_score, quadrant FROM magnetism_scans WHERE id = ?",
+            (scan_id,),
+        ).fetchone()
+        if row is None:
+            return
+
+        magnetism_score, coherence_score, quadrant = _magnetism_public_fields_from_payload(
+            raw_payload,
+            magnetism_score=int(row["magnetism_score"]),
+            coherence_score=int(row["coherence_score"]),
+            quadrant=str(row["quadrant"]),
+        )
         conn.execute(
-            "UPDATE magnetism_scans SET raw_payload = ? WHERE id = ?",
-            (raw_payload, scan_id),
+            """
+            UPDATE magnetism_scans
+            SET raw_payload = ?,
+                magnetism_score = ?,
+                coherence_score = ?,
+                quadrant = ?
+            WHERE id = ?
+            """,
+            (raw_payload, magnetism_score, coherence_score, quadrant, scan_id),
         )
         conn.commit()
 

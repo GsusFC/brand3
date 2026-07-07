@@ -53,6 +53,12 @@ Rules:
   enough when the brand's promise creates a duty of proof.
 - Coherence includes evidence-duty: does the brand provide the type of proof its
   own promise requires?
+- When block_evidence_shortlists are present, treat them as the canonical pool
+  for that block. Reuse shortlist evidence verbatim instead of paraphrasing or
+  switching to other pack lines.
+- When block_signal_candidates are present for personality, attributes, or
+  values, select from those exact terms first. Keep the terms verbatim and keep
+  ordering stable instead of inventing synonyms.
 """
 
 ANALYST_TLDR_SOURCE_RULES = [
@@ -87,5 +93,3 @@ ANALYST_TLDR_NEGATIVE_EXAMPLES = [
         "correct_move": "Separate expressive magnetism from earned magnetism. If the brand promises health, nutrition, performance, money, legality, security, AI decision-making, scientific precision, professional authority, or risk reduction, check whether the Research Pack contains the proof that such a promise requires.",
     },
 ]
-
-

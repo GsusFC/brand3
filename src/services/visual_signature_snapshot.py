@@ -6,6 +6,10 @@ from typing import Any
 from urllib.parse import unquote, urlparse
 
 from src.collectors.web_collector import WebData
+from src.visual_signature.acquisition_contract import (
+    is_visual_acquisition_source,
+    visual_evidence_packet_from_payload,
+)
 
 
 def _visual_signature_shadow_screenshot_payload(
@@ -34,7 +38,7 @@ def _visual_signature_shadow_screenshot_payload(
 
 def _snapshot_has_visual_signature_scan(snapshot: dict[str, Any]) -> bool:
     for item in snapshot.get("raw_inputs") or []:
-        if item.get("source") != "visual_signature" or not isinstance(item.get("payload"), dict):
+        if not is_visual_acquisition_source(item.get("source")) or not isinstance(item.get("payload"), dict):
             continue
         scan = item["payload"].get("visual_signature_scan")
         if isinstance(scan, dict) and scan.get("schema_version") == "visual-signature-scan-v1":
@@ -44,10 +48,10 @@ def _snapshot_has_visual_signature_scan(snapshot: dict[str, Any]) -> bool:
 
 def _snapshot_has_visual_signature_evidence(snapshot: dict[str, Any]) -> bool:
     for item in snapshot.get("raw_inputs") or []:
-        if item.get("source") != "visual_signature" or not isinstance(item.get("payload"), dict):
+        if not is_visual_acquisition_source(item.get("source")) or not isinstance(item.get("payload"), dict):
             continue
-        evidence = item["payload"].get("visual_signature_evidence")
-        if isinstance(evidence, dict) and evidence.get("schema_version") == "visual-signature-evidence-v1":
+        evidence = visual_evidence_packet_from_payload(item["payload"])
+        if evidence is not None:
             return True
     return False
 

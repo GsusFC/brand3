@@ -6,6 +6,7 @@ from urllib.parse import urljoin, urlparse
 from typing import Any
 
 from src.features.magnetism.moodboard import MAX_MOODBOARD_IMAGES, extract_moodboard_images
+from src.visual_signature.acquisition_contract import is_visual_acquisition_source
 
 from web.observatory_index_support import _float_or_none, _timestamp
 
@@ -39,7 +40,7 @@ def _best_logo(
     for candidate in _sorted_candidates(visual_signature_logo_candidates or []):
         logo_url = str(candidate.get("url") or "").strip()
         if logo_url:
-            return logo_url, "visual_signature"
+            return logo_url, "visual_acquisition"
     for payload in web_payloads:
         for image in extract_moodboard_images(payload):
             if image.get("role") == "logo" and image.get("url"):
@@ -141,7 +142,7 @@ def _collect_visual_signature_logo_candidates(payload: dict[str, Any], *, base_u
                     "role": role,
                     "alt": str(item.get("alt") or "")[:160],
                     "confidence": _float_or_none(item.get("confidence")) if not isinstance(item.get("confidence"), (int, float)) else float(item.get("confidence")),
-                    "source": str(item.get("source") or "visual_signature"),
+                    "source": str(item.get("source") or "visual_acquisition"),
                 }
             )
 
@@ -158,7 +159,7 @@ def _collect_visual_signature_logo_candidates(payload: dict[str, Any], *, base_u
                 "role": "logo",
                 "alt": str(item.get("alt") or "")[:160],
                 "confidence": _float_or_none(item.get("confidence")) if not isinstance(item.get("confidence"), (int, float)) else float(item.get("confidence")),
-                "source": str(item.get("source") or "visual_signature"),
+                    "source": str(item.get("source") or "visual_acquisition"),
             }
         )
     return candidates
@@ -182,7 +183,7 @@ def _visual_signature_logo_candidates_from_snapshots(snapshots: list[dict[str, A
     seen: set[str] = set()
     for snapshot in snapshots:
         for item in reversed(snapshot.get("raw_inputs") or []):
-            if item.get("source") != "visual_signature":
+            if not is_visual_acquisition_source(item.get("source")):
                 continue
             payload = _visual_signature_payload(item.get("payload"))
             if not isinstance(payload, dict):
@@ -212,7 +213,7 @@ def _visual_signature_history_from_snapshots(snapshots: list[dict[str, Any]]) ->
         run = snapshot.get("run") if isinstance(snapshot.get("run"), dict) else {}
         run_id = int(run.get("id") or 0) if run.get("id") is not None else None
         for item in reversed(snapshot.get("raw_inputs") or []):
-            if item.get("source") != "visual_signature" or not isinstance(item.get("payload"), dict):
+            if not is_visual_acquisition_source(item.get("source")) or not isinstance(item.get("payload"), dict):
                 continue
             payload = item["payload"]
             scan = payload.get("visual_signature_scan")

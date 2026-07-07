@@ -60,7 +60,8 @@ class HealthTests(unittest.TestCase):
         self.assertEqual(payload["status"], "ok")
         self.assertIsInstance(payload["queue_size"], int)
         self.assertIsInstance(payload["running"], int)
-        self.assertEqual(set(payload.keys()), {"status", "queue_size", "running"})
+        self.assertEqual(set(payload.keys()), {"status", "queue_size", "running", "disk"})
+        self.assertIn(payload["disk"]["status"], {"ok", "warning", "critical", "unavailable"})
 
     def test_health_fields_survive_serialization(self):
         r = self.client.get("/_health")
@@ -80,7 +81,27 @@ class HealthTests(unittest.TestCase):
             r = self.client.get("/_health")
 
         self.assertEqual(r.status_code, 200)
-        self.assertEqual(r.json(), {"status": "ok", "queue_size": 3, "running": 1})
+        payload = r.json()
+        self.assertEqual(payload["status"], "ok")
+        self.assertEqual(payload["queue_size"], 3)
+        self.assertEqual(payload["running"], 1)
+        self.assertEqual(payload["disk"]["status"], "ok")
+
+    def test_health_reports_critical_disk_without_failing_probe(self):
+        from collections import namedtuple
+        from unittest.mock import patch
+
+        from web.routes import health as health_route
+
+        usage = namedtuple("usage", "total used free")(total=100, used=99, free=1)
+        with patch.object(health_route.shutil, "disk_usage", return_value=usage):
+            r = self.client.get("/_health")
+
+        self.assertEqual(r.status_code, 200)
+        payload = r.json()
+        self.assertEqual(payload["status"], "ok")
+        self.assertEqual(payload["disk"]["status"], "critical")
+        self.assertEqual(payload["disk"]["free_ratio"], 0.01)
 
 
 class JsonFormatterTests(unittest.TestCase):

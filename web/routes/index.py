@@ -1,9 +1,10 @@
-"""GET / — scanner-first landing + latest analyses."""
+"""GET / — scanner-first landing."""
 
-import asyncio
 from typing import Literal
+from urllib.parse import urlencode
 
 from fastapi import APIRouter, Query, Request
+from fastapi.responses import RedirectResponse
 
 from src.config import BRAND3_DB_PATH
 
@@ -26,14 +27,19 @@ async def index(
 ):
     ui_lang = normalize_lang(lang)
     sort = {"recent": "newest", "score": "score_desc"}.get(sort, sort)
-    observatory = await asyncio.to_thread(
-        build_observatory_index,
+    if q or category or tag or sort != "newest" or page != 1:
+        params = {"lang": ui_lang, "sort": sort, "page": page}
+        if q:
+            params["q"] = q
+        if category:
+            params["category"] = category
+        if tag:
+            params["tag"] = tag
+        return RedirectResponse(f"/reports?{urlencode(params)}", status_code=303)
+    observatory = build_observatory_index(
         db_path=BRAND3_DB_PATH,
-        query=q,
-        sort=sort,
-        category=category,
-        tag=tag,
-        page=page,
+        sort="newest",
+        page=1,
         per_page=25,
         lang=ui_lang,
     )
@@ -47,7 +53,7 @@ async def index(
             "observatory": {
                 "sort": sort,
                 "category": category,
-                "tag": observatory["tag"],
+                "tag": "",
                 "query": q or "",
                 "categories": observatory["categories"],
                 "tags": observatory["tags"],

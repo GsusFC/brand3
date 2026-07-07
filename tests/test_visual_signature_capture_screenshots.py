@@ -649,6 +649,7 @@ class _FakeElement:
         self.visible = visible
         self.click_error = click_error
         self.localization = localization or {}
+        self.click_calls: list[dict[str, object]] = []
 
     def is_visible(self):
         return self.visible
@@ -662,7 +663,8 @@ class _FakeElement:
     def get_attribute(self, attr: str):
         return {"aria-label": self.label, "title": self.label, "value": self.label}.get(attr)
 
-    def click(self, timeout: int = 2500):
+    def click(self, timeout: int = 2500, **kwargs):
+        self.click_calls.append({"timeout": timeout, **kwargs})
         if self.click_error:
             raise RuntimeError(self.click_error)
 
@@ -762,6 +764,7 @@ def test_cookie_modal_accept_all_is_safe_candidate():
     assert dismissal["attempted"] is True
     assert dismissal["method"] == "accept_all"
     assert dismissal["clicked_text"] == "Accept all"
+    assert page.elements[0].click_calls[0] == {"timeout": 4000}
 
 
 def test_dismissal_discovery_ignores_safe_button_outside_current_viewport():
@@ -908,6 +911,40 @@ def test_newsletter_typed_obstruction_with_cookie_signals_uses_consent_context()
     assert discovery["candidate_click_targets"][0]["interaction_policy"] == "safe_to_dismiss"
     assert any(item["normalized_label"] == "personalizar" and item["reason"] == "manage_choices_not_safe" for item in discovery["rejected_click_targets"])
     assert dismissal["attempted"] is True
+
+
+def test_promo_modal_with_only_page_level_cookie_terms_does_not_remap_to_cookie_context():
+    capturer = _load_capturer()
+    page = _FakePage(["Aceptar", "Rechazar", "Personalizar"])
+    obstruction = {
+        "present": True,
+        "type": "promo_modal",
+        "confidence": 0.9,
+        "signals": ["dom_keyword:cookie", "dom_bottom_aligned_container_pattern"],
+        "page_level_signals": ["dom_keyword:cookies"],
+        "overlay_level_signals": [],
+    }
+
+    discovery = capturer._discover_dismissal_targets(page, obstruction)
+    dismissal = capturer._attempt_obstruction_dismissal(page, obstruction)
+
+    assert discovery["eligible"] is True
+    assert discovery["selected_candidate"] is None
+    assert discovery["block_reason"] == "no_safe_close_button_found"
+    assert dismissal["attempted"] is False
+
+
+def test_low_confidence_cookie_obstruction_is_not_eligible_for_dismissal():
+    capturer = _load_capturer()
+    page = _FakePage(["Accept all"])
+    obstruction = {"present": True, "type": "cookie_modal", "confidence": 0.4, "signals": []}
+
+    discovery = capturer._discover_dismissal_targets(page, obstruction)
+    dismissal = capturer._attempt_obstruction_dismissal(page, obstruction)
+
+    assert discovery["eligible"] is False
+    assert discovery["block_reason"] == "obstruction_confidence_too_low"
+    assert dismissal["attempted"] is False
 
 
 def test_cookie_modal_long_banner_text_is_not_clicked_even_with_accept_phrase():

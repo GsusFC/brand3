@@ -228,6 +228,8 @@ def _sanitize_debug_value(value):
 
 
 def _debug_snapshot_payload(snapshot: dict) -> dict:
+    from src.visual_signature.acquisition_contract import is_visual_acquisition_source
+
     run = snapshot.get("run") if isinstance(snapshot.get("run"), dict) else {}
     raw_inputs = snapshot.get("raw_inputs") if isinstance(snapshot.get("raw_inputs"), list) else []
     features = snapshot.get("features") if isinstance(snapshot.get("features"), list) else []
@@ -236,7 +238,7 @@ def _debug_snapshot_payload(snapshot: dict) -> dict:
     )
     visual_signature_payload = None
     for item in reversed(raw_inputs):
-        if item.get("source") == "visual_signature" and isinstance(item.get("payload"), dict):
+        if is_visual_acquisition_source(item.get("source")) and isinstance(item.get("payload"), dict):
             visual_signature_payload = item.get("payload")
             break
     return {
@@ -249,6 +251,9 @@ def _debug_snapshot_payload(snapshot: dict) -> dict:
             for item in raw_inputs
             if isinstance(item, dict)
         ],
+        "visual_acquisition_payload": _sanitize_debug_value(
+            visual_signature_payload if isinstance(visual_signature_payload, dict) else {}
+        ),
         "visual_signature_payload": _sanitize_debug_value(
             visual_signature_payload if isinstance(visual_signature_payload, dict) else {}
         ),

@@ -286,6 +286,52 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn('class="sv9-scan-url-subtitle"', response.text)
         self.assertIn('href="https://acme.test"', response.text)
 
+
+    def test_scan_view_sanitizes_generated_english_text_for_spanish_report(self):
+        from src.sv9.store import Sv9Store
+
+        store = Sv9Store(str(self.db))
+        try:
+            store.conn.execute(
+                """
+                UPDATE sv9_component_scores
+                SET veredicto = ?, message = ?, tile_profile_json = ?
+                WHERE scan_id = ? AND component = ?
+                """,
+                (
+                    "The brand idea is clearly articulated and consistently executed.",
+                    "The snapshot does not provide enough evidence.",
+                    json.dumps(
+                        [
+                            {"id": "I1", "estado": "ok", "evidencia": "visible"},
+                            {
+                                "id": "I2",
+                                "estado": "sin_evidencia",
+                                "motivo": "The snapshot does not provide access to the full product interface.",
+                                "contexto_requerido": "Access to the logged-in product dashboard and error states.",
+                            },
+                            *[{"id": tid, "estado": "no", "motivo": "falta"} for tid in ["I3", "I4", "I5", "I6", "I7", "I8", "I9", "I10"]],
+                        ],
+                        ensure_ascii=False,
+                    ),
+                    self.scan_id,
+                    "brand_idea",
+                ),
+            )
+            store.conn.commit()
+        finally:
+            store.close()
+
+        response = self.client.get(f"/sv9/scan/{self.scan_id}?lang=es")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("The brand idea", response.text)
+        self.assertNotIn("The snapshot", response.text)
+        self.assertNotIn("Access to", response.text)
+        self.assertIn("Síntesis automática", response.text)
+        self.assertIn("Aporta contexto externo verificable", response.text)
+        self.assertIn("coherencia requiere revisión", response.text)
+
     def test_scan_drawer_shows_missing_tile_verdicts(self):
         from src.sv9.store import Sv9Store
 

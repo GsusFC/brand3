@@ -4,7 +4,13 @@ import json
 from pathlib import Path
 
 from src.reports.brand_research_pack import build_brand_research_pack_from_snapshot
-from src.research.evidence_graph import build_evidence_graph_from_snapshot
+from src.research.evidence_graph import (
+    BrandResearchRun,
+    EvidenceClaim,
+    EvidenceGraph,
+    build_evidence_graph_from_snapshot,
+)
+from src.research.evidence_graph_sources import ResearchSource
 from src.research.research_pack_builder import build_brand_research_pack_from_graph
 
 
@@ -301,3 +307,87 @@ def test_brand_research_pack_builder_example_json_written() -> None:
     assert example_path.exists()
     payload = json.loads(example_path.read_text(encoding="utf-8"))
     assert payload["version"] == "brand_research_pack_v0_1"
+
+
+def test_graph_pack_does_not_promote_adoption_proof_into_offer_fields() -> None:
+    graph = EvidenceGraph(
+        version="brand_research_evidence_graph_v0_1",
+        run=BrandResearchRun(
+            run_id=2001,
+            brand_name="Vercel",
+            input_url="https://vercel.com",
+            resolved_entity="Vercel",
+            entity_type="company",
+        ),
+        sources={
+            "home": ResearchSource(
+                source_id="home",
+                url="https://vercel.com/startups",
+                source_type="owned_home",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+                label="startups",
+            )
+        },
+        claims=[
+            EvidenceClaim(
+                claim_id="proof-1",
+                text="Zapier serves over 100 million monthly website visits on Vercel.",
+                claim_type="proof",
+                source_id="home",
+                source_url="https://vercel.com/startups",
+                source_type="owned_home",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+                confidence="high",
+                supports_blocks=["value_proposition", "magnetism"],
+            )
+        ],
+    )
+
+    pack = build_brand_research_pack_from_graph(graph).to_dict()
+
+    assert pack["offer"] == ""
+    assert pack["company_summary"] == ""
+    assert pack["product_summary"] == ""
+
+
+def test_graph_pack_does_not_emit_plain_platform_as_visual_conceptual_signal() -> None:
+    graph = EvidenceGraph(
+        version="brand_research_evidence_graph_v0_1",
+        run=BrandResearchRun(
+            run_id=2002,
+            brand_name="OpsLayer",
+            input_url="https://opslayer.com",
+            resolved_entity="OpsLayer",
+            entity_type="company",
+        ),
+        sources={
+            "home": ResearchSource(
+                source_id="home",
+                url="https://opslayer.com",
+                source_type="owned_home",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+                label="home",
+            )
+        },
+        claims=[
+            EvidenceClaim(
+                claim_id="offer-1",
+                text="OpsLayer is a workflow platform for operations teams that reduces manual reporting.",
+                claim_type="product_offer",
+                source_id="home",
+                source_url="https://opslayer.com",
+                source_type="owned_home",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+                confidence="high",
+            )
+        ],
+    )
+
+    pack = build_brand_research_pack_from_graph(graph).to_dict()
+
+    assert "workflow platform" in pack["offer"].lower()
+    assert "platform" not in [signal.lower() for signal in pack["visual_or_conceptual_signals"]]

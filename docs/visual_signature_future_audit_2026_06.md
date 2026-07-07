@@ -6,6 +6,16 @@ Visual Signature is worth keeping, but not as an immediate replacement for the c
 
 The correct status is: separate project, evidence-only, with a controlled re-entry path. Brand3 core and Scanner should remain stable. Search Enrichment Lab can stay parked. Visual Signature should be audited and validated on its own because it already contains enough architecture to become useful, but it is not ready to become a default scoring dependency.
 
+Naming decision, 2026-06-30:
+
+- Conceptual/product name: **Visual Acquisition Layer**.
+- New raw input source: `visual_acquisition`.
+- New public evidence key: `visual_evidence_packet`.
+- Legacy compatibility remains: `visual_signature` and `visual_signature_evidence` are still readable.
+- The internal Python package can remain `src.visual_signature` while callers migrate.
+
+Reason: the layer's job is acquisition and evidence structuring, not scoring. The old name suggested identity diagnosis and made it too easy to treat its tile-shaped output as score authority.
+
 ## Scope
 
 This audit reviews the local Visual Signature system as it exists now:
@@ -34,13 +44,13 @@ Visual Signature is not a small abandoned helper. It is a broad lab system with:
 - read-only local web UI;
 - optional shadow persistence inside Brand3 runs.
 
-The code repeatedly states the same boundary: Visual Signature is evidence-only and does not modify scoring, rubric dimensions, production reports, or runtime behavior.
+The code repeatedly states the same boundary: Visual Acquisition Layer is evidence-only and does not modify scoring, rubric dimensions, production reports, or runtime behavior.
 
 That boundary is technically visible in:
 
 - `web/routes/visual_signature.py`: read-only UI routes.
 - `web/visual_signature_data.py`: local artifact adapters under `examples/visual_signature`.
-- `src/visual_signature/persistence.py`: raw-input persistence only.
+- `src/visual_signature/persistence.py`: raw-input persistence only; new writes use `visual_acquisition` with a `visual_evidence_packet` alias.
 - `src/services/brand_service.py`: optional `enable_visual_signature_shadow_run`.
 - `src/visual_signature/governance/runtime_policy_matrix.py`: `scoring_integration` blocked.
 

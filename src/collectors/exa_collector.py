@@ -14,13 +14,16 @@ from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass, field
 import os
+import re
 import time
 from urllib.parse import urlparse
+
+from src.services.legal_identity import legal_name_aliases
 
 _TRANSIENT_SEARCH_ATTEMPTS = 2
 _TRANSIENT_SEARCH_DELAY_S = 1.5
 _MAX_BRAND_DATA_WORKERS = 4
-EXA_STRATEGY_VERSION = "precision_vnext_v1"
+EXA_STRATEGY_VERSION = "precision_vnext_v2"
 
 
 @dataclass
@@ -47,6 +50,7 @@ class ExaData:
     """Aggregated Exa data for a brand."""
     brand_name: str
     mentions: list[ExaResult] = field(default_factory=list)
+    profiles: list[ExaResult] = field(default_factory=list)
     competitors: list[ExaResult] = field(default_factory=list)
     ai_visibility_results: list[ExaResult] = field(default_factory=list)
     news: list[ExaResult] = field(default_factory=list)
@@ -88,6 +92,15 @@ class ExaCollector:
             "contents": {
                 "highlights": {"max_characters": 4000},
                 "text": {"max_characters": 5000},
+            },
+        },
+        "external_profiles": {
+            "type": "auto",
+            "num_results": 10,
+            "category": "company",
+            "contents": {
+                "highlights": {"max_characters": 3000},
+                "text": {"max_characters": 4000},
             },
         },
         "competitors": {
@@ -140,6 +153,23 @@ class ExaCollector:
         "uneed.best",
         "devhunt.org",
         "sourceforge.net",
+    )
+
+    _PROFILE_HOST_MARKERS = (
+        "linkedin.com",
+        "crunchbase.com",
+        "g2.com",
+        "capterra.com",
+        "producthunt.com",
+        "trustpilot.com",
+        "angellist.com",
+        "angel.co",
+        "insurtechcommunityhub.com",
+        "startupshub.catalonia.com",
+        "einforma.com",
+        "datocapital.es",
+        "expansion.com",
+        "prospeo.io",
     )
 
     _NOISE_HOST_MARKERS = (
@@ -218,13 +248,56 @@ class ExaCollector:
         hostname = hostname.replace("www.", "").strip("/")
         return hostname
 
-    def _brand_query(self, brand_name: str, brand_url: str | None, suffix: str) -> str:
+    def _brand_query(
+        self,
+        brand_name: str,
+        brand_url: str | None,
+        suffix: str,
+        *,
+        legal_name: str | None = None,
+    ) -> str:
         domain_anchor = self._domain_anchor(brand_url)
         parts = [f'"{brand_name}"']
         if domain_anchor:
             parts.append(f'"{domain_anchor}"')
+        if legal_name:
+            parts.append(f'"{legal_name}"')
         parts.append(suffix)
         return " ".join(part for part in parts if part)
+
+    def _owned_confirmation_query(self, brand_name: str, brand_url: str | None) -> str:
+        return self._brand_query(brand_name, brand_url, "official website product company about services")
+
+    def _external_profiles_query(self, brand_name: str, brand_url: str | None, legal_name: str | None = None) -> str:
+        return self._brand_query(
+            brand_name,
+            brand_url,
+            "company profile linkedin crunchbase business directory services",
+            legal_name=legal_name,
+        )
+
+    def _external_mentions_query(self, brand_name: str, brand_url: str | None, legal_name: str | None = None) -> str:
+        return self._brand_query(
+            brand_name,
+            brand_url,
+            "press mention media coverage client testimonial case study review",
+            legal_name=legal_name,
+        )
+
+    def _news_query(self, brand_name: str, brand_url: str | None, legal_name: str | None = None) -> str:
+        return self._brand_query(
+            brand_name,
+            brand_url,
+            "press release media coverage announcement featured in",
+            legal_name=legal_name,
+        )
+
+    def _ai_visibility_query(self, brand_name: str, brand_url: str | None) -> str:
+        return self._brand_query(
+            brand_name,
+            brand_url,
+            "what is this company services expertise overview",
+        )
 
     def _intent_params(self, intent: str, num_results: int | None, **kwargs) -> dict:
         profile = dict(self._INTENT_PROFILES.get(intent or "", self._INTENT_PROFILES["default"]))
@@ -250,6 +323,101 @@ class ExaCollector:
             if len(token) >= 4:
                 return token
         return ""
+
+    @staticmethod
+    def _normalize_text(value: str | None) -> str:
+        return re.sub(r"[^a-z0-9]+", "", (value or "").strip().lower())
+
+    @classmethod
+    def _brand_aliases(cls, brand_name: str, brand_url: str | None, legal_name: str | None = None) -> set[str]:
+        aliases: set[str] = set()
+        domain_anchor = cls._domain_anchor(brand_url)
+        if domain_anchor:
+            aliases.add(cls._normalize_text(domain_anchor))
+            root_label = domain_anchor.split(".", 1)[0]
+            if root_label and root_label not in {"www", "com", "net", "org", "io", "ai", "co", "es"}:
+                aliases.add(cls._normalize_text(root_label))
+        normalized_name = cls._normalize_text(brand_name)
+        if normalized_name and normalized_name not in {"www", "company"}:
+            aliases.add(normalized_name)
+        aliases.update(legal_name_aliases(legal_name))
+        return {alias for alias in aliases if len(alias) >= 4}
+
+    @classmethod
+    def _entity_match_score(
+        cls,
+        *,
+        result,
+        brand_name: str,
+        brand_url: str | None,
+        legal_name: str | None = None,
+    ) -> tuple[float, str]:
+        aliases = cls._brand_aliases(brand_name, brand_url, legal_name=legal_name)
+        if not aliases:
+            return 0.0, "no_brand_alias"
+
+        host = cls._host(getattr(result, "url", "") or "")
+        host_norm = cls._normalize_text(host)
+        title_norm = cls._normalize_text(getattr(result, "title", "") or "")
+        text_norm = cls._normalize_text(
+            ((getattr(result, "text", "") or "") + " " + (getattr(result, "summary", "") or ""))
+        )
+
+        for alias in aliases:
+            if alias and alias in host_norm:
+                return 1.0, "alias_in_host"
+        for alias in aliases:
+            if alias and alias in title_norm:
+                return 0.95, "alias_in_title"
+        for alias in aliases:
+            if alias and alias in text_norm:
+                return 0.7, "alias_in_text"
+        return 0.0, "no_alias_match"
+
+    @classmethod
+    def _should_accept_result(
+        cls,
+        *,
+        result,
+        intent: str,
+        brand_name: str,
+        brand_url: str | None,
+        legal_name: str | None = None,
+    ) -> tuple[bool, str, float]:
+        source_class, relation, _, _ = cls._classify_source(
+            url=getattr(result, "url", ""),
+            brand_url=brand_url,
+            brand_name=brand_name,
+        )
+        match_score, match_reason = cls._entity_match_score(
+            result=result,
+            brand_name=brand_name,
+            brand_url=brand_url,
+            legal_name=legal_name,
+        )
+
+        if intent == "owned_confirmation":
+            if source_class == "owned":
+                return True, "owned_surface", 1.0
+            return False, "owned_confirmation_requires_owned_surface", match_score
+
+        if intent in {"external_profiles", "external_mentions", "news"}:
+            if source_class == "owned":
+                return False, "owned_surface_excluded_from_external_intent", match_score
+            if source_class in {"technical_internal", "noise"}:
+                return False, "non_market_source_class", match_score
+            if match_score >= 0.95:
+                return True, match_reason, match_score
+            return False, f"weak_entity_match:{match_reason}", match_score
+
+        if intent == "ai_visibility":
+            if source_class == "owned" and match_score >= 0.95:
+                return True, "owned_alias_match", match_score
+            if source_class != "owned" and match_score >= 0.95:
+                return True, match_reason, match_score
+            return False, f"weak_entity_match:{match_reason}", match_score
+
+        return True, "default_accept", match_score
 
     @staticmethod
     def _host(url: str | None) -> str:
@@ -415,6 +583,7 @@ class ExaCollector:
         intent: str = "default",
         brand_name: str = "",
         brand_url: str | None = None,
+        legal_name: str | None = None,
         **kwargs,
     ) -> list[ExaResult]:
         """Run a search query via Exa."""
@@ -454,6 +623,7 @@ class ExaCollector:
 
         results = []
         filtered_empty_content_count = 0
+        filtered_irrelevant_count = 0
         for r in response.results:
             if getattr(r, "url", "") and not self._result_has_content(r):
                 filtered_empty_content_count += 1
@@ -463,6 +633,16 @@ class ExaCollector:
                 brand_url=brand_url,
                 brand_name=brand_name,
             )
+            accepted, acceptance_reason, match_score = self._should_accept_result(
+                result=r,
+                intent=intent,
+                brand_name=brand_name,
+                brand_url=brand_url,
+                legal_name=legal_name,
+            )
+            if not accepted:
+                filtered_irrelevant_count += 1
+                continue
             raw_score = getattr(r, "score", None)
             results.append(ExaResult(
                 url=r.url,
@@ -478,6 +658,10 @@ class ExaCollector:
                 classification_reason=reason,
                 requires_human_review=requires_review,
                 score_is_missing=raw_score is None,
+                metadata={
+                    "entity_match_score": match_score,
+                    "entity_match_reason": acceptance_reason,
+                },
             ))
         elapsed_ms = int((time.perf_counter() - start) * 1000)
         self._record_event(
@@ -487,6 +671,7 @@ class ExaCollector:
                 "status": "no_results" if not results else "ok",
                 "result_count": len(results),
                 "filtered_empty_content_count": filtered_empty_content_count,
+                "filtered_irrelevant_count": filtered_irrelevant_count,
                 "params": {k: v for k, v in params.items() if k != "contents"},
                 "score_missing_count": sum(1 for item in results if item.score_is_missing),
                 "configured_type": configured_type,
@@ -505,7 +690,13 @@ class ExaCollector:
         )
         return results
 
-    def collect_brand_data(self, brand_name: str, brand_url: str = None) -> ExaData:
+    def collect_brand_data(
+        self,
+        brand_name: str,
+        brand_url: str = None,
+        *,
+        legal_name: str | None = None,
+    ) -> ExaData:
         """Collect all Exa data for a brand."""
         with self._search_events_lock:
             self._search_events = []
@@ -514,26 +705,41 @@ class ExaCollector:
 
         tasks = {
             "owned_confirmation": lambda: self.search(
-                self._brand_query(brand_name, brand_url, "official website product company about"),
+                self._owned_confirmation_query(brand_name, brand_url),
                 intent="owned_confirmation",
                 brand_name=brand_name,
                 brand_url=brand_url,
+                legal_name=legal_name,
                 include_domains=[domain_anchor] if domain_anchor else None,
             ),
+            "external_profiles": lambda: self.search(
+                self._external_profiles_query(brand_name, brand_url, legal_name),
+                intent="external_profiles",
+                brand_name=brand_name,
+                brand_url=brand_url,
+                legal_name=legal_name,
+            ),
             "external_mentions": lambda: self.search(
-                self._brand_query(brand_name, brand_url, "review case study customer integration"),
+                self._external_mentions_query(brand_name, brand_url, legal_name),
                 intent="external_mentions",
                 brand_name=brand_name,
                 brand_url=brand_url,
+                legal_name=legal_name,
                 exclude_domains=[domain_anchor] if domain_anchor else None,
             ),
             "news": lambda: self.search(
-                self._brand_query(brand_name, brand_url, "announcement launch funding partnership product"),
+                self._news_query(brand_name, brand_url, legal_name),
                 intent="news",
                 brand_name=brand_name,
                 brand_url=brand_url,
+                legal_name=legal_name,
+                exclude_domains=[domain_anchor] if domain_anchor else None,
             ),
-            "ai_visibility": lambda: self.probe_ai_visibility(brand_name, brand_url=brand_url),
+            "ai_visibility": lambda: self.probe_ai_visibility(
+                brand_name,
+                brand_url=brand_url,
+                legal_name=legal_name,
+            ),
         }
         if domain_anchor and self._include_competitor_intent:
             tasks["competitors"] = lambda: self.search(
@@ -545,11 +751,25 @@ class ExaCollector:
             )
 
         results = self._run_brand_data_tasks(tasks)
-        data.mentions = (results.get("owned_confirmation") or []) + (results.get("external_mentions") or [])
+        external_mentions = results.get("external_mentions") or []
+        promoted_profiles = [item for item in external_mentions if self._is_profile_like_result(item)]
+        independent_mentions = [item for item in external_mentions if not self._is_profile_like_result(item)]
+        data.mentions = (
+            (results.get("owned_confirmation") or [])
+            + independent_mentions
+        )
+        data.profiles = (results.get("external_profiles") or []) + promoted_profiles
         data.competitors = results.get("competitors") or []
         data.news = results.get("news") or []
         data.ai_visibility_results = results.get("ai_visibility") or []
         data.diagnostics = self._build_diagnostics()
+        if legal_name:
+            data.diagnostics["identity_anchors"] = {
+                "brand_name": brand_name,
+                "brand_url": brand_url or "",
+                "legal_name": legal_name,
+                "alias_count": len(self._brand_aliases(brand_name, brand_url, legal_name=legal_name)),
+            }
         with self._search_events_lock:
             data.raw_responses = {"search_events": list(self._search_events)}
 
@@ -571,16 +791,23 @@ class ExaCollector:
                     results[name] = []
         return results
 
-    def probe_ai_visibility(self, brand_name: str, brand_url: str | None = None) -> list[ExaResult]:
+    def probe_ai_visibility(
+        self,
+        brand_name: str,
+        brand_url: str | None = None,
+        *,
+        legal_name: str | None = None,
+    ) -> list[ExaResult]:
         """
         Check if the brand appears in AI-related content.
         Proxies 'AI visibility' — do LLMs know this brand?
         """
         return self.search(
-            self._brand_query(brand_name, brand_url, "AI recommendation alternatives best tools"),
+            self._ai_visibility_query(brand_name, brand_url),
             intent="ai_visibility",
             brand_name=brand_name,
             brand_url=brand_url,
+            legal_name=legal_name,
         )
 
     def _build_diagnostics(self) -> dict:
@@ -596,6 +823,7 @@ class ExaCollector:
                 "query": event.get("query") or "",
                 "params": event.get("params") or {},
                 "filtered_empty_content_count": int(event.get("filtered_empty_content_count") or 0),
+                "filtered_irrelevant_count": int(event.get("filtered_irrelevant_count") or 0),
                 "score_missing_count": int(event.get("score_missing_count") or 0),
                 "configured_type": event.get("configured_type") or "",
                 "effective_type": event.get("effective_type") or "",
@@ -619,13 +847,14 @@ class ExaCollector:
         return {
             "strategy": EXA_STRATEGY_VERSION,
             "strategy_notes": [
-                "owned_confirmation, external_mentions, news, and ai_visibility are default production intents.",
+                "owned_confirmation, external_profiles, external_mentions, news, and ai_visibility are default production intents.",
                 "competitors intent is opt-in via BRAND3_EXA_INCLUDE_COMPETITOR_INTENT=1.",
                 "Use separate CompetitorCollector for full competitive analysis.",
             ],
             "competitor_intent_enabled": self._include_competitor_intent,
             "planned_intents": [
                 "owned_confirmation",
+                "external_profiles",
                 "external_mentions",
                 "news",
                 "ai_visibility",
@@ -638,3 +867,11 @@ class ExaCollector:
             "latency_buckets_by_intent": latency_by_intent,
             "unresolved_collision_count": unresolved_collision_count,
         }
+
+    @classmethod
+    def _is_profile_like_result(cls, result: ExaResult) -> bool:
+        source_class = str(getattr(result, "source_class", "") or "").strip().lower()
+        if source_class == "marketplace_listing":
+            return True
+        host = cls._host(getattr(result, "url", "") or "")
+        return any(host == marker or host.endswith(f".{marker}") for marker in cls._PROFILE_HOST_MARKERS)

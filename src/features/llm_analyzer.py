@@ -43,6 +43,36 @@ llm_failure_reason = _llm_runtime.llm_failure_reason
 _LOG = logging.getLogger(__name__)
 
 
+def _normalize_usage_metadata(usage: Any) -> dict[str, Any] | None:
+    if not isinstance(usage, dict):
+        return None
+    out: dict[str, Any] = {}
+    for key in (
+        "prompt_tokens",
+        "completion_tokens",
+        "total_tokens",
+        "promptTokenCount",
+        "candidatesTokenCount",
+        "totalTokenCount",
+        "cachedContentTokenCount",
+        "thoughtsTokenCount",
+    ):
+        value = usage.get(key)
+        if isinstance(value, bool):
+            continue
+        if isinstance(value, (int, float)):
+            out[key] = value
+    return out or None
+
+
+def _llm_call_result(value: Any) -> tuple[str, str, dict[str, Any] | None]:
+    """Accept legacy (status, content) pairs from test doubles."""
+
+    if isinstance(value, tuple) and len(value) == 2:
+        return value[0], value[1], None
+    return value
+
+
 class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
     """LLM-powered brand content analyzer."""
 
@@ -64,6 +94,7 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
         self.last_raw_response: str | None = None
         self.call_failures: list[dict[str, Any]] = []
         self.last_request_debug: dict[str, Any] | None = None
+        self.usage_observations: list[dict[str, Any]] = []
 
     def _call(self, system: str, user: str, max_tokens: int = 8000) -> str:
         """Make an LLM call via the OpenAI-compatible endpoint.
@@ -81,6 +112,12 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             self._clear_failure()
             return cached
         self.cache_misses += 1
+        self._record_usage_observation(
+            event="cache_miss",
+            response_type="text",
+            cache_key=cache_key,
+            max_tokens=max_tokens,
+        )
 
         body: dict = {
             "model": self.model,
@@ -93,14 +130,24 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
         }
         payload = json.dumps(body).encode()
 
-        status, content = _run_llm_http_call(
-            url=_chat_completions_url(self.base_url),
-            payload=payload,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-            },
-            timeout_seconds=self.timeout_seconds,
+        status, content, usage_payload = _llm_call_result(
+            _run_llm_http_call(
+                url=_chat_completions_url(self.base_url),
+                payload=payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.api_key}",
+                },
+                timeout_seconds=self.timeout_seconds,
+            )
+        )
+        self._record_usage_observation(
+            event="provider_call",
+            response_type="text",
+            cache_key=cache_key,
+            status=status,
+            max_tokens=max_tokens,
+            usage_metadata=_normalize_usage_metadata(usage_payload),
         )
         if status == "ok":
             if not content:
@@ -152,6 +199,13 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             self._clear_failure()
             return cached
         self.cache_misses += 1
+        self._record_usage_observation(
+            event="cache_miss",
+            response_type="json",
+            cache_key=cache_key,
+            max_tokens=max_tokens,
+            schema_name=normalized_schema_name,
+        )
 
         body: dict = {
             "model": self.model,
@@ -194,11 +248,22 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
                 "timeout_seconds": effective_timeout,
             }
             _LOG.debug("llm transport debug", extra={"request_debug": self.last_request_debug})
-        status, content = _run_llm_http_call(
-            url=final_url,
-            payload=payload,
-            headers=headers,
-            timeout_seconds=effective_timeout,
+        status, content, usage_payload = _llm_call_result(
+            _run_llm_http_call(
+                url=final_url,
+                payload=payload,
+                headers=headers,
+                timeout_seconds=effective_timeout,
+            )
+        )
+        self._record_usage_observation(
+            event="provider_call",
+            response_type="json",
+            cache_key=cache_key,
+            status=status,
+            max_tokens=max_tokens,
+            schema_name=normalized_schema_name,
+            usage_metadata=_normalize_usage_metadata(usage_payload),
         )
         if status != "ok" and json_schema is not None:
             # Provider compatibility varies; keep production safe by falling back
@@ -206,11 +271,23 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             if status != "transport_error":
                 fallback_body = dict(body)
                 fallback_body["response_format"] = {"type": "json_object"}
-                status, content = _run_llm_http_call(
-                    url=final_url,
-                    payload=json.dumps(fallback_body).encode(),
-                    headers=headers,
-                    timeout_seconds=effective_timeout,
+                status, content, usage_payload = _llm_call_result(
+                    _run_llm_http_call(
+                        url=final_url,
+                        payload=json.dumps(fallback_body).encode(),
+                        headers=headers,
+                        timeout_seconds=effective_timeout,
+                    )
+                )
+                self._record_usage_observation(
+                    event="provider_call",
+                    response_type="json",
+                    cache_key=cache_key,
+                    status=status,
+                    max_tokens=max_tokens,
+                    schema_name=normalized_schema_name,
+                    request_variant="json_object_fallback",
+                    usage_metadata=_normalize_usage_metadata(usage_payload),
                 )
         if status != "ok":
             if status == "timeout":
@@ -298,6 +375,13 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             self._clear_failure()
             return cached
         self.cache_misses += 1
+        self._record_usage_observation(
+            event="cache_miss",
+            response_type="json_gemini_native",
+            cache_key=cache_key,
+            max_tokens=max_tokens,
+            schema_name=schema_name or "brand3_json_response",
+        )
 
         body = {
             "systemInstruction": {"parts": [{"text": system}]},
@@ -320,11 +404,22 @@ class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
             "x-goog-api-key": self.api_key,
         }
         payload = json.dumps(body).encode("utf-8")
-        status, content = _run_gemini_http_call(
-            url=final_url,
-            payload=payload,
-            headers=headers,
-            timeout_seconds=effective_timeout,
+        status, content, usage_payload = _llm_call_result(
+            _run_gemini_http_call(
+                url=final_url,
+                payload=payload,
+                headers=headers,
+                timeout_seconds=effective_timeout,
+            )
+        )
+        self._record_usage_observation(
+            event="provider_call",
+            response_type="json_gemini_native",
+            cache_key=cache_key,
+            status=status,
+            max_tokens=max_tokens,
+            schema_name=schema_name or "brand3_json_response",
+            usage_metadata=_normalize_usage_metadata(usage_payload),
         )
         if status != "ok":
             if status == "timeout":

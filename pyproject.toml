@@ -28,6 +28,7 @@ dev = [
 
 [tool.setuptools.package-data]
 "web" = ["templates/*.j2", "static/*"]
+"src.sv9_flow" = ["policy_data/*.json"]
 
 [tool.setuptools.packages.find]
 include = ["src", "src.*", "web", "web.*"]

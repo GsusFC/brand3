@@ -7,6 +7,9 @@ from html import unescape
 from urllib.parse import urlparse
 
 _MIN_USABLE_MARKDOWN_CHARS = 200
+_FALLBACK_MAX_LINES = 96
+_FALLBACK_RICH_TEXT_MIN_CHARS = 2000
+_FALLBACK_MAX_CHARS = 12000
 
 
 class WebCollectorContentSupport:
@@ -195,7 +198,7 @@ class WebCollectorContentSupport:
         return canonical_url, alternate_domains
 
     def _html_to_markdown_fallback(self, html: str) -> str:
-        """Extract a minimal, readable text snapshot from raw HTML."""
+        """Extract a readable text snapshot from raw HTML."""
         if not html:
             return ""
 
@@ -210,13 +213,14 @@ class WebCollectorContentSupport:
         )
 
         block_matches = re.findall(
-            r"<(h1|h2|h3|p|li)[^>]*>(.*?)</\1>",
+            r"<(h[1-6]|p|li|blockquote)[^>]*>(.*?)</\1>",
             body,
             flags=re.IGNORECASE | re.DOTALL,
         )
 
-        lines = []
-        seen = set()
+        lines: list[str] = []
+        seen: set[str] = set()
+        total_chars = 0
         for _, fragment in block_matches:
             text = re.sub(r"<[^>]+>", " ", fragment)
             text = self._normalize_html_text(text)
@@ -227,8 +231,33 @@ class WebCollectorContentSupport:
                 continue
             seen.add(lowered)
             lines.append(text)
-            if len(lines) >= 24:
+            total_chars += len(text)
+            if len(lines) >= _FALLBACK_MAX_LINES:
                 break
+
+        if total_chars < _FALLBACK_RICH_TEXT_MIN_CHARS:
+            # SPA/SSR pages keep most copy in <div>/<span>, invisible to the
+            # block-tag pass; recover it from whole-body text with breaks at
+            # block boundaries so strategy sections (values, culture) survive.
+            with_breaks = re.sub(
+                r"</(p|div|h[1-6]|li|section|article|blockquote|tr)>|<br\s*/?>",
+                "\n",
+                body,
+                flags=re.IGNORECASE,
+            )
+            text_only = re.sub(r"<[^>]+>", " ", with_breaks)
+            for raw_line in text_only.splitlines():
+                text = self._normalize_html_text(raw_line)
+                if not text or len(text) < 12:
+                    continue
+                lowered = text.lower()
+                if lowered in seen:
+                    continue
+                seen.add(lowered)
+                lines.append(text)
+                total_chars += len(text)
+                if len(lines) >= _FALLBACK_MAX_LINES or total_chars >= _FALLBACK_MAX_CHARS:
+                    break
 
         content_parts = []
         if title:

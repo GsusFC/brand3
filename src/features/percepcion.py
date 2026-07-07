@@ -25,6 +25,7 @@ from ..models.brand import FeatureValue
 from ..collectors.context_collector import ContextData
 from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
+from .exa_relevance import filter_independent_relevant_results
 from .llm_analyzer import LLMAnalyzer, llm_failure_reason
 from .score_reconciliation import reconcile_label_score
 
@@ -163,6 +164,12 @@ def _mention_payload(results) -> list[dict]:
     return out
 
 
+def _independent_relevant_mentions(exa: ExaData | None) -> list:
+    if not exa:
+        return []
+    return filter_independent_relevant_results(exa.mentions + exa.news, exa.brand_name)
+
+
 class PercepcionExtractor:
     """Extract percepción features from third-party mentions and coverage."""
 
@@ -207,34 +214,47 @@ class PercepcionExtractor:
     # ── brand_sentiment (LLM-first, absorbs controversy) ───────────────
 
     def _brand_sentiment(self, exa: ExaData | None) -> FeatureValue:
-        if not exa or not exa.mentions:
+        if not exa:
             return FeatureValue(
                 "brand_sentiment", 50.0,
                 raw_value={"reason": "no_mentions"},
                 confidence=0.3, source="none",
             )
+        if not exa.mentions and not exa.news:
+            return FeatureValue(
+                "brand_sentiment", 50.0,
+                raw_value={"reason": "no_mentions"},
+                confidence=0.3, source="none",
+            )
+        mentions = _independent_relevant_mentions(exa)
+        if not mentions:
+            return FeatureValue(
+                "brand_sentiment", 50.0,
+                raw_value={"reason": "no_independent_relevant_mentions"},
+                confidence=0.3, source="exa",
+            )
 
         if self.llm is not None and getattr(self.llm, "api_key", None):
-            mentions = _mention_payload(exa.mentions + exa.news)
+            mentions_payload = _mention_payload(mentions)
             try:
                 result = self.llm.analyze_brand_sentiment(
-                    mentions, exa.brand_name or "",
+                    mentions_payload, exa.brand_name or "",
                 )
             except Exception as exc:
                 return self._sentiment_heuristic(
-                    exa, reason="llm_error", extra={"error": str(exc)[:200]},
+                    mentions, reason="llm_error", extra={"error": str(exc)[:200]},
                 )
 
             if not isinstance(result, dict) or "sentiment_score" not in result:
                 return self._sentiment_heuristic(
-                    exa, reason=llm_failure_reason(self.llm, "llm_invalid_response"),
+                    mentions, reason=llm_failure_reason(self.llm, "llm_invalid_response"),
                     extra={"got": type(result).__name__},
                 )
 
             verdict = result.get("verdict", "unclear")
             if verdict not in _VALID_SENTIMENT_VERDICTS:
                 return self._sentiment_heuristic(
-                    exa, reason="llm_invalid_verdict",
+                    mentions, reason="llm_invalid_verdict",
                     extra={"got": str(verdict)[:50]},
                 )
 
@@ -242,7 +262,7 @@ class PercepcionExtractor:
                 score = float(result.get("sentiment_score", 50))
             except (TypeError, ValueError):
                 return self._sentiment_heuristic(
-                    exa, reason="llm_invalid_response",
+                    mentions, reason="llm_invalid_response",
                     extra={"got": type(result.get("sentiment_score")).__name__},
                 )
             score = max(0.0, min(score, 100.0))
@@ -261,7 +281,7 @@ class PercepcionExtractor:
                 score = min(score, _CONTROVERSY_CAP)
 
             evidence, dropped_evidence = _clean_sentiment_evidence(result.get("evidence"))
-            partial_evidence = bool(mentions) and (
+            partial_evidence = bool(mentions_payload) and (
                 dropped_evidence or (not evidence and verdict != "unclear")
             )
             confidence = 0.5 if (verdict == "unclear" or partial_evidence) else 0.85
@@ -290,17 +310,17 @@ class PercepcionExtractor:
                 confidence=confidence, source="llm",
             )
 
-        return self._sentiment_heuristic(exa, reason="llm_unavailable")
+        return self._sentiment_heuristic(mentions, reason="llm_unavailable")
 
     @staticmethod
     def _sentiment_heuristic(
-        exa: ExaData,
+        results: list,
         reason: str,
         extra: dict | None = None,
     ) -> FeatureValue:
         all_text = " ".join(
             ((r.text or "") + " " + (r.summary or "")).lower()
-            for r in exa.mentions + exa.news
+            for r in results
         )
         total_words = len(all_text.split()) or 1
         pos_count = sum(1 for w in POSITIVE_WORDS if w in all_text)
@@ -390,15 +410,28 @@ class PercepcionExtractor:
     # ── sentiment_trend (LLM-first if enough data, heuristic otherwise) ─
 
     def _sentiment_trend(self, exa: ExaData | None) -> FeatureValue:
-        if not exa or not exa.mentions:
+        if not exa:
             return FeatureValue(
                 "sentiment_trend", 50.0,
                 raw_value={"reason": "no_mentions"},
                 confidence=0.3, source="none",
             )
+        if not exa.mentions and not exa.news:
+            return FeatureValue(
+                "sentiment_trend", 50.0,
+                raw_value={"reason": "no_mentions"},
+                confidence=0.3, source="none",
+            )
+        mentions = _independent_relevant_mentions(exa)
+        if not mentions:
+            return FeatureValue(
+                "sentiment_trend", 50.0,
+                raw_value={"reason": "no_independent_relevant_mentions"},
+                confidence=0.3, source="exa",
+            )
 
         dated: list[tuple[datetime, object]] = []
-        for r in exa.mentions + exa.news:
+        for r in mentions:
             d = _parse_published_date(getattr(r, "published_date", "") or "")
             if d is not None:
                 dated.append((d, r))

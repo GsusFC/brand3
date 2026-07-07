@@ -135,6 +135,9 @@ def _looks_like_product_summary_noise(text: str) -> bool:
             "skip to main content",
             "ask assistant",
             "api playground",
+            "schema detected",
+            "copy logo as svg",
+            "copy wordmark as svg",
             "select your city",
             "popular cities",
             "see experiences",
@@ -370,4 +373,3 @@ def _offer_sentence_score(sentence: str) -> int:
     if len(sentence) > 260:
         score -= 6
     return score
-

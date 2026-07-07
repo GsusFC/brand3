@@ -97,6 +97,114 @@ class EvaluateComponentTests(unittest.TestCase):
         self.assertEqual(result.score, 4)
         self.assertEqual(len(result.tile_profile), 10)
 
+
+    def test_generated_tile_explanations_are_sanitized_to_spanish(self):
+        class EnglishLLM(FakeLLM):
+            def _call_json(self, system, user, max_tokens=8000, *, json_schema=None, schema_name=None, timeout_seconds=None, strict_schema=True):
+                ids = self._tiles_for(schema_name)
+                return {
+                    "componente": schema_name,
+                    "baldosas": [
+                        {"id": ids[0], "estado": "ok", "evidencia": "quote"},
+                        {
+                            "id": ids[1],
+                            "estado": "sin_evidencia",
+                            "motivo": "The snapshot does not provide access to the full product interface.",
+                            "contexto_requerido": "Access to the logged-in product dashboard and error states.",
+                        },
+                        *[{"id": tid, "estado": "no", "motivo": "falta"} for tid in ids[2:]],
+                    ],
+                }
+
+        result = evaluate_component(
+            "personality",
+            tldr=full_tldr(),
+            signals=[],
+            brand_name="Acme",
+            url="u",
+            llm=EnglishLLM(),
+        )
+
+        blind = result.tile_profile[1]
+        self.assertEqual(result.status, STATUS_SCORED)
+        self.assertNotIn("The snapshot", blind.motivo)
+        self.assertNotIn("Access to", blind.contexto_requerido)
+        self.assertIn("snapshot no aporta evidencia suficiente", blind.motivo)
+        self.assertIn("Aporta contexto externo verificable", blind.contexto_requerido)
+
+    def test_sv9_flow_tile_signals_are_rendered_as_tile_scoped_context(self):
+        llm = FakeLLM(ok_up_to=2)
+        evaluate_component(
+            "magnetism",
+            tldr=full_tldr(),
+            signals=[
+                {
+                    "feature": "sv9_flow_tile_signal",
+                    "legacy_dimension": "sv9-tile-signals-v1",
+                    "value": "insufficient_evidence",
+                    "confidence": "high",
+                    "source": "brand_interpretation",
+                    "tile": "magnetism.MG10",
+                    "effect": "insufficient_evidence",
+                    "evidence_refs": ["features.7"],
+                    "rationale": "No direct gravity evidence.",
+                }
+            ],
+            brand_name="Acme",
+            url="u",
+            llm=llm,
+        )
+
+        user_prompt = llm.calls[0]["user"]
+        self.assertIn("SV9 Flow tile signal: tile=magnetism.MG10 effect=insufficient_evidence", user_prompt)
+        self.assertIn("Un `supports` en una baldosa no enciende otras baldosas por arrastre", user_prompt)
+        self.assertIn("Un `insufficient_evidence` de alta confianza en una baldosa exige `sin_evidencia`", user_prompt)
+        self.assertIn("Un `weakens` de alta confianza exige `no`", user_prompt)
+
+    def test_high_confidence_negative_sv9_flow_tile_signals_override_llm_tile_states(self):
+        llm = FakeLLM(ok_up_to=10)
+        result = evaluate_component(
+            "magnetism",
+            tldr=full_tldr(),
+            signals=[
+                {
+                    "feature": "sv9_flow_tile_signal",
+                    "value": "insufficient_evidence",
+                    "confidence": "high",
+                    "tile": "magnetism.MG10",
+                    "effect": "insufficient_evidence",
+                    "rationale": "No direct gravity evidence.",
+                },
+                {
+                    "feature": "sv9_flow_tile_signal",
+                    "value": "weakens",
+                    "confidence": "high",
+                    "tile": "magnetism.MG3",
+                    "effect": "weakens",
+                    "rationale": "No hook evidence.",
+                },
+                {
+                    "feature": "sv9_flow_tile_signal",
+                    "value": "insufficient_evidence",
+                    "confidence": "medium",
+                    "tile": "magnetism.MG9",
+                    "effect": "insufficient_evidence",
+                    "rationale": "Medium confidence remains advisory.",
+                },
+            ],
+            brand_name="Acme",
+            url="u",
+            llm=llm,
+        )
+
+        by_tile = {verdict.tile_id: verdict for verdict in result.tile_profile}
+        self.assertEqual(result.score, 8)
+        self.assertEqual(by_tile["MG10"].estado, "sin_evidencia")
+        self.assertEqual(by_tile["MG3"].estado, "no")
+        self.assertEqual(by_tile["MG9"].estado, "ok")
+        self.assertIn("No direct gravity evidence", by_tile["MG10"].motivo)
+        self.assertIn("No hook evidence", by_tile["MG3"].motivo)
+
     def test_missing_llm_marks_not_evaluated(self):
         result = evaluate_component(
             "mission", tldr=full_tldr(), signals=[], brand_name="Acme", url="u", llm=None
@@ -304,6 +412,22 @@ class EvaluateCoherenciaTests(unittest.TestCase):
         prompt = llm.calls[-1]["user"]
         self.assertIn("(no detectado)", prompt)
         self.assertIn("messaging_consistency", prompt)
+
+
+    def test_english_component_verdict_falls_back_to_spanish_summary(self):
+        class EnglishVeredictoLLM(FakeLLM):
+            def _call_json(self, system, user, max_tokens=8000, **kwargs):
+                payload = super()._call_json(system, user, max_tokens, **kwargs)
+                payload["veredicto"] = "The brand idea is clearly articulated and consistently executed."
+                return payload
+
+        result = evaluate_coherencia(
+            components={}, tldr=full_tldr(), signals=[], brand_name="Acme", url="u", llm=EnglishVeredictoLLM(ok_up_to=2)
+        )
+
+        self.assertEqual(result.status, STATUS_SCORED)
+        self.assertNotIn("The brand idea", result.veredicto)
+        self.assertIn("Síntesis automática", result.veredicto)
 
     def test_coherencia_without_llm_is_not_evaluated(self):
         result = evaluate_coherencia(

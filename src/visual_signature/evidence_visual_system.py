@@ -71,7 +71,7 @@ def first_impression_contract(payload: dict[str, Any], capture: dict[str, Any]) 
 def copy_visual_alignment_contract(payload: dict[str, Any], capture: dict[str, Any]) -> dict[str, Any]:
     semantics = _dict(payload.get("semantics"))
     semantic_data = _dict(semantics.get("data"))
-    alignment = _semantic_text(semantic_data.get("copy_visual_alignment")) or _semantic_text(semantic_data.get("visual_coherence"))
+    alignment = _semantic_text(semantic_data.get("copy_visual_alignment"))
     multimodal_available = _semantics_detected(semantics)
     status = "blocked" if capture.get("status") != "usable" else "available" if alignment else "unknown"
     return {

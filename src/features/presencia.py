@@ -18,6 +18,7 @@ from ..collectors.context_collector import ContextData
 from ..collectors.exa_collector import ExaData
 from ..collectors.social_collector import SocialData
 from ..collectors.web_collector import WebData
+from .exa_relevance import brand_aliases, is_owned_result, subject_relevance
 from ..models.brand import FeatureValue
 
 
@@ -48,27 +49,53 @@ class PresenciaExtractor:
         "angellist.com",
         "producthunt.com",
     )
+    AI_VISIBILITY_WEAK_DIRECTORY_DOMAINS = (
+        "linkedin.com",
+        "startupshub.catalonia.com",
+        "einforma.com",
+        "datocapital.es",
+        "expansion.com",
+        "prospeo.io",
+    )
+    STRATEGIC_OWNED_PATH_MARKERS = (
+        "/about",
+        "/company",
+        "/equipo",
+        "/manifesto",
+        "/product",
+        "/products",
+        "/platform",
+        "/features",
+        "/solutions",
+        "/soluciones",
+        "/use-cases",
+        "/casos-de-uso",
+        "/pricing",
+    )
+    SUPPORT_OWNED_PATH_MARKERS = (
+        "/privacy",
+        "/privacidad",
+        "/legal",
+        "/terms",
+        "/contact",
+        "/contacto",
+        "/blog",
+        "/news",
+        "/resources",
+        "/article",
+        "/post",
+        "/docs",
+        "/documentation",
+        "/developers",
+        "/api",
+        "/support",
+        "/help",
+    )
 
     @staticmethod
     def _subject_relevance(result, brand_name: str) -> float:
         """Estimate whether the brand is central in the result, not just mentioned in passing."""
-        brand_lower = (brand_name or "").strip().lower()
-        if not brand_lower:
-            return 0.5
-
-        title = (getattr(result, "title", "") or "").lower()
-        url = (getattr(result, "url", "") or "").lower()
-        text = (
-            (getattr(result, "text", "") or "")
-            + " "
-            + (getattr(result, "summary", "") or "")
-        ).lower()
-
-        if brand_lower in title or brand_lower in url:
-            return 1.0
-        if brand_lower in text:
-            return 0.7
-        return 0.35
+        return subject_relevance(result, brand_name)
 
     @staticmethod
     def _normalize_relevance(score: float) -> float:
@@ -119,6 +146,90 @@ class PresenciaExtractor:
         if host.startswith("www."):
             host = host[4:]
         return host or None
+
+    @classmethod
+    def _is_weak_ai_visibility_domain(cls, domain: str | None) -> bool:
+        if not domain:
+            return False
+        return any(domain == candidate or domain.endswith(f".{candidate}") for candidate in cls.AI_VISIBILITY_WEAK_DIRECTORY_DOMAINS)
+
+    def _credible_ai_visibility_results(self, exa: ExaData) -> list:
+        credible = []
+        for result in exa.ai_visibility_results[:5]:
+            if getattr(result, "source_class", "") == "owned" or getattr(result, "relation", "") in {"audited_surface", "same_root_surface"}:
+                continue
+            domain = self._extract_domain(result.url)
+            if self._is_weak_ai_visibility_domain(domain):
+                continue
+            if self._subject_relevance(result, exa.brand_name) < 0.6:
+                continue
+            credible.append(result)
+        return credible
+
+    def _looks_owned_by_host(self, result, brand_name: str) -> bool:
+        if is_owned_result(result):
+            return True
+        domain = self._extract_domain(getattr(result, "url", ""))
+        if not domain or self._is_weak_ai_visibility_domain(domain):
+            return False
+        compact_domain = domain.replace(".", "")
+        return any(alias and alias in compact_domain for alias in brand_aliases(brand_name))
+
+    def _is_profile_result(self, result) -> bool:
+        if getattr(result, "source_class", "") == "marketplace_listing":
+            return True
+        domain = self._extract_domain(getattr(result, "url", ""))
+        if self._is_weak_ai_visibility_domain(domain):
+            return True
+        url = (getattr(result, "url", "") or "").lower()
+        return any(domain_hint in url for domain_hint in (*self.TIER1_DIRECTORIES, *self.TIER2_DIRECTORIES))
+
+    def _relevant_profiles(self, exa: ExaData) -> list:
+        profiles = []
+        for result in exa.profiles or []:
+            if self._subject_relevance(result, exa.brand_name) <= 0.35:
+                continue
+            if not self._is_profile_result(result):
+                continue
+            profiles.append(result)
+        return profiles
+
+    @staticmethod
+    def _url_path(url: str | None) -> str:
+        if not url:
+            return "/"
+        parsed = urlparse(url if "://" in url else f"https://{url}")
+        return (parsed.path or "/").lower()
+
+    def _owned_surface_kind(self, result) -> str:
+        path = self._url_path(getattr(result, "url", ""))
+        title = (getattr(result, "title", "") or "").lower()
+        if path in {"", "/"}:
+            return "homepage"
+        if any(marker in path for marker in self.STRATEGIC_OWNED_PATH_MARKERS):
+            return "strategic"
+        if any(marker in path for marker in self.SUPPORT_OWNED_PATH_MARKERS):
+            return "support"
+        if any(token in title for token in ("about", "team", "equipo", "solution", "solutions", "soluciones", "product", "platform", "business")):
+            return "strategic"
+        if any(token in title for token in ("privacy", "privacidad", "legal", "terms", "contact", "contacto", "support", "help", "blog", "news")):
+            return "support"
+        return "other_owned"
+
+    def _classify_relevant_mentions(self, exa: ExaData) -> tuple[list, list, list, list]:
+        relevant_mentions = [
+            result
+            for result in exa.mentions
+            if self._subject_relevance(result, exa.brand_name) > 0.35
+        ]
+        owned_mentions = [result for result in relevant_mentions if self._looks_owned_by_host(result, exa.brand_name)]
+        profile_mentions = self._relevant_profiles(exa)
+        independent_mentions = [
+            result
+            for result in relevant_mentions
+            if not self._looks_owned_by_host(result, exa.brand_name) and not self._is_profile_result(result)
+        ]
+        return relevant_mentions, owned_mentions, profile_mentions, independent_mentions
 
     @staticmethod
     def _parse_last_post_days_ago(last_post_date: str | None) -> int | None:
@@ -413,8 +524,16 @@ class PresenciaExtractor:
                 raw_value={
                     "search_results_count": 0,
                     "relevant_results_count": 0,
+                    "discoverability_results_count": 0,
+                    "owned_results_count": 0,
+                    "strategic_owned_results_count": 0,
+                    "support_owned_results_count": 0,
+                    "profile_results_count": 0,
+                    "independent_results_count": 0,
                     "own_url_in_top3": False,
                     "ai_visibility_signals": 0,
+                    "ai_visibility_results_count": 0,
+                    "credible_ai_visibility_results_count": 0,
                     "top_domains": [],
                     "evidence": [],
                 },
@@ -422,33 +541,61 @@ class PresenciaExtractor:
                 source="exa",
             )
 
-        relevant_mentions = [
-            result
-            for result in exa.mentions
-            if self._subject_relevance(result, exa.brand_name) > 0.35
-        ]
+        relevant_mentions, owned_mentions, profile_mentions, independent_mentions = self._classify_relevant_mentions(exa)
         relevant_count = len(relevant_mentions)
-        if relevant_count >= 12:
+        independent_count = len(independent_mentions)
+        owned_count = len(owned_mentions)
+        profile_count = len(profile_mentions)
+        strategic_owned_count = sum(
+            1 for result in owned_mentions if self._owned_surface_kind(result) in {"homepage", "strategic"}
+        )
+        support_owned_count = sum(
+            1 for result in owned_mentions if self._owned_surface_kind(result) == "support"
+        )
+        discoverability_mentions = [
+            result
+            for result in relevant_mentions
+            if not self._looks_owned_by_host(result, exa.brand_name)
+            or self._owned_surface_kind(result) in {"homepage", "strategic"}
+        ]
+        discoverability_count = len(discoverability_mentions)
+        if independent_count >= 8:
             score = 70.0
-        elif relevant_count >= 8:
-            score = 58.0
-        elif relevant_count >= 5:
-            score = 45.0
-        elif relevant_count >= 3:
-            score = 32.0
-        elif relevant_count >= 1:
-            score = 20.0
+        elif independent_count >= 5:
+            score = 56.0
+        elif independent_count >= 3:
+            score = 42.0
+        elif independent_count >= 1:
+            score = 28.0
         else:
-            score = 10.0
+            score = 12.0
+
+        if profile_count >= 5:
+            score += 10.0
+        elif profile_count >= 3:
+            score += 7.0
+        elif profile_count >= 1:
+            score += 4.0
+
+        if strategic_owned_count >= 5:
+            score += 8.0
+        elif strategic_owned_count >= 3:
+            score += 5.0
+        elif strategic_owned_count >= 1:
+            score += 3.0
+
+        if support_owned_count >= 3:
+            score -= 2.0
 
         brand_lower = (exa.brand_name or "").lower()
         own_url_in_top3 = any(brand_lower in (result.url or "").lower() for result in exa.mentions[:3])
         if own_url_in_top3:
-            score += 10.0
+            score += 6.0
 
         ai_visibility_signals = 0
         ai_weighted_sum = 0.0
-        for result in exa.ai_visibility_results[:5]:
+        credible_ai_results = self._credible_ai_visibility_results(exa)
+        for result in credible_ai_results:
             relevance = self._normalize_relevance(getattr(result, "score", 0.0))
             subject_relevance = self._subject_relevance(result, exa.brand_name)
             contribution = 30.0 * relevance * subject_relevance
@@ -465,13 +612,16 @@ class PresenciaExtractor:
             score += 4.0
 
         domain_counter = Counter()
-        for result in relevant_mentions:
+        for result in discoverability_mentions:
             domain = self._extract_domain(result.url)
             if domain:
                 domain_counter[domain] += 1
 
         evidence = []
-        for result in relevant_mentions[:3]:
+        evidence_pool = independent_mentions + [
+            result for result in owned_mentions if self._owned_surface_kind(result) in {"homepage", "strategic"}
+        ]
+        for result in evidence_pool[:3]:
             evidence.append(
                 {
                     "url": result.url,
@@ -486,8 +636,16 @@ class PresenciaExtractor:
             raw_value={
                 "search_results_count": len(exa.mentions),
                 "relevant_results_count": relevant_count,
+                "discoverability_results_count": discoverability_count,
+                "owned_results_count": owned_count,
+                "strategic_owned_results_count": strategic_owned_count,
+                "support_owned_results_count": support_owned_count,
+                "profile_results_count": profile_count,
+                "independent_results_count": independent_count,
                 "own_url_in_top3": own_url_in_top3,
                 "ai_visibility_signals": ai_visibility_signals,
+                "ai_visibility_results_count": len(exa.ai_visibility_results or []),
+                "credible_ai_visibility_results_count": len(credible_ai_results),
                 "top_domains": [domain for domain, _ in domain_counter.most_common(3)],
                 "evidence": evidence,
             },
@@ -497,7 +655,9 @@ class PresenciaExtractor:
 
     def _directory_presence(self, exa: ExaData = None) -> FeatureValue:
         """Presence in tiered structured directories and review platforms."""
-        if not exa or not exa.mentions:
+        profile_results = list(exa.profiles or []) if exa else []
+        mention_results = list(exa.mentions or []) if exa else []
+        if not exa or not mention_results + profile_results:
             return FeatureValue(
                 "directory_presence",
                 0.0,
@@ -510,7 +670,7 @@ class PresenciaExtractor:
         tier2_found = []
         seen_tier1 = set()
         seen_tier2 = set()
-        for result in exa.mentions:
+        for result in mention_results + profile_results:
             url = (result.url or "").lower()
             for domain in self.TIER1_DIRECTORIES:
                 if domain in url and domain not in seen_tier1:

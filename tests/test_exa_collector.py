@@ -4,7 +4,9 @@ import threading
 import time
 from types import SimpleNamespace
 
-from src.collectors.exa_collector import ExaCollector
+from src.collectors.exa_collector import EXA_STRATEGY_VERSION, ExaCollector
+from src.collectors.web_collector import WebData
+from src.services.legal_identity import derive_legal_name
 
 
 class _FakeExaClient:
@@ -15,7 +17,7 @@ class _FakeExaClient:
         self.calls.append({"query": query, "kwargs": kwargs})
         if "competitors" in query:
             raise RuntimeError("fixture competitor failure")
-        if "news" in query or "announcement launch funding partnership product" in query:
+        if "press release media coverage announcement featured in" in query:
             return SimpleNamespace(results=[])
         return SimpleNamespace(
             results=[
@@ -62,7 +64,7 @@ def test_collect_brand_data_emits_structured_diagnostics_for_failed_and_empty_in
     diagnostics = data.diagnostics
 
     assert diagnostics["status"] == "degraded"
-    assert diagnostics["strategy"] == "precision_vnext_v1"
+    assert diagnostics["strategy"] == EXA_STRATEGY_VERSION
     assert diagnostics["competitor_intent_enabled"] is True
     assert "competitors" in diagnostics["failed_intents"]
     assert "news" in diagnostics["no_result_intents"]
@@ -84,29 +86,303 @@ def test_collect_brand_data_uses_precision_exa_queries_in_production():
     data = collector.collect_brand_data("Brand", "https://brand.com")
     queries = [call["query"] for call in fake.calls]
 
-    assert any("official website product company about" in query for query in queries)
-    assert any("review case study customer integration" in query for query in queries)
-    assert any("announcement launch funding partnership product" in query for query in queries)
-    assert any("AI recommendation alternatives best tools" in query for query in queries)
+    assert any("official website product company about services" in query for query in queries)
+    assert any("company profile linkedin crunchbase business directory services" in query for query in queries)
+    assert any("press mention media coverage client testimonial case study review" in query for query in queries)
+    assert any("press release media coverage announcement featured in" in query for query in queries)
+    assert any("what is this company services expertise overview" in query for query in queries)
     assert not any("alternatives competitors similar to Brand brand.com category" in query for query in queries)
 
-    owned_call = next(call for call in fake.calls if "official website product company about" in call["query"])
-    external_call = next(call for call in fake.calls if "review case study customer integration" in call["query"])
+    owned_call = next(call for call in fake.calls if "official website product company about services" in call["query"])
+    profile_call = next(call for call in fake.calls if "company profile linkedin crunchbase business directory services" in call["query"])
+    external_call = next(call for call in fake.calls if "press mention media coverage client testimonial case study review" in call["query"])
+    news_call = next(call for call in fake.calls if "press release media coverage announcement featured in" in call["query"])
     assert owned_call["kwargs"]["include_domains"] == ["brand.com"]
+    assert profile_call["kwargs"]["category"] == "company"
     assert external_call["kwargs"]["exclude_domains"] == ["brand.com"]
-    assert len(data.mentions) == 2
+    assert news_call["kwargs"]["exclude_domains"] == ["brand.com"]
+    assert len(data.mentions) == 1
+    assert len(data.profiles) == 1
     assert data.competitors == []
-    assert data.diagnostics["strategy"] == "precision_vnext_v1"
+    assert data.diagnostics["strategy"] == EXA_STRATEGY_VERSION
     assert data.diagnostics["competitor_intent_enabled"] is False
     assert data.diagnostics["planned_intents"] == [
         "owned_confirmation",
+        "external_profiles",
         "external_mentions",
         "news",
         "ai_visibility",
     ]
     assert "owned_confirmation" in data.diagnostics["intent_results"]
+    assert "external_profiles" in data.diagnostics["intent_results"]
     assert "external_mentions" in data.diagnostics["intent_results"]
     assert "competitors" not in data.diagnostics["intent_results"]
+
+
+def test_collect_brand_data_promotes_profile_like_external_mentions_into_profiles():
+    class MixedClient:
+        def __init__(self):
+            self.calls = []
+
+        def search(self, query: str, **kwargs):
+            self.calls.append({"query": query, "kwargs": kwargs})
+            if "official website product company about services" in query:
+                return SimpleNamespace(
+                    results=[
+                        SimpleNamespace(
+                            url="https://brand.com/",
+                            title="Brand",
+                            text="Owned site",
+                            highlights=[],
+                            summary="",
+                            score=0.8,
+                            published_date="2026-05-15",
+                        )
+                    ]
+                )
+            if "press mention media coverage client testimonial case study review" in query:
+                return SimpleNamespace(
+                    results=[
+                        SimpleNamespace(
+                            url="https://startupshub.catalonia.com/startup/brand",
+                            title="Brand startup profile",
+                            text="Directory listing.",
+                            highlights=[],
+                            summary="",
+                            score=0.7,
+                            published_date="2026-05-15",
+                        ),
+                        SimpleNamespace(
+                            url="https://press.example.com/brand-analysis",
+                            title="Brand analysis",
+                            text="Independent article.",
+                            highlights=[],
+                            summary="",
+                            score=0.7,
+                            published_date="2026-05-15",
+                        ),
+                    ]
+                )
+            return SimpleNamespace(results=[])
+
+    collector = ExaCollector(api_key="test")
+    collector._client = MixedClient()
+
+    data = collector.collect_brand_data("Brand", "https://brand.com")
+
+    assert [item.url for item in data.mentions] == [
+        "https://brand.com/",
+        "https://press.example.com/brand-analysis",
+    ]
+    assert [item.url for item in data.profiles] == [
+        "https://startupshub.catalonia.com/startup/brand",
+    ]
+
+
+def test_collect_brand_data_promotes_insurtechcommunityhub_mentions_into_profiles():
+    class HubClient:
+        def search(self, query: str, **kwargs):
+            if "press mention media coverage client testimonial case study review" in query:
+                return SimpleNamespace(
+                    results=[
+                        SimpleNamespace(
+                            url="https://insurtechcommunityhub.com/blog/socio/brand",
+                            title="Brand partner profile",
+                            text="Partner directory profile.",
+                            highlights=[],
+                            summary="",
+                            score=0.7,
+                            published_date="2026-05-15",
+                        )
+                    ]
+                )
+            return SimpleNamespace(results=[])
+
+    collector = ExaCollector(api_key="test")
+    collector._client = HubClient()
+
+    data = collector.collect_brand_data("Brand", "https://brand.com")
+
+    assert data.mentions == []
+    assert [item.url for item in data.profiles] == [
+        "https://insurtechcommunityhub.com/blog/socio/brand",
+    ]
+
+
+def test_derive_legal_name_prefers_explicit_legal_notice_signal():
+    legal_name = derive_legal_name(
+        brand_name="www.cofisolutions.com",
+        web_data=WebData(
+            url="https://www.cofisolutions.com",
+            markdown_content="Aviso legal\nRazón social: COFI SOLUTIONS, S.L.\nCIF B12345678",
+        ),
+    )
+
+    assert legal_name == "COFI SOLUTIONS, S.L."
+
+
+def test_external_mentions_accept_legal_name_exact_match():
+    class DirectoryClient:
+        def search(self, query: str, **kwargs):
+            return SimpleNamespace(
+                results=[
+                    SimpleNamespace(
+                        url="https://www.einforma.com/informacion-empresa/cofi-solutions",
+                        title="COFI SOLUTIONS, S.L. - Consulte CIF y dirección",
+                        text="Directorio mercantil de COFI SOLUTIONS, S.L.",
+                        highlights=[],
+                        summary="",
+                        score=0.6,
+                        published_date="2026-05-15",
+                    ),
+                    SimpleNamespace(
+                        url="https://www.einforma.com/informacion-empresa/cfo-solutions",
+                        title="CFO Solutions - Consulte CIF y dirección",
+                        text="Directorio mercantil de CFO Solutions.",
+                        highlights=[],
+                        summary="",
+                        score=0.5,
+                        published_date="2026-05-15",
+                    ),
+                ]
+            )
+
+    collector = ExaCollector(api_key="test")
+    collector._client = DirectoryClient()
+
+    results = collector.search(
+        "brand query",
+        intent="external_mentions",
+        brand_name="COFI",
+        brand_url="https://www.cofisolutions.com",
+        legal_name="COFI SOLUTIONS, S.L.",
+    )
+
+    assert [item.url for item in results] == ["https://www.einforma.com/informacion-empresa/cofi-solutions"]
+    assert results[0].metadata["entity_match_reason"] in {"alias_in_title", "alias_in_text", "alias_in_host"}
+
+
+def test_external_mentions_filters_collision_results_without_exact_entity_match():
+    class CollisionClient:
+        def search(self, query: str, **kwargs):
+            return SimpleNamespace(
+                results=[
+                    SimpleNamespace(
+                        url="https://cfosolutions.com/case-study",
+                        title="CFO Solutions case study",
+                        text="Consulting work for finance teams.",
+                        highlights=[],
+                        summary="",
+                        score=0.5,
+                        published_date="2026-05-15",
+                    ),
+                    SimpleNamespace(
+                        url="https://www.einforma.com/informacion-empresa/cofi-solutions",
+                        title="Cofi Solutions SL: consulte teléfono, CIF y dirección",
+                        text="Business directory profile for Cofi Solutions SL.",
+                        highlights=[],
+                        summary="",
+                        score=0.6,
+                        published_date="2026-05-15",
+                    ),
+                ]
+            )
+
+    collector = ExaCollector(api_key="test")
+    collector._client = CollisionClient()
+
+    results = collector.search(
+        "brand query",
+        intent="external_mentions",
+        brand_name="www.cofisolutions.com",
+        brand_url="https://www.cofisolutions.com",
+    )
+
+    assert [item.url for item in results] == ["https://www.einforma.com/informacion-empresa/cofi-solutions"]
+    diagnostics = collector._build_diagnostics()
+    assert diagnostics["intent_results"]["external_mentions"]["filtered_irrelevant_count"] == 1
+
+
+def test_news_filters_results_without_exact_brand_alias():
+    class NewsClient:
+        def search(self, query: str, **kwargs):
+            return SimpleNamespace(
+                results=[
+                    SimpleNamespace(
+                        url="https://www.businesswire.com/coherent-solutions",
+                        title="Coherent Solutions closes strategic investment",
+                        text="Unrelated software engineering company.",
+                        highlights=[],
+                        summary="",
+                        score=0.4,
+                        published_date="2026-05-15",
+                    ),
+                    SimpleNamespace(
+                        url="https://press.example.com/cofisolutions-expands",
+                        title="Cofisolutions expands advisory footprint",
+                        text="Cofisolutions announced a new advisory initiative.",
+                        highlights=[],
+                        summary="",
+                        score=0.7,
+                        published_date="2026-05-15",
+                    ),
+                ]
+            )
+
+    collector = ExaCollector(api_key="test")
+    collector._client = NewsClient()
+
+    results = collector.search(
+        "brand query",
+        intent="news",
+        brand_name="www.cofisolutions.com",
+        brand_url="https://www.cofisolutions.com",
+    )
+
+    assert [item.url for item in results] == ["https://press.example.com/cofisolutions-expands"]
+    diagnostics = collector._build_diagnostics()
+    assert diagnostics["intent_results"]["news"]["filtered_irrelevant_count"] == 1
+
+
+def test_ai_visibility_accepts_only_exact_alias_matches():
+    class VisibilityClient:
+        def search(self, query: str, **kwargs):
+            return SimpleNamespace(
+                results=[
+                    SimpleNamespace(
+                        url="https://startupshub.catalonia.com/company",
+                        title="COFI SOLUTIONS SL at Barcelona & Catalonia Startup Hub",
+                        text="Directory listing for Cofi Solutions.",
+                        highlights=[],
+                        summary="",
+                        score=0.8,
+                        published_date="2026-05-15",
+                    ),
+                    SimpleNamespace(
+                        url="https://www.coforge.com/overview",
+                        title="Coforge overview",
+                        text="Enterprise modernization company.",
+                        highlights=[],
+                        summary="",
+                        score=0.7,
+                        published_date="2026-05-15",
+                    ),
+                ]
+            )
+
+    collector = ExaCollector(api_key="test")
+    collector._client = VisibilityClient()
+
+    results = collector.search(
+        "brand query",
+        intent="ai_visibility",
+        brand_name="www.cofisolutions.com",
+        brand_url="https://www.cofisolutions.com",
+    )
+
+    assert [item.url for item in results] == ["https://startupshub.catalonia.com/company"]
+    diagnostics = collector._build_diagnostics()
+    assert diagnostics["intent_results"]["ai_visibility"]["filtered_irrelevant_count"] == 1
 
 
 def test_collect_brand_data_can_opt_into_exa_competitor_intent(monkeypatch):
@@ -200,8 +476,8 @@ def test_search_filters_url_results_without_content_body():
                     ),
                     SimpleNamespace(
                         url="https://press.example.com/body",
-                        title="Body exists",
-                        text="Independent body content",
+                        title="Brand body exists",
+                        text="Independent body content about Brand.",
                         highlights=[],
                         summary="",
                         score=0.2,

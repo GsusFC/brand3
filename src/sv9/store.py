@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from src.config import BRAND3_DB_PATH
+from src.sv9.detection_trace import detection_fingerprint
 from src.sv9.models import ComponentResult, Sv9ScanResult, TileVerdict
 
 _MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
@@ -23,6 +24,7 @@ _MIGRATION_PATHS = [
     _MIGRATIONS_DIR / "011_sv9_editorial_decisions.sql",
     _MIGRATIONS_DIR / "012_baldosas_v31.sql",
     _MIGRATIONS_DIR / "013_sv9_reliability.sql",
+    _MIGRATIONS_DIR / "017_sv9_detection_runs.sql",
 ]
 
 
@@ -283,6 +285,13 @@ class Sv9Store:
     # --- pinned Pass 1 detection ---
 
     def save_detection(self, run_id: int, payload: dict[str, Any]) -> None:
+        fingerprint = detection_fingerprint(payload)
+        self.record_detection_run(
+            run_id,
+            payload,
+            source="cache_pin",
+            fingerprint=fingerprint,
+        )
         self.conn.execute(
             """
             INSERT OR REPLACE INTO sv9_detection_cache (run_id, payload_json, created_at)
@@ -303,6 +312,63 @@ class Sv9Store:
             return json.loads(row["payload_json"])
         except json.JSONDecodeError:
             return None
+
+    def record_detection_run(
+        self,
+        run_id: int,
+        payload: dict[str, Any],
+        *,
+        source: str,
+        fingerprint: dict[str, Any] | None = None,
+    ) -> int:
+        fingerprint = fingerprint or detection_fingerprint(payload)
+        cursor = self.conn.execute(
+            """
+            INSERT INTO sv9_detection_runs (
+                run_id, source, tldr_hash, block_hashes_json, payload_json, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                run_id,
+                source,
+                fingerprint.get("tldr_hash"),
+                json.dumps(fingerprint.get("block_hashes") or {}, ensure_ascii=False),
+                json.dumps(payload, ensure_ascii=False, default=str),
+                _utcnow(),
+            ),
+        )
+        self.conn.commit()
+        return int(cursor.lastrowid)
+
+    def list_detection_runs(
+        self,
+        run_id: int,
+        *,
+        source: str | None = None,
+        limit: int = 50,
+    ) -> list[dict[str, Any]]:
+        query = """
+            SELECT * FROM sv9_detection_runs
+            WHERE run_id = ?
+        """
+        params: list[Any] = [run_id]
+        if source is not None:
+            query += " AND source = ?"
+            params.append(source)
+        query += " ORDER BY created_at DESC, id DESC LIMIT ?"
+        params.append(limit)
+        rows = self.conn.execute(query, params).fetchall()
+        payloads: list[dict[str, Any]] = []
+        for row in rows:
+            payload = dict(row)
+            for field in ("block_hashes_json", "payload_json"):
+                raw = payload.pop(field, None)
+                try:
+                    payload[field.removesuffix("_json")] = json.loads(raw) if raw else {}
+                except json.JSONDecodeError:
+                    payload[field.removesuffix("_json")] = {}
+            payloads.append(payload)
+        return payloads
 
     # --- brand categories (ranking) ---
 

@@ -86,15 +86,28 @@ def analyze_viewport_obstruction(
     present = existing.present or dom.present or viewport.present
     obstruction_type = _choose_type(existing.type, dom.type, viewport.type)
     coverage_ratio = max(existing.coverage_ratio, dom.coverage_ratio, viewport.coverage_ratio)
+    dom_only_unconfirmed_by_viewport = _dom_only_unconfirmed_by_viewport(
+        existing=existing,
+        dom=dom,
+        viewport=viewport,
+        viewport_image=viewport_image,
+        obstruction_type=obstruction_type,
+        coverage_ratio=coverage_ratio,
+    )
+    if dom_only_unconfirmed_by_viewport:
+        obstruction_type = "unknown_overlay"
+        coverage_ratio = min(coverage_ratio, 0.12)
 
     if not present and signals:
         limitations.append("weak_obstruction_signals_below_presence_threshold")
+    if dom_only_unconfirmed_by_viewport:
+        limitations.append("dom_only_obstruction_unconfirmed_by_viewport")
     severity = _severity(coverage_ratio, obstruction_type, present)
     first_impression_valid = not (
         severity in {"major", "blocking"}
         or obstruction_type == "login_wall"
         or coverage_ratio >= 0.45
-        or existing.first_impression_valid is False
+        or (existing.first_impression_valid is False and not dom_only_unconfirmed_by_viewport)
     )
     confidence = _confidence(
         present=present,
@@ -104,6 +117,8 @@ def analyze_viewport_obstruction(
         coverage_ratio=coverage_ratio,
         signal_count=len(signals),
     )
+    if dom_only_unconfirmed_by_viewport:
+        confidence = min(confidence, 0.45)
     if viewport_image is None:
         limitations.append("viewport_pixels_unavailable_for_obstruction_analysis")
     if not dom_html and not existing.signals:
@@ -122,6 +137,35 @@ def analyze_viewport_obstruction(
         signals=signals,
         limitations=_unique(limitations),
     )
+
+
+def _dom_only_unconfirmed_by_viewport(
+    *,
+    existing: ViewportObstructionEvidence,
+    dom: ViewportObstructionEvidence,
+    viewport: ViewportObstructionEvidence,
+    viewport_image: RasterImage | None,
+    obstruction_type: str,
+    coverage_ratio: float,
+) -> bool:
+    if viewport_image is None:
+        return False
+    if viewport.present:
+        return False
+    if viewport.visual_signals:
+        return False
+    if not existing.present:
+        return False
+    if not any(
+        item in {"viewport_pixels_unavailable", "viewport_pixels_unavailable_for_obstruction_analysis"}
+        for item in existing.limitations
+    ):
+        return False
+    if obstruction_type == "login_wall":
+        return False
+    if coverage_ratio < 0.45:
+        return False
+    return True
 
 
 def _dom_obstruction(html: str) -> ViewportObstructionEvidence:

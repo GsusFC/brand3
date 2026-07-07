@@ -42,7 +42,6 @@
         <th class="col-brand">{{ 'marca' if current_lang == 'es' else 'brand' }}</th>
         <th>{{ 'dominio' if current_lang == 'es' else 'domain' }}</th>
         <th class="num col-score">score</th>
-        <th>{{ 'modelo' if current_lang == 'es' else 'model' }}</th>
         <th>{{ 'cuadrante' if current_lang == 'es' else 'quadrant' }}</th>
         <th>{{ 'categoría' if current_lang == 'es' else 'category' }}</th>
         <th class="num">{{ 'scans' if current_lang == 'es' else 'scans' }}</th>
@@ -56,7 +55,6 @@
         <td class="col-brand"><a href="{{ row.brand_href }}">{{ row.display_name }}</a></td>
         <td class="dim">{{ row.domain or '-' }}</td>
         <td class="num num-inline col-score"><span class="score-compact">{{ row.score_compact }}</span></td>
-        <td><span class="badge-ready">{{ row.score_model }}</span></td>
         <td class="dim">{{ row.quadrant or '-' }}</td>
         <td class="dim">{{ row.category_label or '-' }}</td>
         <td class="num"><a href="{{ row.brand_href }}">{{ row.scan_count }}</a></td>

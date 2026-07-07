@@ -25,6 +25,7 @@ from ..collectors.context_collector import ContextData
 from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
 from ..reports.research_prompt_input import research_pack_prompt_input
+from .exa_relevance import filter_independent_relevant_results
 from .llm_analyzer import LLMAnalyzer, llm_failure_reason
 from .score_reconciliation import reconcile_label_score
 from .visual_analyzer import VisualAnalyzer
@@ -665,11 +666,9 @@ class CoherenciaExtractor:
         if not exa or not exa.mentions:
             return []
         payload: list[dict] = []
-        for r in exa.mentions:
+        for r in filter_independent_relevant_results(exa.mentions, exa.brand_name):
             source_class = r.source_class or ""
             relation = r.relation or ""
-            if source_class == "owned" or relation in {"audited_surface", "same_root_surface"}:
-                continue
             payload.append({
                 "url": r.url or "",
                 "title": r.title or "",

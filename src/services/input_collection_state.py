@@ -8,8 +8,10 @@ import logging
 from src.collectors.competitor_collector import CompetitorData
 from src.collectors.context_collector import ContextData
 from src.collectors.exa_collector import ExaData
+from src.collectors.github_proof_collector import GitHubProofData
 from src.collectors.hyperbrowser_collector import HyperbrowserFetchData
 from src.collectors.parallel_shadow_collector import ParallelShadowData
+from src.collectors.searchapi_collector import SearchApiData
 from src.collectors.social_collector import SocialData
 from src.collectors.web_collector import WebData
 from src.storage.sqlite_store import SQLiteStore, _MalformedJSONPayload
@@ -48,8 +50,10 @@ class RawInputs:
     context_data: ContextData | None
     web_data: WebData | None
     hyperbrowser_data: HyperbrowserFetchData | None
+    github_data: GitHubProofData | None
     effective_brand_url: str
     exa_data: ExaData | None
+    searchapi_data: SearchApiData | None
     parallel_shadow_data: ParallelShadowData | None
     social_data: SocialData | None
     social_limitation: str | None

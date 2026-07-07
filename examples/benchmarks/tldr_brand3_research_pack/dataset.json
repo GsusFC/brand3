@@ -1,6 +1,6 @@
 {
   "version": "tldr_brand3_research_pack_dataset_v0_1",
-  "generated_at": "2026-05-29T08:07:31.000180+00:00",
+  "generated_at": "2026-06-24T17:46:14.625874+00:00",
   "cases": [
     {
       "slug": "base44",
@@ -762,6 +762,7 @@
         ],
         "proof_points": [],
         "founder_or_press_context": [],
+        "competitive_context": [],
         "noise_rejected": [
           {
             "text": "feed/article prediction",
@@ -788,6 +789,7 @@
             "notes": []
           }
         ],
+        "shadow_sources": [],
         "evidence_gaps": [
           "Brand Idea remains weak and reviewable."
         ],
@@ -1401,6 +1403,7 @@
             "notes": []
           }
         ],
+        "competitive_context": [],
         "noise_rejected": [
           {
             "text": "About Fly.io · Fly Docs --- title: \"About Fly.io\" layout: docs sitemap: true toc: false nav: firecracker --- More details about using and working",
@@ -1835,6 +1838,7 @@
             "notes": []
           }
         ],
+        "shadow_sources": [],
         "evidence_gaps": [
           "no_parent_or_product_relation_found",
           "brand_domain_match_failed"
@@ -2380,6 +2384,7 @@
             "notes": []
           }
         ],
+        "competitive_context": [],
         "noise_rejected": [
           {
             "text": "This might be the best value you can get from an AI subscription.",
@@ -2826,6 +2831,7 @@
             "notes": []
           }
         ],
+        "shadow_sources": [],
         "evidence_gaps": [
           "no_parent_or_product_relation_found",
           "brand_domain_match_failed"
@@ -3285,6 +3291,7 @@
             "notes": []
           }
         ],
+        "competitive_context": [],
         "noise_rejected": [
           {
             "text": "A singular agentic intelligence that filters the noise, delegates the details, and returns your most valuable asset: your time.",
@@ -3695,6 +3702,7 @@
             "notes": []
           }
         ],
+        "shadow_sources": [],
         "evidence_gaps": [],
         "confidence_notes": [
           "{'direct': 11, 'indirect': 7, 'weak': 2}"
@@ -4281,6 +4289,7 @@
             "notes": []
           }
         ],
+        "competitive_context": [],
         "noise_rejected": [
           {
             "text": "Creatify is a company that provides AI-powered video a",
@@ -4763,6 +4772,7 @@
             "notes": []
           }
         ],
+        "shadow_sources": [],
         "evidence_gaps": [],
         "confidence_notes": [
           "{'direct': 11, 'weak': 1}"
@@ -5155,6 +5165,7 @@
         ],
         "proof_points": [],
         "founder_or_press_context": [],
+        "competitive_context": [],
         "noise_rejected": [
           {
             "text": "navigation / page chrome fragments",
@@ -5169,6 +5180,7 @@
             "notes": []
           }
         ],
+        "shadow_sources": [],
         "evidence_gaps": [
           "No magnetism scan exists in the current corpus for this URL."
         ],

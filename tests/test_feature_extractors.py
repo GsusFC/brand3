@@ -130,8 +130,8 @@ class PercepcionExtractorTests(unittest.TestCase):
         exa = ExaData(
             brand_name="Test Brand",
             mentions=[
-                ExaResult(url="https://x/1", title="t", text="excellent amazing outstanding"),
-                ExaResult(url="https://x/2", title="t", text="great innovative reliable"),
+                ExaResult(url="https://reviews.example.com/test-brand", title="Test Brand review", text="excellent amazing outstanding"),
+                ExaResult(url="https://directory.example.com/test-brand", title="Test Brand profile", text="great innovative reliable"),
             ],
         )
         feature = PercepcionExtractor()._brand_sentiment(exa)
@@ -143,6 +143,39 @@ class PercepcionExtractorTests(unittest.TestCase):
         feature = PercepcionExtractor()._brand_sentiment(ExaData(brand_name="X"))
         self.assertEqual(feature.value, 50.0)
         self.assertEqual(feature.raw_value["reason"], "no_mentions")
+
+    def test_brand_sentiment_ignores_owned_and_collision_mentions(self):
+        exa = ExaData(
+            brand_name="www.cofisolutions.com",
+            mentions=[
+                ExaResult(
+                    url="https://cofisolutions.com/",
+                    title="COFI Solutions",
+                    text="Owned brand copy",
+                    source_class="owned",
+                    relation="audited_surface",
+                ),
+                ExaResult(
+                    url="https://www.coforge.com/news",
+                    title="Coforge launches new platform",
+                    text="Unrelated enterprise services news",
+                    source_class="external",
+                    relation="external",
+                ),
+            ],
+            news=[
+                ExaResult(
+                    url="https://www.bcv.hn/cofisa",
+                    title="COFISA enters market",
+                    text="Unrelated financial institution news",
+                    source_class="external",
+                    relation="external",
+                )
+            ],
+        )
+        feature = PercepcionExtractor()._brand_sentiment(exa)
+        self.assertEqual(feature.value, 50.0)
+        self.assertEqual(feature.raw_value["reason"], "no_independent_relevant_mentions")
 
     def test_brand_sentiment_with_llm_uses_structured_verdict(self):
         exa = ExaData(brand_name="X", mentions=[
@@ -308,6 +341,42 @@ class PercepcionExtractorTests(unittest.TestCase):
         self.assertEqual(feature.source, "heuristic_fallback")
         self.assertEqual(feature.raw_value["method"], "heuristic_fallback")
         self.assertEqual(feature.raw_value["trend"], "improving")
+
+    def test_sentiment_trend_ignores_irrelevant_collision_news(self):
+        exa = ExaData(
+            brand_name="www.cofisolutions.com",
+            mentions=[
+                ExaResult(
+                    url="https://cofisolutions.com/",
+                    title="COFI Solutions",
+                    text="Owned brand copy",
+                    published_date="2026-01-01",
+                    source_class="owned",
+                    relation="audited_surface",
+                )
+            ],
+            news=[
+                ExaResult(
+                    url="https://www.coeosolutions.com/news",
+                    title="COEO Solutions investment",
+                    text="Unrelated external news",
+                    published_date="2026-02-01",
+                    source_class="external",
+                    relation="external",
+                ),
+                ExaResult(
+                    url="https://news.coforge.com/story",
+                    title="Coforge partnership",
+                    text="Unrelated external news",
+                    published_date="2026-03-01",
+                    source_class="external",
+                    relation="external",
+                ),
+            ],
+        )
+        feature = PercepcionExtractor()._sentiment_trend(exa)
+        self.assertEqual(feature.value, 50.0)
+        self.assertEqual(feature.raw_value["reason"], "no_independent_relevant_mentions")
 
     # ── review_quality ─────────────────────────────────────────────────
 
@@ -1060,6 +1129,13 @@ class PresenciaExtractorTests(unittest.TestCase):
 
         self.assertEqual(feature.value, 15.0)
         self.assertEqual(feature.raw_value["search_results_count"], 0)
+        self.assertEqual(feature.raw_value["discoverability_results_count"], 0)
+        self.assertEqual(feature.raw_value["owned_results_count"], 0)
+        self.assertEqual(feature.raw_value["strategic_owned_results_count"], 0)
+        self.assertEqual(feature.raw_value["support_owned_results_count"], 0)
+        self.assertEqual(feature.raw_value["profile_results_count"], 0)
+        self.assertEqual(feature.raw_value["independent_results_count"], 0)
+        self.assertEqual(feature.raw_value["credible_ai_visibility_results_count"], 0)
         self.assertEqual(feature.raw_value["evidence"], [])
 
     def test_search_visibility_with_few_results_stays_mid_low(self):
@@ -1086,9 +1162,25 @@ class PresenciaExtractorTests(unittest.TestCase):
         self.assertGreaterEqual(feature.value, 20.0)
         self.assertLess(feature.value, 50.0)
         self.assertEqual(feature.raw_value["relevant_results_count"], 2)
+        self.assertEqual(feature.raw_value["discoverability_results_count"], 2)
+        self.assertEqual(feature.raw_value["owned_results_count"], 1)
+        self.assertEqual(feature.raw_value["strategic_owned_results_count"], 1)
+        self.assertEqual(feature.raw_value["support_owned_results_count"], 0)
+        self.assertEqual(feature.raw_value["profile_results_count"], 0)
+        self.assertEqual(feature.raw_value["independent_results_count"], 1)
 
     def test_search_visibility_rewards_many_results_and_own_url_top3(self):
         exa = self._exa_mentions()
+        exa.ai_visibility_results = [
+            ExaResult(
+                url="https://analysis.example.com/acme-overview",
+                title="Acme overview",
+                text="Acme is explained in detail with category and product context.",
+                score=0.9,
+                source_class="external",
+                relation="external",
+            )
+        ]
         exa.mentions.extend(
             [
                 ExaResult(
@@ -1106,6 +1198,8 @@ class PresenciaExtractorTests(unittest.TestCase):
         self.assertGreaterEqual(feature.value, 70.0)
         self.assertTrue(feature.raw_value["own_url_in_top3"])
         self.assertGreaterEqual(feature.raw_value["ai_visibility_signals"], 1)
+        self.assertGreaterEqual(feature.raw_value["independent_results_count"], 7)
+        self.assertEqual(feature.raw_value["credible_ai_visibility_results_count"], 1)
         self.assertEqual(len(feature.raw_value["evidence"]), 3)
 
     def test_search_visibility_filters_low_subject_relevance(self):
@@ -1131,7 +1225,166 @@ class PresenciaExtractorTests(unittest.TestCase):
 
         self.assertEqual(feature.raw_value["search_results_count"], 2)
         self.assertEqual(feature.raw_value["relevant_results_count"], 1)
+        self.assertEqual(feature.raw_value["discoverability_results_count"], 1)
+        self.assertEqual(feature.raw_value["owned_results_count"], 1)
+        self.assertEqual(feature.raw_value["strategic_owned_results_count"], 1)
+        self.assertEqual(feature.raw_value["independent_results_count"], 0)
         self.assertEqual(len(feature.raw_value["evidence"]), 1)
+
+    def test_search_visibility_ignores_domain_collision_results(self):
+        exa = ExaData(
+            brand_name="www.cofisolutions.com",
+            mentions=[
+                ExaResult(
+                    url="https://www.coforge.com/news",
+                    title="Coforge launches new platform",
+                    text="Unrelated enterprise systems company.",
+                    score=0.9,
+                ),
+                ExaResult(
+                    url="https://www.cofisolutions.com/",
+                    title="COFI Solutions",
+                    text="Official site for COFI Solutions.",
+                    score=0.9,
+                ),
+            ],
+        )
+
+        feature = self.extractor._search_visibility(exa)
+
+        self.assertEqual(feature.raw_value["relevant_results_count"], 1)
+        self.assertEqual(feature.raw_value["discoverability_results_count"], 1)
+        self.assertEqual(feature.raw_value["owned_results_count"], 1)
+        self.assertEqual(feature.raw_value["strategic_owned_results_count"], 1)
+        self.assertEqual(feature.raw_value["profile_results_count"], 0)
+        self.assertEqual(feature.raw_value["independent_results_count"], 0)
+        self.assertEqual(feature.raw_value["evidence"][0]["url"], "https://www.cofisolutions.com/")
+
+    def test_search_visibility_ignores_owned_and_directory_ai_visibility_noise(self):
+        exa = ExaData(
+            brand_name="www.cofisolutions.com",
+            mentions=[
+                ExaResult(
+                    url="https://www.cofisolutions.com/",
+                    title="COFI Solutions",
+                    text="Official site for COFI Solutions.",
+                    score=0.9,
+                    source_class="owned",
+                    relation="audited_surface",
+                ),
+                ExaResult(
+                    url="https://press.example.com/cofisolutions",
+                    title="COFI Solutions profile",
+                    text="Independent profile about COFI Solutions.",
+                    score=0.7,
+                    source_class="external",
+                    relation="external",
+                ),
+            ],
+            ai_visibility_results=[
+                ExaResult(
+                    url="https://www.cofisolutions.com/contacto",
+                    title="COFI Solutions contacto",
+                    text="Owned page",
+                    score=0.8,
+                    source_class="owned",
+                    relation="audited_surface",
+                ),
+                ExaResult(
+                    url="https://linkedin.com/company/cofi-solutions",
+                    title="COFI Solutions LinkedIn",
+                    text="Directory-like company profile.",
+                    score=0.8,
+                    source_class="external",
+                    relation="external",
+                ),
+                ExaResult(
+                    url="https://einforma.com/informacion-empresa/cofi-solutions",
+                    title="COFI SOLUTIONS, S.L.",
+                    text="Business directory listing.",
+                    score=0.8,
+                    source_class="external",
+                    relation="external",
+                ),
+            ],
+        )
+
+        feature = self.extractor._search_visibility(exa)
+
+        self.assertEqual(feature.raw_value["ai_visibility_results_count"], 3)
+        self.assertEqual(feature.raw_value["credible_ai_visibility_results_count"], 0)
+        self.assertEqual(feature.raw_value["ai_visibility_signals"], 0)
+
+    def test_search_visibility_separates_profile_results_from_independent_results(self):
+        exa = ExaData(
+            brand_name="www.cofisolutions.com",
+            mentions=[
+                ExaResult(
+                    url="https://www.cofisolutions.com/",
+                    title="COFI Solutions",
+                    text="Official site for COFI Solutions.",
+                    score=0.9,
+                    source_class="owned",
+                    relation="audited_surface",
+                ),
+                ExaResult(
+                    url="https://press.example.com/cofi-solutions-analysis",
+                    title="COFI Solutions analysis",
+                    text="Independent article explaining the company and its market focus.",
+                    score=0.7,
+                    source_class="external",
+                    relation="external",
+                ),
+            ],
+            profiles=[
+                ExaResult(
+                    url="https://www.einforma.com/informacion-empresa/cofi-solutions",
+                    title="COFI SOLUTIONS, S.L.",
+                    text="Business directory listing.",
+                    score=0.8,
+                    source_class="external",
+                    relation="external",
+                ),
+            ],
+        )
+
+        feature = self.extractor._search_visibility(exa)
+
+        self.assertEqual(feature.raw_value["relevant_results_count"], 2)
+        self.assertEqual(feature.raw_value["discoverability_results_count"], 2)
+        self.assertEqual(feature.raw_value["owned_results_count"], 1)
+        self.assertEqual(feature.raw_value["strategic_owned_results_count"], 1)
+        self.assertEqual(feature.raw_value["support_owned_results_count"], 0)
+        self.assertEqual(feature.raw_value["profile_results_count"], 1)
+        self.assertEqual(feature.raw_value["independent_results_count"], 1)
+
+    def test_search_visibility_penalizes_support_owned_surfaces_vs_strategic_owned(self):
+        strategic = ExaData(
+            brand_name="www.cofisolutions.com",
+            mentions=[
+                ExaResult(url="https://www.cofisolutions.com/", title="COFI Solutions", text="Homepage"),
+                ExaResult(url="https://www.cofisolutions.com/about", title="About COFI Solutions", text="About"),
+                ExaResult(url="https://www.cofisolutions.com/solutions", title="Solutions", text="Solutions"),
+                ExaResult(url="https://press.example.com/cofi-solutions-analysis", title="Analysis", text="Independent article"),
+            ],
+        )
+        support = ExaData(
+            brand_name="www.cofisolutions.com",
+            mentions=[
+                ExaResult(url="https://www.cofisolutions.com/", title="COFI Solutions", text="Homepage"),
+                ExaResult(url="https://www.cofisolutions.com/contacto", title="COFI Solutions contacto", text="Contact"),
+                ExaResult(url="https://www.cofisolutions.com/privacidad-y-datos", title="COFI Solutions privacidad", text="Privacy"),
+                ExaResult(url="https://press.example.com/cofi-solutions-analysis", title="Analysis", text="Independent article"),
+            ],
+        )
+
+        strategic_feature = self.extractor._search_visibility(strategic)
+        support_feature = self.extractor._search_visibility(support)
+
+        self.assertGreater(strategic_feature.value, support_feature.value)
+        self.assertEqual(strategic_feature.raw_value["strategic_owned_results_count"], 3)
+        self.assertEqual(support_feature.raw_value["support_owned_results_count"], 2)
+        self.assertEqual(support_feature.raw_value["discoverability_results_count"], 2)
 
     def test_directory_presence_without_directories_is_zero(self):
         exa = ExaData(
@@ -1197,9 +1450,9 @@ class VitalidadExtractorTests(unittest.TestCase):
         base = datetime.now()
         mentions = [
             ExaResult(
-                url=f"https://example.com/article-{i}",
-                title=f"Article {i}",
-                text="content",
+                url=f"https://test.example.com/test/article-{i}",
+                title=f"Test article {i}",
+                text="Test content",
                 published_date=(base - timedelta(days=d)).strftime("%Y-%m-%d"),
             )
             for i, d in enumerate(days_ago_list)
@@ -1210,7 +1463,7 @@ class VitalidadExtractorTests(unittest.TestCase):
         exa = self._exa_with_dates([3])
         features = self.extractor.extract(exa=exa)
         self.assertEqual(features["content_recency"].value, 100.0)
-        self.assertEqual(features["content_recency"].raw_value["evidence_snippet"], "content")
+        self.assertEqual(features["content_recency"].raw_value["evidence_snippet"], "Test content")
 
     def test_content_recency_30_days_is_mid_high(self):
         exa = self._exa_with_dates([25])
@@ -1298,20 +1551,59 @@ class VitalidadExtractorTests(unittest.TestCase):
         self.assertEqual(fv.value, 20.0)
         payload = fv.raw_value
         self.assertEqual(payload["reason"], "insufficient_dates_12m")
-        self.assertEqual(payload["evidence"][0]["snippet"], "content")
+        self.assertEqual(payload["evidence"][0]["snippet"], "Test content")
 
     def test_publication_cadence_regular_rhythm_scores_high(self):
         # 3 dates roughly ~20 days apart → mean_gap < 30 → 90
         exa = self._exa_with_dates([10, 35, 60])
         features = self.extractor.extract(exa=exa)
         self.assertEqual(features["publication_cadence"].value, 90.0)
-        self.assertTrue(all(item["snippet"] == "content" for item in features["publication_cadence"].raw_value["evidence"]))
+        self.assertTrue(all(item["snippet"] == "Test content" for item in features["publication_cadence"].raw_value["evidence"]))
 
     def test_publication_cadence_moderate_rhythm_scores_mid(self):
         # 3 dates ~100 days apart → 90 <= mean < 180 → 50
         exa = self._exa_with_dates([5, 110, 215])
         features = self.extractor.extract(exa=exa)
         self.assertEqual(features["publication_cadence"].value, 50.0)
+
+    def test_publication_cadence_ignores_irrelevant_collision_news(self):
+        exa = ExaData(
+            brand_name="www.cofisolutions.com",
+            mentions=[
+                ExaResult(
+                    url="https://www.cofisolutions.com/blog/a",
+                    title="COFI Solutions article A",
+                    text="content",
+                    published_date="2026-01-01",
+                    source_class="owned",
+                    relation="audited_surface",
+                ),
+                ExaResult(
+                    url="https://www.cofisolutions.com/blog/b",
+                    title="COFI Solutions article B",
+                    text="content",
+                    published_date="2026-03-01",
+                    source_class="owned",
+                    relation="audited_surface",
+                ),
+            ],
+            news=[
+                ExaResult(
+                    url="https://news.coforge.com/story",
+                    title="Coforge partnership",
+                    text="Unrelated external news",
+                    published_date="2026-06-01",
+                    source_class="external",
+                    relation="external",
+                )
+            ],
+        )
+
+        features = self.extractor.extract(exa=exa)
+        evidence_urls = [item["url"] for item in features["publication_cadence"].raw_value["evidence"]]
+        self.assertNotIn("https://news.coforge.com/story", evidence_urls)
+        self.assertIn("https://www.cofisolutions.com/blog/a", evidence_urls)
+        self.assertIn("https://www.cofisolutions.com/blog/b", evidence_urls)
 
     # ── momentum ───────────────────────────────────────────────────────
 
@@ -1615,6 +1907,31 @@ Tabular foundation models for real-world data.
         self.assertIn("Runtime policy enforcement, steering, and audit trails", content)
         self.assertNotIn("ignore me", content)
 
+    def test_html_to_markdown_fallback_recovers_div_only_copy(self):
+        collector = WebCollector()
+        filler = "".join(
+            f"<p>Structured paragraph number {i} with enough length to count.</p>" for i in range(3)
+        )
+        html = f"""
+<html>
+  <head><title>Mercury Jobs</title></head>
+  <body>
+    {filler}
+    <div class="values-section">
+      <div>Our values. Your strengths.</div>
+      <div>We put our values into practice every day across the company.</div>
+    </div>
+    <script>window.__NEXT_DATA__ = {{"ignored": true}}</script>
+  </body>
+</html>
+"""
+
+        content = collector._html_to_markdown_fallback(html)
+
+        self.assertIn("Our values. Your strengths.", content)
+        self.assertIn("values into practice", content)
+        self.assertNotIn("__NEXT_DATA__", content)
+
     def test_extract_canonical_metadata_captures_alternate_domains(self):
         collector = WebCollector()
         html = """
@@ -1792,10 +2109,30 @@ Tabular foundation models for real-world data.
                 "https://example.com/about-us",
                 "https://example.com/customers",
                 "https://example.com/testimonials",
+                "https://example.com/pricing",
+                "https://example.com/features/ai-video",
             ],
         )
-        self.assertNotIn("https://example.com/pricing", selected)
         self.assertNotIn("https://example.com/privacy-policy", selected)
+
+    def test_select_internal_links_to_crawl_prefers_manifesto_over_company_page(self):
+        collector = WebCollector()
+        links = [
+            "https://example.com/use-cases",
+            "https://example.com/company",
+            "https://example.com/blog/manifesto",
+            "https://example.com/customers",
+            "https://example.com/security",
+        ]
+
+        selected = collector._select_internal_links_to_crawl(links, "https://example.com")
+
+        self.assertIn("https://example.com/blog/manifesto", selected)
+        self.assertLess(
+            selected.index("https://example.com/blog/manifesto"),
+            selected.index("https://example.com/company"),
+        )
+        self.assertLessEqual(len(selected), 6)
 
     def test_select_internal_links_to_crawl_recognizes_spanish_proof_pages(self):
         collector = WebCollector()
@@ -1811,7 +2148,50 @@ Tabular foundation models for real-world data.
 
         self.assertIn("https://example.com/es/testimonios", selected)
         self.assertIn("https://example.com/es/resenas", selected)
-        self.assertLessEqual(len(selected), 4)
+        self.assertLessEqual(len(selected), 6)
+
+    def test_select_internal_links_to_crawl_guarantees_culture_page_slot(self):
+        collector = WebCollector()
+        links = [
+            "https://example.com/features/dashboard",
+            "https://example.com/features/ai-video",
+            "https://example.com/solutions/enterprise",
+            "https://example.com/about-us",
+            "https://example.com/customers",
+            "https://example.com/case-studies",
+            "https://example.com/jobs",
+        ]
+
+        selected = collector._select_internal_links_to_crawl(links, "https://example.com")
+
+        self.assertIn("https://example.com/jobs", selected)
+
+    def test_select_internal_links_to_crawl_prefers_values_page_over_careers(self):
+        collector = WebCollector()
+        links = [
+            "https://example.com/careers",
+            "https://example.com/company/values",
+            "https://example.com/features/dashboard",
+        ]
+
+        selected = collector._select_internal_links_to_crawl(links, "https://example.com")
+
+        self.assertIn("https://example.com/company/values", selected)
+        self.assertLess(
+            selected.index("https://example.com/company/values"),
+            selected.index("https://example.com/careers"),
+        )
+
+    def test_select_internal_links_recognizes_spanish_culture_pages(self):
+        collector = WebCollector()
+        links = [
+            "https://example.com/es/producto",
+            "https://example.com/es/cultura",
+        ]
+
+        selected = collector._select_internal_links_to_crawl(links, "https://example.com/es/")
+
+        self.assertIn("https://example.com/es/cultura", selected)
 
 
     def test_scrape_recursive_crawling(self):
@@ -2237,7 +2617,15 @@ class CoherenciaExtractorTests(unittest.TestCase):
     def test_messaging_consistency_partial_gap_all_dropped_degrades_confidence(self):
         web = WebData(url="https://example.com", title="Example",
                       markdown_content="We are a data platform.")
-        exa = ExaData(brand_name="Example", mentions=[ExaResult(url="https://x/1", title="t", text="t")])
+        exa = ExaData(brand_name="Example", mentions=[
+            ExaResult(
+                url="https://directory.example.com/example",
+                title="Example company profile",
+                text="Example appears in a directory profile.",
+                source_class="external",
+                relation="external",
+            )
+        ])
         llm = self._make_coherence_llm(messaging_payload={
             "consistency_score": 50, "verdict": "partial_gap",
             "gaps": [{"self_says": 123, "third_party_says": "analytics"}],
@@ -2377,6 +2765,52 @@ class CoherenciaExtractorTests(unittest.TestCase):
         self.assertEqual(feature.confidence, 0.5)
         self.assertEqual(feature.value, 60.0)
         self.assertEqual(feature.raw_value["reason"], "no_third_party_tone_evidence")
+
+    def test_tone_consistency_ignores_domain_collision_mentions(self):
+        web = WebData(
+            url="https://www.cofisolutions.com",
+            title="COFI Solutions",
+            markdown_content="Rigor de norma internacional y lenguaje de negocio.",
+        )
+        exa = ExaData(
+            brand_name="www.cofisolutions.com",
+            mentions=[
+                ExaResult(
+                    url="https://cofisolutions.com/",
+                    title="COFI Solutions",
+                    text="Owned brand copy",
+                    source_class="owned",
+                    relation="audited_surface",
+                ),
+                ExaResult(
+                    url="https://news.coforge.com/story",
+                    title="Coforge partnership",
+                    text="Unrelated enterprise services coverage",
+                    source_class="external",
+                    relation="external",
+                ),
+            ],
+        )
+        captured = {}
+
+        class FakeLLM:
+            api_key = "sk-test"
+
+            def analyze_tone_consistency(self, web_content, snippets, brand_name):
+                captured["snippets"] = snippets
+                return {
+                    "tone_consistency_score": 80,
+                    "self_tone": "formal",
+                    "third_party_tone": "",
+                    "gap_signal": "none",
+                    "examples": [],
+                    "reasoning": "No usable third-party evidence.",
+                }
+
+        feature = CoherenciaExtractor(llm=FakeLLM())._tone_consistency(web, exa)
+
+        self.assertEqual(captured["snippets"], [])
+        self.assertEqual(feature.value, 80.0)
 
     def test_tone_consistency_without_llm_falls_back_to_heuristic(self):
         web = WebData(url="https://example.com", title="Example",

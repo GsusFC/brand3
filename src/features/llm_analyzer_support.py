@@ -41,20 +41,21 @@ def _llm_http_request_once(
     payload: bytes,
     headers: dict[str, str],
     timeout_seconds: int | None,
-) -> tuple[str, str]:
+) -> tuple[str, str, dict | None]:
     req = urllib.request.Request(url, data=payload, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
             data = json.loads(resp.read())
             msg = data["choices"][0]["message"]
             content = msg.get("content") or msg.get("reasoning") or ""
-            return "ok", content
+            usage = data.get("usage") if isinstance(data, dict) else None
+            return "ok", content, usage if isinstance(usage, dict) else None
     except urllib.error.HTTPError as exc:
         error_body = exc.read().decode("utf-8", errors="replace")[:500]
-        return "http_error", f"HTTP {exc.code}: {error_body}"
+        return "http_error", f"HTTP {exc.code}: {error_body}", None
     except Exception as exc:
         reason = "timeout" if _looks_like_timeout(exc) else "error"
-        return reason, str(exc)
+        return reason, str(exc), None
 
 
 def _gemini_http_request_once(
@@ -62,26 +63,27 @@ def _gemini_http_request_once(
     payload: bytes,
     headers: dict[str, str],
     timeout_seconds: int | None,
-) -> tuple[str, str]:
+) -> tuple[str, str, dict | None]:
     req = urllib.request.Request(url, data=payload, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
             data = json.loads(resp.read())
             candidates = data.get("candidates") if isinstance(data, dict) else None
             if not isinstance(candidates, list) or not candidates:
-                return "error", "gemini_response_missing_candidates"
+                return "error", "gemini_response_missing_candidates", None
             content = candidates[0].get("content") if isinstance(candidates[0], dict) else None
             parts = content.get("parts") if isinstance(content, dict) else None
             if not isinstance(parts, list):
-                return "error", "gemini_response_missing_parts"
+                return "error", "gemini_response_missing_parts", None
             text_parts = [str(part.get("text") or "") for part in parts if isinstance(part, dict) and part.get("text")]
-            return "ok", "".join(text_parts)
+            usage = data.get("usageMetadata") if isinstance(data, dict) else None
+            return "ok", "".join(text_parts), usage if isinstance(usage, dict) else None
     except urllib.error.HTTPError as exc:
         error_body = exc.read().decode("utf-8", errors="replace")[:500]
-        return "http_error", f"HTTP {exc.code}: {error_body}"
+        return "http_error", f"HTTP {exc.code}: {error_body}", None
     except Exception as exc:
         reason = "timeout" if _looks_like_timeout(exc) else "error"
-        return reason, str(exc)
+        return reason, str(exc), None
 
 
 def _llm_http_worker(
@@ -100,7 +102,7 @@ def _run_llm_http_call(
     payload: bytes,
     headers: dict[str, str],
     timeout_seconds: int,
-) -> tuple[str, str]:
+) -> tuple[str, str, dict | None]:
     if timeout_seconds <= 0:
         return _llm_http_request_once(url, payload, headers, None)
     return _llm_http_request_once(url, payload, headers, timeout_seconds)
@@ -112,7 +114,7 @@ def _run_gemini_http_call(
     payload: bytes,
     headers: dict[str, str],
     timeout_seconds: int,
-) -> tuple[str, str]:
+) -> tuple[str, str, dict | None]:
     if timeout_seconds <= 0:
         return _gemini_http_request_once(url, payload, headers, None)
     return _gemini_http_request_once(url, payload, headers, timeout_seconds)

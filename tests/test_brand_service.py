@@ -266,10 +266,12 @@ class VisualSignatureShadowRunTests(unittest.TestCase):
         self.assertEqual(payload["visual_signature_scan"]["schema_version"], "visual-signature-scan-v1")
         self.assertGreaterEqual(payload["visual_signature_scan"]["score"], 0)
         self.assertEqual(payload["visual_signature_evidence"]["schema_version"], "visual-signature-evidence-v1")
+        self.assertEqual(payload["visual_evidence_packet"]["schema_version"], "visual-signature-evidence-v1")
         self.assertEqual(payload["visual_signature_evidence"]["capture"]["status"], "usable")
         self.assertTrue(payload["visual_signature_evidence"]["tile_signals"])
         self.assertIn("visual_signature_score", result)
         self.assertIn("visual_signature_scan_status", result)
+        self.assertEqual(result["visual_evidence_packet"]["schema_version"], "visual-signature-evidence-v1")
         self.assertEqual(result["visual_signature_evidence"]["schema_version"], "visual-signature-evidence-v1")
 
     def test_run_visual_signature_for_existing_run_reuses_persisted_inputs(self):
@@ -342,12 +344,16 @@ class VisualSignatureShadowRunTests(unittest.TestCase):
                 self.assertEqual(result["status"], "completed")
                 snapshot = store.get_run_snapshot(run_id)
                 visual_inputs = [
-                    item for item in snapshot["raw_inputs"] if item["source"] == "visual_signature"
+                    item for item in snapshot["raw_inputs"] if item["source"] == "visual_acquisition"
                 ]
                 self.assertEqual(len(visual_inputs), 1)
                 self.assertEqual(
                     visual_inputs[0]["payload"]["visual_signature_scan"]["schema_version"],
                     "visual-signature-scan-v1",
+                )
+                self.assertEqual(
+                    visual_inputs[0]["payload"]["visual_evidence_packet"]["schema_version"],
+                    "visual-signature-evidence-v1",
                 )
                 self.assertEqual(
                     visual_inputs[0]["payload"]["visual_signature_evidence"]["schema_version"],
@@ -387,7 +393,9 @@ class VisualSignatureShadowRunTests(unittest.TestCase):
                 self.assertEqual(result["status"], "already_available")
                 snapshot = store.get_run_snapshot(run_id)
                 visual_inputs = [
-                    item for item in snapshot["raw_inputs"] if item["source"] == "visual_signature"
+                    item
+                    for item in snapshot["raw_inputs"]
+                    if item["source"] in {"visual_signature", "visual_acquisition"}
                 ]
                 self.assertEqual(len(visual_inputs), 1)
             finally:
@@ -445,9 +453,16 @@ class VisualSignatureShadowRunTests(unittest.TestCase):
                 self.assertTrue(result["persisted"])
                 snapshot = store.get_run_snapshot(run_id)
                 visual_inputs = [
-                    item for item in snapshot["raw_inputs"] if item["source"] == "visual_signature"
+                    item
+                    for item in snapshot["raw_inputs"]
+                    if item["source"] in {"visual_signature", "visual_acquisition"}
                 ]
                 self.assertEqual(len(visual_inputs), 2)
+                self.assertEqual(visual_inputs[-1]["source"], "visual_acquisition")
+                self.assertEqual(
+                    visual_inputs[-1]["payload"]["visual_evidence_packet"]["schema_version"],
+                    "visual-signature-evidence-v1",
+                )
                 self.assertEqual(
                     visual_inputs[-1]["payload"]["visual_signature_evidence"]["schema_version"],
                     "visual-signature-evidence-v1",

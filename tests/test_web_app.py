@@ -185,6 +185,7 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("ScannerMethodologyResponse", payload["components"]["schemas"])
         self.assertIn("ScannerEvidenceResponse", payload["components"]["schemas"])
         self.assertIn("ScannerAuditResponse", payload["components"]["schemas"])
+        self.assertIn("ScannerAuditSnapshotResponse", payload["components"]["schemas"])
         self.assertIn("ScannerApiKey", payload["components"]["securitySchemes"])
         self.assertEqual(payload["paths"]["/api/v1/scanner"]["post"]["security"], [{"ScannerApiKey": []}])
         create_props = payload["components"]["schemas"]["ScannerCreateRequest"]["properties"]
@@ -204,10 +205,14 @@ class WebAppFlowTests(unittest.TestCase):
         evidence_schema = payload["paths"]["/api/v1/scanner/{scan_id}/evidence"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
         methodology_schema = payload["paths"]["/api/v1/scanner/{scan_id}/methodology"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
         audit_schema = payload["paths"]["/api/v1/scanner/{scan_id}/audit"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+        audit_snapshot_schema = payload["paths"]["/api/v1/scanner/{scan_id}/audit-snapshot"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+        audit_snapshot_params = payload["paths"]["/api/v1/scanner/{scan_id}/audit-snapshot"]["get"]["parameters"]
         self.assertEqual(result_schema, {"$ref": "#/components/schemas/ScannerResultResponse"})
         self.assertEqual(evidence_schema, {"$ref": "#/components/schemas/ScannerEvidenceResponse"})
         self.assertEqual(methodology_schema, {"$ref": "#/components/schemas/ScannerMethodologyResponse"})
         self.assertEqual(audit_schema, {"$ref": "#/components/schemas/ScannerAuditResponse"})
+        self.assertEqual(audit_snapshot_schema, {"$ref": "#/components/schemas/ScannerAuditSnapshotResponse"})
+        self.assertTrue(any(param["name"] == "full" and param["in"] == "query" for param in audit_snapshot_params))
         metadata_props = payload["components"]["schemas"]["ScannerResultMetadata"]["properties"]
         self.assertEqual(
             metadata_props["scanner_readiness"],

@@ -142,5 +142,6 @@ class VisualSignaturePersistenceTests(unittest.TestCase):
             self.assertEqual(latest["artifact_refs"]["capture_type"], "viewport")
             self.assertEqual(latest["brand_name"], "Example")
             self.assertEqual(latest["website_url"], "https://example.com")
-            self.assertEqual(snapshot["raw_inputs"][-1]["source"], "visual_signature")
+            self.assertEqual(snapshot["raw_inputs"][-1]["source"], "visual_acquisition")
             self.assertEqual(snapshot["raw_inputs"][-1]["payload"]["run_metadata"]["acquisition_status"], "error")
+            self.assertIn("visual_evidence_packet", snapshot["raw_inputs"][-1]["payload"])

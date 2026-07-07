@@ -2,10 +2,6 @@
 
 Initial evaluation set built from existing Brand Audit and Magnetism Scanner artifacts.
 
-## Evaluation outputs
-- [evaluation.json](./evaluation.json)
-- [evaluation.md](./evaluation.md)
-
 | Case | Source URL | Brand Audit Run | Magnetism Scan | Source Kind |
 | --- | --- | ---: | ---: | --- |
 | base44.com | https://base44.com | 81 | 8 | benchmark_fixture |

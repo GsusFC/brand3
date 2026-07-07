@@ -15,7 +15,13 @@ mutate V5 data (results are cached in sv9_visual_evidence).
 from __future__ import annotations
 
 import json
+from collections import defaultdict
 from typing import Any
+
+from src.visual_signature.acquisition_contract import (
+    is_visual_acquisition_source,
+    visual_evidence_packet_from_payload,
+)
 
 _VISION_EVIDENCE_PROMPT = """Analyze this website screenshot as brand identity evidence. The brand is "{brand_name}".
 
@@ -198,6 +204,78 @@ def compute_vision_observations(
     return payload
 
 
+def visual_evidence_packet_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any] | None:
+    """Return the latest persisted visual evidence packet, if present."""
+
+    latest: dict[str, Any] | None = None
+    for row in snapshot.get("raw_inputs") or []:
+        entry = dict(row) if not isinstance(row, dict) else row
+        if not is_visual_acquisition_source(entry.get("source")):
+            continue
+        payload = entry.get("payload")
+        evidence = visual_evidence_packet_from_payload(payload)
+        if evidence is not None:
+            latest = evidence
+    return latest
+
+
+def visual_signature_evidence_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any] | None:
+    """Legacy wrapper for Visual Acquisition Layer evidence."""
+
+    return visual_evidence_packet_from_snapshot(snapshot)
+
+
+def visual_signature_shadow_signals(
+    evidence_packet: dict[str, Any] | None,
+) -> dict[str, list[dict[str, Any]]]:
+    """Adapt VS evidence into SV9 auxiliary signals.
+
+    VS remains evidence-only here: the evaluator receives grouped observations
+    per component, not autonomous tile verdicts or any direct score.
+    """
+    if not isinstance(evidence_packet, dict):
+        return {}
+    if evidence_packet.get("schema_version") != "visual-signature-evidence-v1":
+        return {}
+    capture = evidence_packet.get("capture")
+    if not isinstance(capture, dict) or str(capture.get("status") or "") != "usable":
+        return {}
+
+    grouped_tiles: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for tile_signal in evidence_packet.get("tile_signals") or []:
+        if not isinstance(tile_signal, dict):
+            continue
+        tile_id = str(tile_signal.get("tile") or "")
+        component = tile_id.split(".", 1)[0] if "." in tile_id else ""
+        if component:
+            grouped_tiles[component].append(tile_signal)
+
+    if not grouped_tiles:
+        return {}
+
+    limitations = evidence_packet.get("limitations")
+    health = evidence_packet.get("evidence_health")
+    payload: dict[str, list[dict[str, Any]]] = {}
+    for component, component_tiles in grouped_tiles.items():
+        detail = _visual_signature_component_detail(
+            component_tiles,
+            capture=capture,
+            limitations=limitations,
+            evidence_health=health,
+        )
+        payload[component] = [
+            {
+                "feature": "visual_signature_shadow",
+                "legacy_dimension": "visual_signature_evidence_v1",
+                "value": _visual_signature_component_value(component_tiles),
+                "confidence": _visual_signature_component_confidence(component_tiles, capture),
+                "source": "visual_signature_shadow",
+                "detail": detail,
+            }
+        ]
+    return payload
+
+
 def vision_signals(payload: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
     """Expose vision observations as evaluator signals.
 
@@ -214,3 +292,76 @@ def vision_signals(payload: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
         "detail": detail,
     }
     return {"brand_idea": [dict(base)], "coherencia": [dict(base)]}
+
+
+def _visual_signature_component_value(component_tiles: list[dict[str, Any]]) -> str:
+    effects = {str(item.get("effect") or "") for item in component_tiles if isinstance(item, dict)}
+    if "supports" in effects:
+        return "supports_present"
+    if "weakens" in effects:
+        return "weakens_present"
+    return "insufficient_evidence_only"
+
+
+def _visual_signature_component_confidence(
+    component_tiles: list[dict[str, Any]],
+    capture: Any,
+) -> str:
+    if isinstance(capture, dict) and str(capture.get("status") or "") != "usable":
+        return "medium"
+    confidences = {
+        str(item.get("confidence") or "")
+        for item in component_tiles
+        if isinstance(item, dict) and item.get("confidence")
+    }
+    if "high" in confidences:
+        return "high"
+    if "medium" in confidences:
+        return "medium"
+    return "low"
+
+
+def _visual_signature_component_detail(
+    component_tiles: list[dict[str, Any]],
+    *,
+    capture: Any,
+    limitations: Any,
+    evidence_health: Any,
+) -> str:
+    support_tiles = []
+    weaken_tiles = []
+    insufficient_tiles = []
+    for item in component_tiles:
+        if not isinstance(item, dict):
+            continue
+        effect = str(item.get("effect") or "")
+        tile_id = str(item.get("tile") or "")
+        rationale = str(item.get("rationale") or "")
+        simplified = {
+            "tile": tile_id,
+            "effect": effect,
+            "confidence": item.get("confidence"),
+            "source": item.get("source"),
+            "rationale": rationale,
+            "evidence_refs": item.get("evidence_refs") or [],
+        }
+        if effect == "supports":
+            support_tiles.append(simplified)
+        elif effect == "weakens":
+            weaken_tiles.append(simplified)
+        else:
+            insufficient_tiles.append(simplified)
+    summary = {
+        "capture_status": capture.get("status") if isinstance(capture, dict) else None,
+        "first_fold_evaluable": capture.get("first_fold_evaluable")
+        if isinstance(capture, dict)
+        else None,
+        "supports": support_tiles[:4],
+        "weakens": weaken_tiles[:4],
+        "insufficient_evidence": insufficient_tiles[:4],
+        "limitations": list(limitations or [])[:6] if isinstance(limitations, list) else [],
+        "warnings": list((evidence_health or {}).get("warnings") or [])[:6]
+        if isinstance(evidence_health, dict)
+        else [],
+    }
+    return json.dumps(summary, ensure_ascii=False)[:600]

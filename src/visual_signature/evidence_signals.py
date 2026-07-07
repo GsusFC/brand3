@@ -65,7 +65,26 @@ def tile_signals(
     semantics = _dict(payload.get("semantics"))
     multimodal_available = _multimodal_available(semantics)
     return [
-        threshold_signal("coherencia.C6", consistency, source="heuristic", evidence_refs=["visual_signature:consistency"], rationale_detail=f"consistency:{round(consistency,3)}"),
+        negative_or_threshold_signal(
+            "coherencia.C6",
+            score=consistency,
+            source="llm_multimodal" if multimodal_available and copy_summary else "heuristic",
+            evidence_refs=copy_visual_alignment.get("evidence_refs") or ["visual_signature:consistency"],
+            negative_reason=None,
+            unavailable_reason=(
+                "first_fold_not_evaluable"
+                if capture.get("first_fold_evaluable") is False
+                else "multimodal_semantics_unavailable"
+                if not multimodal_available
+                else "copy_visual_alignment_missing"
+                if not copy_summary
+                else None
+            ),
+            rationale_detail=(
+                f"copy_visual_alignment:{copy_summary or 'unknown'} "
+                f"consistency:{round(consistency,3)}"
+            ),
+        ),
         negative_or_threshold_signal(
             "brand_idea.I1",
             score=logo_confidence if has_logo else 0.0,
